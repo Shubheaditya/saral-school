@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --font-nunito: "Nunito", sans-serif;
+
+  --color-brand-primary: #E0E7FF;
+  --color-brand-secondary: #ECFDF5;
+  --color-brand-accent: #FFF7ED;
+  --color-brand-soft-pink: #FDF2F8;
+  --color-brand-soft-yellow: #FFFBEB;
+
+  --color-text-main: #1E293B;
+  --color-text-muted: #64748B;
+
+  --radius-3xl: 1.5rem;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #1e293b;
+  color-scheme: light;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-nunito);
+  overflow-x: hidden;
+}
+
+@layer utilities {
+  .bouncy-hover {
+    @apply transition-transform duration-300 ease-out;
+  }
+
+  .bouncy-hover:hover {
+    @apply scale-105 -rotate-1;
+  }
+
+  .bouncy-hover:active {
+    @apply scale-95;
+  }
+}
+
+@keyframes bounce-slow {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: bounce-slow 4s ease-in-out infinite;
+}
