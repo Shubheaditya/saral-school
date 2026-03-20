@@ -53,4 +53,14 @@ Integrated multiple core PRDs into the site's marketing and documentation.
 - **Strict Semester Filtering**: To prevent overwhelming the student, the Subject Detail views (`/learn/subject/[id]`) now strictly filter the data model to *only* display the specific `Semester` (which are presented as Chapters/Regions) that matches the student's current learning grade, hiding previous or advanced material.
 
 ---
+## Stage 7: Production Backend & Analytics (WIP)
+**Objective**: Transition from local mock data to a persistent, cloud-based architecture and implement usage tracking to monitor real-world learning.
+- **Storage & Database (Supabase)**: 
+  - Overhaul the hardcoded `AppContext` to synchronize with a Supabase PostgreSQL database.
+  - Integrate Supabase Storage buckets so admins can securely upload real `.mp4` video lectures and `.pdf` notes.
+  - The Learner UI will automatically fetch these secure URLs from the database, allowing global access without inflating the application's bundle size.
+- **Usage Tracking (Vercel Web Analytics)**:
+  - Inject the `@vercel/analytics` component into the root layout.
+  - This provides a privacy-friendly, zero-config dashboard directly in Vercel to monitor daily visitors, active users, page views, and geographic distribution.
+
 *Updated: March 2026*

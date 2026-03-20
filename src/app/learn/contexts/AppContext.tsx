@@ -7,6 +7,7 @@ import {
   AdminContent, generateSemesters,
 } from "../types";
 import { DEFAULT_SUBJECTS, MOCK_QUIZ } from "../mockData";
+import { supabase } from "../../../lib/supabase";
 
 interface AppContextType {
   subjects: Subject[];
@@ -90,17 +91,54 @@ function loadContent(): AdminContent {
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [content, setContent] = useState<AdminContent>(getDefaultContent());
   const [loaded, setLoaded] = useState(false);
+  const [stateId, setStateId] = useState<string | null>(null);
 
   useEffect(() => {
-    setContent(loadContent());
-    setLoaded(true);
+    async function initSupabase() {
+      try {
+        const { data, error } = await supabase.from('saral_state').select('*').limit(1).maybeSingle();
+        if (data && data.content) {
+          const loadedData = data.content as AdminContent;
+          if (loadedData.subjects && loadedData.subjects.length > 0 && !loadedData.subjects[0].semesters) {
+            loadedData.subjects = loadedData.subjects.map(s => ({ ...s, semesters: generateSemesters(s.id) }));
+          }
+          if (!loadedData.chapterNotes) loadedData.chapterNotes = [];
+          if (!loadedData.formulaSheets) loadedData.formulaSheets = [];
+          if (!loadedData.studentNotes) loadedData.studentNotes = [];
+          
+          setContent(loadedData);
+          setStateId(data.id);
+        } else {
+           const defaultState = loadContent(); // check local temp first just in case
+           const { data: insertData } = await supabase.from('saral_state').insert({ content: defaultState }).select().single();
+           setContent(defaultState);
+           if (insertData) setStateId(insertData.id);
+        }
+      } catch (err) {
+        console.error("Failed to load from Supabase:", err);
+        setContent(loadContent());
+      } finally {
+        setLoaded(true);
+      }
+    }
+    initSupabase();
   }, []);
 
   useEffect(() => {
-    if (loaded) {
+    if (loaded && stateId) {
+      supabase.from('saral_state').update({ content, updated_at: new Date().toISOString() }).eq('id', stateId).then();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
     }
-  }, [content, loaded]);
+  }, [content, loaded, stateId]);
+
+  if (!loaded) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center flex-col gap-4">
+        <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+        <p className="text-slate-500 font-bold animate-pulse">Loading Saral School Engine...</p>
+      </div>
+    );
+  }
 
   // --- Subject ops ---
   const addSubject = useCallback((subject: Subject) => {

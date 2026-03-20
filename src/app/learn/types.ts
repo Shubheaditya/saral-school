@@ -82,6 +82,7 @@ export interface ChapterNotes {
   subjectId: string;
   title: string;
   content: string; // markdown or plain text
+  pdfUrl?: string; // Appended for PDF support
 }
 
 export interface FormulaSheet {

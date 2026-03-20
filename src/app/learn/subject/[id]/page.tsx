@@ -59,8 +59,22 @@ export default function SubjectPage() {
     if (type === "video") router.push(`/learn/video/${id}`);
     else if (type === "practice") router.push(`/learn/quiz/${id}`);
     else if (type === "notes") {
-      // TODO: Notes viewer route
-      alert("Notes viewer coming soon!");
+      let noteId = null;
+      for (const sem of subject.semesters) {
+        // Match either the subtopic ID or the semester chapter ID
+        const targetChapter = sem.chapters.find(c => `sub-${c.id}` === id || c.id === id || `ch-${sem.id}` === id);
+        if (targetChapter) {
+          const noteItem = targetChapter.contentItems.find(ci => ci.type === "notes");
+          if (noteItem) noteId = noteItem.refId;
+          break;
+        }
+      }
+
+      if (noteId) {
+        router.push(`/learn/notes/${noteId}`);
+      } else {
+        alert("Ask your teacher to upload notes for this chapter!");
+      }
     }
   };
 

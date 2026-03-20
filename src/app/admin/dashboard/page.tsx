@@ -8,6 +8,7 @@ import {
   VideoLecture, Quiz, Question, QuestionType, ChapterNotes, FormulaSheet,
   generateSemesters, CONTENT_TYPE_INFO,
 } from "../../learn/types";
+import { supabase } from "../../../lib/supabase";
 
 type AdminView =
   | { screen: "subjects" }
@@ -472,12 +473,28 @@ function AddVideoForm({ subjectId, semesterId, chapterId, order, app, onClose }:
   const [description, setDescription] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const [duration, setDuration] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!title.trim()) return;
+    setUploading(true);
+
+    let finalVideoUrl = videoUrl;
+    if (file) {
+      const fileName = `videos/${Date.now()}-${file.name}`;
+      const { data, error } = await supabase.storage.from('saral_files').upload(fileName, file);
+      if (data) {
+        finalVideoUrl = supabase.storage.from('saral_files').getPublicUrl(fileName).data.publicUrl;
+      } else {
+        console.error("Video upload failed:", error);
+      }
+    }
+
     const videoId = `vid-${Date.now()}`;
-    app.addVideo({ id: videoId, chapterId, subjectId, title, description, videoUrl: videoUrl || undefined, duration: duration || undefined });
+    app.addVideo({ id: videoId, chapterId, subjectId, title, description, videoUrl: finalVideoUrl || undefined, duration: duration || undefined });
     app.addContentItem(subjectId, semesterId, chapterId, { id: `ci-${Date.now()}`, chapterId, type: "video", order, refId: videoId });
+    setUploading(false);
     onClose();
   };
 
@@ -495,17 +512,23 @@ function AddVideoForm({ subjectId, semesterId, chapterId, order, app, onClose }:
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-sm font-bold text-slate-600 block mb-1">Video URL (or upload later)</label>
-            <input value={videoUrl} onChange={e => setVideoUrl(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="https://..." />
+            <label className="text-sm font-bold text-slate-600 block mb-1">Paste Video Link</label>
+            <input value={videoUrl} onChange={e => setVideoUrl(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="https://youtube.com/..." disabled={!!file} />
           </div>
           <div>
-            <label className="text-sm font-bold text-slate-600 block mb-1">Duration</label>
-            <input value={duration} onChange={e => setDuration(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="e.g., 12:30" />
+            <label className="text-sm font-bold text-slate-600 block mb-1">OR Upload Video File (.mp4)</label>
+            <input type="file" accept="video/mp4,video/webm" onChange={e => setFile(e.target.files?.[0] || null)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 font-bold hover:file:bg-indigo-100" disabled={!!videoUrl} />
           </div>
         </div>
-        <div className="flex gap-2">
-          <button onClick={handleSave} className="px-4 py-2 bg-emerald-600 text-white rounded-lg font-bold text-sm">Save Video</button>
-          <button onClick={onClose} className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg font-bold text-sm">Cancel</button>
+        <div>
+           <label className="text-sm font-bold text-slate-600 block mb-1">Duration</label>
+           <input value={duration} onChange={e => setDuration(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="e.g., 12:30" />
+        </div>
+        <div className="flex gap-2 pt-2">
+          <button onClick={handleSave} disabled={uploading} className="px-4 py-2 bg-emerald-600 text-white rounded-lg font-bold text-sm disabled:opacity-50">
+            {uploading ? "Uploading..." : "Save Video"}
+          </button>
+          <button onClick={onClose} disabled={uploading} className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg font-bold text-sm">Cancel</button>
         </div>
       </div>
     </div>
@@ -519,12 +542,32 @@ function AddNotesForm({ subjectId, semesterId, chapterId, order, app, onClose }:
 }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
-  const handleSave = () => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFile(e.target.files?.[0] || null);
+  };
+
+  const handleSave = async () => {
     if (!title.trim()) return;
+    setUploading(true);
+
+    let finalPdfUrl = "";
+    if (file) {
+      const fileName = `notes/${Date.now()}-${file.name}`;
+      const { data, error } = await supabase.storage.from('saral_files').upload(fileName, file);
+      if (data) {
+        finalPdfUrl = supabase.storage.from('saral_files').getPublicUrl(fileName).data.publicUrl;
+      } else {
+        console.error("PDF upload failed:", error);
+      }
+    }
+
     const noteId = `note-${Date.now()}`;
-    app.addChapterNote({ id: noteId, chapterId, subjectId, title, content });
+    app.addChapterNote({ id: noteId, chapterId, subjectId, title, content, pdfUrl: finalPdfUrl || undefined });
     app.addContentItem(subjectId, semesterId, chapterId, { id: `ci-${Date.now()}`, chapterId, type: "notes", order, refId: noteId });
+    setUploading(false);
     onClose();
   };
 
@@ -537,12 +580,19 @@ function AddNotesForm({ subjectId, semesterId, chapterId, order, app, onClose }:
           <input value={title} onChange={e => setTitle(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="Notes title" autoFocus />
         </div>
         <div>
-          <label className="text-sm font-bold text-slate-600 block mb-1">Content</label>
-          <textarea value={content} onChange={e => setContent(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-40 resize-y font-mono" placeholder="Write notes (supports plain text or markdown)..." />
+          <label className="text-sm font-bold text-slate-600 block mb-1">Content (Text) OR</label>
+          <textarea value={content} onChange={e => setContent(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-32 resize-y font-mono" placeholder="Write notes..." />
         </div>
-        <div className="flex gap-2">
-          <button onClick={handleSave} className="px-4 py-2 bg-emerald-600 text-white rounded-lg font-bold text-sm">Save Notes</button>
-          <button onClick={onClose} className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg font-bold text-sm">Cancel</button>
+        <div>
+          <label className="text-sm font-bold text-slate-600 block mb-1">Upload PDF Note</label>
+          <input type="file" accept="application/pdf" onChange={handleFileUpload} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-emerald-50 file:text-emerald-700 font-bold hover:file:bg-emerald-100" />
+          {file && <p className="text-xs text-emerald-600 font-bold mt-1">✓ PDF Selected: {file.name}</p>}
+        </div>
+        <div className="flex gap-2 pt-2">
+          <button onClick={handleSave} disabled={uploading} className="px-4 py-2 bg-emerald-600 text-white rounded-lg font-bold text-sm disabled:opacity-50">
+            {uploading ? "Uploading..." : "Save Notes"}
+          </button>
+          <button onClick={onClose} disabled={uploading} className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg font-bold text-sm">Cancel</button>
         </div>
       </div>
     </div>

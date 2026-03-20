@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react";
 import ConditionalLayout from "./components/ConditionalLayout";
 
 const nunito = Nunito({
@@ -24,6 +25,7 @@ export default function RootLayout({
         className={`${nunito.variable} antialiased selection:bg-brand-primary selection:text-text-main bg-white text-slate-900`}
       >
         <ConditionalLayout>{children}</ConditionalLayout>
+        <Analytics />
       </body>
     </html>
   );
