@@ -78,11 +78,20 @@ export default function NotesPage() {
                   title={note.title}
                 />
               ) : (
-                <iframe 
-                  src={`${note.pdfUrl}#view=FitH`} 
-                  className="w-full h-full bg-slate-100" 
-                  title={note.title}
-                />
+                <div className="w-full h-full relative bg-slate-100">
+                  {/* Desktop: High-Quality Native Renderer with Perfect Zoom */}
+                  <iframe 
+                    src={`${note.pdfUrl}#view=FitH`} 
+                    className="hidden md:block w-full h-full border-0" 
+                    title={`${note.title} - Desktop`}
+                  />
+                  {/* Mobile: Google Docs Embed to prevent opening in external tabs */}
+                  <iframe 
+                    src={`https://docs.google.com/viewer?url=${encodeURIComponent(note.pdfUrl)}&embedded=true`}
+                    className="block md:hidden w-full h-full border-0" 
+                    title={`${note.title} - Mobile`}
+                  />
+                </div>
               )
             ) : (
               <div className="w-full h-full p-8 overflow-y-auto custom-scrollbar">
