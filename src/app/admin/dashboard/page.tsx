@@ -8,7 +8,7 @@ import {
   VideoLecture, Quiz, Question, QuestionType, ChapterNotes, FormulaSheet,
   generateSemesters, CONTENT_TYPE_INFO,
 } from "../../learn/types";
-import { supabase } from "../../../lib/supabase";
+import { supabase, isSupabaseConfigured } from "../../../lib/supabase";
 
 type AdminView =
   | { screen: "subjects" }
@@ -482,12 +482,21 @@ function AddVideoForm({ subjectId, semesterId, chapterId, order, app, onClose }:
 
     let finalVideoUrl = videoUrl;
     if (file) {
-      const fileName = `videos/${Date.now()}-${file.name}`;
+      if (!isSupabaseConfigured) {
+        alert("Cannot upload file: Supabase is not configured (missing environment variables).");
+        setUploading(false);
+        return;
+      }
+      const fileName = `videos/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
       const { data, error } = await supabase.storage.from('saral_files').upload(fileName, file);
+      if (error) {
+        console.error("Video upload failed:", error);
+        alert(`Failed to upload video to Supabase: ${error.message}\nMake sure your storage bucket exists and policies are applied.`);
+        setUploading(false);
+        return;
+      }
       if (data) {
         finalVideoUrl = supabase.storage.from('saral_files').getPublicUrl(fileName).data.publicUrl;
-      } else {
-        console.error("Video upload failed:", error);
       }
     }
 
@@ -555,12 +564,21 @@ function AddNotesForm({ subjectId, semesterId, chapterId, order, app, onClose }:
 
     let finalPdfUrl = "";
     if (file) {
-      const fileName = `notes/${Date.now()}-${file.name}`;
+      if (!isSupabaseConfigured) {
+        alert("Cannot upload file: Supabase is not configured (missing environment variables).");
+        setUploading(false);
+        return;
+      }
+      const fileName = `notes/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
       const { data, error } = await supabase.storage.from('saral_files').upload(fileName, file);
+      if (error) {
+        console.error("File upload failed:", error);
+        alert(`Failed to upload document to Supabase Storage: ${error.message}\nEnsure 'saral_files' bucket exists and RLS policies allow inserts.`);
+        setUploading(false);
+        return;
+      }
       if (data) {
         finalPdfUrl = supabase.storage.from('saral_files').getPublicUrl(fileName).data.publicUrl;
-      } else {
-        console.error("PDF upload failed:", error);
       }
     }
 
