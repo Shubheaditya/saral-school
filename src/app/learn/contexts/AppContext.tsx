@@ -139,14 +139,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [content, loaded, stateId]);
 
-  if (!loaded) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center flex-col gap-4">
-        <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-        <p className="text-slate-500 font-bold animate-pulse">Loading Saral School Engine...</p>
-      </div>
-    );
-  }
 
   // --- Subject ops ---
   const addSubject = useCallback((subject: Subject) => {
@@ -340,7 +332,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const getChapterNoteById = useCallback((id: string) => content.chapterNotes.find(n => n.id === id), [content.chapterNotes]);
   const getFormulaSheetById = useCallback((id: string) => content.formulaSheets.find(f => f.id === id), [content.formulaSheets]);
 
-  if (!loaded) return null;
+  if (!loaded) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center flex-col gap-4">
+        <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+        <p className="text-slate-500 font-bold animate-pulse">Loading Saral School Engine...</p>
+      </div>
+    );
+  }
 
   return (
     <AppContext.Provider value={{
