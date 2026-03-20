@@ -7,7 +7,7 @@ import {
   AdminContent, generateSemesters,
 } from "../types";
 import { DEFAULT_SUBJECTS, MOCK_QUIZ } from "../mockData";
-import { supabase } from "../../../lib/supabase";
+import { supabase, isSupabaseConfigured } from "../../../lib/supabase";
 
 interface AppContextType {
   subjects: Subject[];
@@ -95,6 +95,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function initSupabase() {
+      if (!isSupabaseConfigured) {
+        console.warn("Supabase not configured. Using local storage mode.");
+        setContent(loadContent());
+        setLoaded(true);
+        return;
+      }
       try {
         const { data, error } = await supabase.from('saral_state').select('*').limit(1).maybeSingle();
         if (data && data.content) {
@@ -109,7 +115,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setContent(loadedData);
           setStateId(data.id);
         } else {
-           const defaultState = loadContent(); // check local temp first just in case
+           const defaultState = loadContent(); 
            const { data: insertData } = await supabase.from('saral_state').insert({ content: defaultState }).select().single();
            setContent(defaultState);
            if (insertData) setStateId(insertData.id);
@@ -125,8 +131,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (loaded && stateId) {
+    if (loaded && stateId && isSupabaseConfigured) {
       supabase.from('saral_state').update({ content, updated_at: new Date().toISOString() }).eq('id', stateId).then();
+    }
+    if (loaded) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
     }
   }, [content, loaded, stateId]);
