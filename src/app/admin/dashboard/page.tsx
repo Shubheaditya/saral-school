@@ -584,9 +584,9 @@ function AddNotesForm({ subjectId, semesterId, chapterId, order, app, onClose }:
           <textarea value={content} onChange={e => setContent(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-32 resize-y font-mono" placeholder="Write notes..." />
         </div>
         <div>
-          <label className="text-sm font-bold text-slate-600 block mb-1">Upload PDF Note</label>
-          <input type="file" accept="application/pdf" onChange={handleFileUpload} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-emerald-50 file:text-emerald-700 font-bold hover:file:bg-emerald-100" />
-          {file && <p className="text-xs text-emerald-600 font-bold mt-1">✓ PDF Selected: {file.name}</p>}
+          <label className="text-sm font-bold text-slate-600 block mb-1">Upload Note Document (PDF, Image, Word)</label>
+          <input type="file" accept=".pdf,.doc,.docx,image/*" onChange={handleFileUpload} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-emerald-50 file:text-emerald-700 font-bold hover:file:bg-emerald-100" />
+          {file && <p className="text-xs text-emerald-600 font-bold mt-1">✓ Document Selected: {file.name}</p>}
         </div>
         <div className="flex gap-2 pt-2">
           <button onClick={handleSave} disabled={uploading} className="px-4 py-2 bg-emerald-600 text-white rounded-lg font-bold text-sm disabled:opacity-50">

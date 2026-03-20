@@ -34,6 +34,9 @@ export default function NotesPage() {
     );
   }
 
+  const isImage = note.pdfUrl?.toLowerCase().match(/\.(jpeg|jpg|gif|png|webp|avif|svg)$/);
+  const isWord = note.pdfUrl?.toLowerCase().match(/\.(doc|docx)$/);
+
   return (
     <main className={`min-h-screen ${backgroundClass} ${textClass} relative pb-24 transition-colors duration-500`}>
       <UniversalBackground />
@@ -58,11 +61,23 @@ export default function NotesPage() {
         <div className="flex-1 w-full max-w-5xl mx-auto px-6 pb-6">
           <div className={`w-full h-full rounded-[2rem] overflow-hidden shadow-xl ${isDark ? 'bg-slate-900 border border-white/10' : 'bg-white border-4 border-emerald-50'}`}>
             {note.pdfUrl ? (
-              <iframe 
-                src={note.pdfUrl} 
-                className="w-full h-full bg-slate-100" 
-                title={note.title}
-              />
+              isImage ? (
+                <div className="w-full h-full bg-slate-100 flex items-center justify-center p-8 overflow-y-auto">
+                  <img src={note.pdfUrl} alt={note.title} className="max-w-full h-auto rounded-xl shadow-sm" />
+                </div>
+              ) : isWord ? (
+                <iframe 
+                  src={`https://docs.google.com/viewer?url=${encodeURIComponent(note.pdfUrl)}&embedded=true`}
+                  className="w-full h-full bg-slate-100" 
+                  title={note.title}
+                />
+              ) : (
+                <iframe 
+                  src={note.pdfUrl} 
+                  className="w-full h-full bg-slate-100" 
+                  title={note.title}
+                />
+              )
             ) : (
               <div className="w-full h-full p-8 overflow-y-auto custom-scrollbar">
                 <p className={`whitespace-pre-wrap font-mono text-sm leading-loose ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
