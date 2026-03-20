@@ -43,11 +43,18 @@ export default function NotesPage() {
 
       <div className="relative z-10 w-full h-screen flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 shrink-0">
+        <div className="flex items-center justify-between p-4 shrink-0 gap-3">
           <button onClick={() => router.back()} className="bg-white rounded-xl px-4 py-2 shadow-sm border border-slate-100 font-bold text-slate-700 bouncy-hover">
             ← Back
           </button>
-          <TopProfileBar />
+          <div className="flex items-center gap-3 ml-auto">
+            {note.pdfUrl && (
+              <a href={note.pdfUrl} target="_blank" download rel="noopener noreferrer" className="bg-indigo-600 text-white rounded-xl px-4 py-2 shadow-md shadow-indigo-200 font-bold text-sm bouncy-hover flex items-center gap-2 whitespace-nowrap">
+                📥 <span className="hidden sm:inline">Download File</span>
+              </a>
+            )}
+            <TopProfileBar />
+          </div>
         </div>
 
         {/* Notes Title Area */}
@@ -65,15 +72,9 @@ export default function NotesPage() {
                 <div className="w-full h-full bg-slate-100 flex items-center justify-center p-8 overflow-y-auto">
                   <img src={note.pdfUrl} alt={note.title} className="max-w-full h-auto rounded-xl shadow-sm" />
                 </div>
-              ) : isWord ? (
-                <iframe 
-                  src={`https://docs.google.com/viewer?url=${encodeURIComponent(note.pdfUrl)}&embedded=true`}
-                  className="w-full h-full bg-slate-100" 
-                  title={note.title}
-                />
               ) : (
                 <iframe 
-                  src={note.pdfUrl} 
+                  src={`https://docs.google.com/viewer?url=${encodeURIComponent(note.pdfUrl)}&embedded=true`}
                   className="w-full h-full bg-slate-100" 
                   title={note.title}
                 />
