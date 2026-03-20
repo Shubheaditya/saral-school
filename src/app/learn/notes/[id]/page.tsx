@@ -6,8 +6,11 @@ import { useAuth } from "../../contexts/AuthContext";
 import TopProfileBar from "../../components/TopProfileBar";
 import UniversalBackground from "../../components/UniversalBackground";
 import { useUniversalTheme } from "../../hooks/useUniversalTheme";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ChapterNotes } from "../../types";
+import { Document, Page, pdfjs } from 'react-pdf';
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export default function NotesPage() {
   const router = useRouter();
@@ -17,6 +20,20 @@ export default function NotesPage() {
   const { backgroundClass, textClass, isDark } = useUniversalTheme();
 
   const [note, setNote] = useState<ChapterNotes | null>(null);
+  const [numPages, setNumPages] = useState<number>();
+  const [containerWidth, setContainerWidth] = useState<number>();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.clientWidth);
+      }
+    };
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, [note]);
 
   useEffect(() => {
     const foundNote = app.getChapterNoteById(noteId);
@@ -74,23 +91,28 @@ export default function NotesPage() {
               ) : isWord ? (
                 <iframe 
                   src={`https://docs.google.com/viewer?url=${encodeURIComponent(note.pdfUrl)}&embedded=true`}
-                  className="w-full h-full bg-slate-100" 
+                  className="w-full h-full bg-slate-100 border-0" 
                   title={note.title}
                 />
               ) : (
-                <div className="w-full h-full relative bg-slate-100">
-                  {/* Desktop: High-Quality Native Renderer with Perfect Zoom */}
-                  <iframe 
-                    src={`${note.pdfUrl}#view=FitH`} 
-                    className="hidden md:block w-full h-full border-0" 
-                    title={`${note.title} - Desktop`}
-                  />
-                  {/* Mobile: Google Docs Embed to prevent opening in external tabs */}
-                  <iframe 
-                    src={`https://docs.google.com/viewer?url=${encodeURIComponent(note.pdfUrl)}&embedded=true`}
-                    className="block md:hidden w-full h-full border-0" 
-                    title={`${note.title} - Mobile`}
-                  />
+                <div className="w-full h-full bg-slate-200 overflow-y-auto p-4 flex flex-col items-center custom-scrollbar" ref={containerRef}>
+                  <Document
+                    file={note.pdfUrl}
+                    onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                    loading={<div className="p-8 text-slate-500 font-bold animate-pulse">Loading Document...</div>}
+                    className="flex flex-col gap-6"
+                  >
+                    {Array.from(new Array(numPages || 0), (el, index) => (
+                      <Page 
+                        key={`page_${index + 1}`} 
+                        pageNumber={index + 1} 
+                        width={containerWidth ? containerWidth - 32 : undefined} 
+                        renderTextLayer={false}
+                        renderAnnotationLayer={false}
+                        className="shadow-xl rounded-xl overflow-hidden bg-white"
+                      />
+                    ))}
+                  </Document>
                 </div>
               )
             ) : (
