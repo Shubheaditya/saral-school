@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { Subject } from "../types";
+import { Subject, CONTENT_TYPE_INFO, ContentItem, VideoLecture, ChapterNotes, Quiz, FormulaSheet } from "../types";
 import { useAuth } from "../contexts/AuthContext";
+import { useApp } from "../contexts/AppContext";
 import UniversalBackground from "./UniversalBackground";
 import { useUniversalTheme } from "../hooks/useUniversalTheme";
 
@@ -26,7 +27,9 @@ export default function ScholarSubjectView({
   const [activeChapter, setActiveChapter] = useState<string | null>(null);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"journey" | "browse">("journey");
   const { currentUser } = useAuth();
+  const app = useApp();
   const { backgroundClass, textClass, isDark } = useUniversalTheme();
 
   const theme = THEME_ACCENTS[subject.id] || { bg: "bg-slate-800/50", text: "text-slate-400", ring: "ring-slate-700", lightBg: "bg-slate-100", lightText: "text-slate-600" };
@@ -37,6 +40,27 @@ export default function ScholarSubjectView({
   const semestersToDisplay = activeSemester ? [activeSemester] : [];
   const chapters = semestersToDisplay.filter(s => s.chapters.length > 0);
   const totalSubtopics = chapters.reduce((sum, ch) => sum + ch.chapters.length, 0);
+
+  // Resolve content item title
+  const getContentTitle = (item: ContentItem): string => {
+    switch (item.type) {
+      case "video": return app.videos.find((v: VideoLecture) => v.id === item.refId)?.title || "Untitled Video";
+      case "quiz": case "test": return app.quizzes.find((q: Quiz) => q.id === item.refId)?.title || "Untitled Quiz";
+      case "notes": return app.chapterNotes.find((n: ChapterNotes) => n.id === item.refId)?.title || "Untitled Notes";
+      case "formula-sheet": return app.formulaSheets.find((f: FormulaSheet) => f.id === item.refId)?.title || "Untitled";
+      default: return "Unknown";
+    }
+  };
+
+  // Route to the correct content viewer
+  const handleContentClick = (item: ContentItem) => {
+    switch (item.type) {
+      case "video": router.push(`/learn/video/${item.refId}`); break;
+      case "notes": router.push(`/learn/notes/${item.refId}`); break;
+      case "quiz": case "test": router.push(`/learn/quiz/${item.refId}`); break;
+      default: break;
+    }
+  };
 
   // Fake Cmd+K listener
   useEffect(() => {
@@ -69,6 +93,21 @@ export default function ScholarSubjectView({
         </div>
         
         <div className="flex items-center gap-4">
+           {/* Journey / Browse Mode Toggle */}
+           <div className={`flex items-center rounded-lg border text-xs ${isDark ? 'border-white/10 bg-white/5' : 'border-slate-200 bg-slate-50'}`}>
+             <button 
+               onClick={() => setViewMode("journey")} 
+               className={`px-3 py-1.5 rounded-l-lg font-semibold transition-all ${viewMode === 'journey' ? (isDark ? 'bg-indigo-500/20 text-indigo-400' : 'bg-indigo-100 text-indigo-700') : (isDark ? 'text-slate-500 hover:text-white' : 'text-slate-500 hover:text-slate-700')}`}
+             >
+               🗺️ Journey
+             </button>
+             <button 
+               onClick={() => setViewMode("browse")} 
+               className={`px-3 py-1.5 rounded-r-lg font-semibold transition-all ${viewMode === 'browse' ? (isDark ? 'bg-indigo-500/20 text-indigo-400' : 'bg-indigo-100 text-indigo-700') : (isDark ? 'text-slate-500 hover:text-white' : 'text-slate-500 hover:text-slate-700')}`}
+             >
+               📚 Browse
+             </button>
+           </div>
            {/* Simulate completion % */}
            <div className="flex items-center gap-2 text-xs">
               <span className="text-slate-500">Progress</span>
@@ -120,42 +159,99 @@ export default function ScholarSubjectView({
                   </div>
                 </button>
 
-                {/* Subtopics List - Slick Accordion */}
-                <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? `max-h-[800px] border-t ${isDark ? 'border-white/5' : 'border-slate-100'}` : 'max-h-0'}`}>
+                {/* Subtopics / Journey Content */}
+                <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? `max-h-[2000px] border-t ${isDark ? 'border-white/5' : 'border-slate-100'}` : 'max-h-0'}`}>
                   <div className={`${isDark ? 'bg-black/20' : 'bg-slate-50/50'} p-2`}>
-                    {/* Header Row */}
-                    <div className={`grid grid-cols-12 gap-4 px-4 py-2 text-[10px] uppercase tracking-wider font-semibold border-b mb-2 ${isDark ? 'text-slate-600 border-white/5' : 'text-slate-400 border-slate-200'}`}>
-                       <div className="col-span-1">ID</div>
-                       <div className="col-span-8">Topic Name</div>
-                       <div className="col-span-3 text-right">Actions</div>
-                    </div>
 
-                    {chapter.chapters.sort((a,b) => a.order - b.order).map((sub, sIdx) => (
-                      <div key={sub.id} className={`grid grid-cols-12 gap-4 items-center px-4 py-3 rounded-lg transition-colors group cursor-default ${isDark ? 'hover:bg-white/[0.03]' : 'hover:bg-white shadow-sm hover:shadow-md border border-transparent hover:border-slate-200'}`}>
-                        
-                        <div className={`col-span-1 text-xs font-mono w-6 ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>
-                          {idx + 1}.{sIdx + 1}
-                        </div>
-                        
-                        <div className="col-span-8">
-                          <h3 className={`text-sm font-medium transition-colors ${isDark ? 'text-slate-300 group-hover:text-white' : 'text-slate-700 group-hover:text-slate-900'}`}>{sub.title}</h3>
-                        </div>
-                        
-                        <div className="col-span-3 flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                          {/* Ghost Buttons for Pro Actions */}
-                          <button onClick={() => onAction("video", sub.id)} className={`px-2 py-1 border text-xs rounded transition-colors ${isDark ? 'bg-white/5 hover:bg-white/10 border-white/10 text-white' : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-600'}`} title="Watch Lecture">
-                            🎬
-                          </button>
-                          <button onClick={() => onAction("notes", sub.id)} className={`px-2 py-1 border text-xs rounded transition-colors ${isDark ? 'bg-white/5 hover:bg-white/10 border-white/10 text-white' : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-600'}`} title="Read Notes">
-                            📝
-                          </button>
-                          <button onClick={() => onAction("practice", sub.id)} className={`px-2 py-1 border text-xs rounded transition-colors flex items-center gap-1 ${isDark ? 'bg-emerald-500/10 hover:bg-emerald-500/20 border-emerald-500/20 text-emerald-400' : 'bg-emerald-50 hover:bg-emerald-100 border-emerald-200 text-emerald-700'}`} title="Execute Test">
-                            ⚡ <span className="hidden lg:inline">Run</span>
-                          </button>
-                        </div>
+                    {viewMode === "journey" ? (
+                      /* ===== JOURNEY MODE: Sequential Content Timeline ===== */
+                      <div className="relative pl-6">
+                        {/* Vertical timeline line */}
+                        <div className={`absolute left-[18px] top-4 bottom-4 w-px ${isDark ? 'bg-white/10' : 'bg-slate-200'}`} />
 
+                        {chapter.chapters.sort((a,b) => a.order - b.order).map((sub) => {
+                          const contentItems = [...sub.contentItems].sort((a,b) => a.order - b.order);
+                          if (contentItems.length === 0) return null;
+
+                          return (
+                            <div key={sub.id} className="mb-6">
+                              {/* Subtopic Label */}
+                              <div className="flex items-center gap-2 mb-3 ml-4">
+                                <div className={`w-2.5 h-2.5 rounded-full ${isDark ? 'bg-indigo-400' : 'bg-indigo-500'} relative z-10 ring-4 ${isDark ? 'ring-[#0A0A0A]' : 'ring-white'}`} />
+                                <span className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{sub.title}</span>
+                              </div>
+
+                              {/* Content Items in Order */}
+                              <div className="space-y-2 ml-4">
+                                {contentItems.map((item, itemIdx) => {
+                                  const info = CONTENT_TYPE_INFO[item.type];
+                                  return (
+                                    <button
+                                      key={item.id}
+                                      onClick={() => handleContentClick(item)}
+                                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all group ${isDark ? 'bg-white/[0.03] hover:bg-white/[0.07] border border-white/5 hover:border-indigo-500/30' : 'bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 shadow-sm hover:shadow-md'}`}
+                                    >
+                                      <span className={`text-xs font-mono w-5 text-center ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>{itemIdx + 1}</span>
+                                      <span className="text-lg">{info?.icon || '📄'}</span>
+                                      <div className="flex-1 min-w-0">
+                                        <p className={`text-sm font-medium truncate transition-colors ${isDark ? 'text-slate-300 group-hover:text-white' : 'text-slate-700 group-hover:text-indigo-700'}`}>
+                                          {getContentTitle(item)}
+                                        </p>
+                                        <p className={`text-[10px] uppercase tracking-wider ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>{info?.label || item.type}</p>
+                                      </div>
+                                      <span className={`text-xs font-medium transition-colors ${isDark ? 'text-slate-600 group-hover:text-indigo-400' : 'text-slate-400 group-hover:text-indigo-600'}`}>Start →</span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                        {/* Empty state for Journey if no content items exist */}
+                        {chapter.chapters.every(sub => sub.contentItems.length === 0) && (
+                          <div className={`text-center py-8 ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>
+                            <p className="text-sm">No content uploaded yet. Ask your admin to add videos and notes!</p>
+                          </div>
+                        )}
                       </div>
-                    ))}
+                    ) : (
+                      /* ===== BROWSE MODE: Original Subtopic Grid ===== */
+                      <>
+                        {/* Header Row */}
+                        <div className={`grid grid-cols-12 gap-4 px-4 py-2 text-[10px] uppercase tracking-wider font-semibold border-b mb-2 ${isDark ? 'text-slate-600 border-white/5' : 'text-slate-400 border-slate-200'}`}>
+                           <div className="col-span-1">ID</div>
+                           <div className="col-span-8">Topic Name</div>
+                           <div className="col-span-3 text-right">Actions</div>
+                        </div>
+
+                        {chapter.chapters.sort((a,b) => a.order - b.order).map((sub, sIdx) => (
+                          <div key={sub.id} className={`grid grid-cols-12 gap-4 items-center px-4 py-3 rounded-lg transition-colors group cursor-default ${isDark ? 'hover:bg-white/[0.03]' : 'hover:bg-white shadow-sm hover:shadow-md border border-transparent hover:border-slate-200'}`}>
+                            
+                            <div className={`col-span-1 text-xs font-mono w-6 ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>
+                              {idx + 1}.{sIdx + 1}
+                            </div>
+                            
+                            <div className="col-span-8">
+                              <h3 className={`text-sm font-medium transition-colors ${isDark ? 'text-slate-300 group-hover:text-white' : 'text-slate-700 group-hover:text-slate-900'}`}>{sub.title}</h3>
+                            </div>
+                            
+                            <div className="col-span-3 flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                              <button onClick={() => onAction("video", sub.id)} className={`px-2 py-1 border text-xs rounded transition-colors ${isDark ? 'bg-white/5 hover:bg-white/10 border-white/10 text-white' : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-600'}`} title="Watch Lecture">
+                                🎬
+                              </button>
+                              <button onClick={() => onAction("notes", sub.id)} className={`px-2 py-1 border text-xs rounded transition-colors ${isDark ? 'bg-white/5 hover:bg-white/10 border-white/10 text-white' : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-600'}`} title="Read Notes">
+                                📝
+                              </button>
+                              <button onClick={() => onAction("practice", sub.id)} className={`px-2 py-1 border text-xs rounded transition-colors flex items-center gap-1 ${isDark ? 'bg-emerald-500/10 hover:bg-emerald-500/20 border-emerald-500/20 text-emerald-400' : 'bg-emerald-50 hover:bg-emerald-100 border-emerald-200 text-emerald-700'}`} title="Execute Test">
+                                ⚡ <span className="hidden lg:inline">Run</span>
+                              </button>
+                            </div>
+
+                          </div>
+                        ))}
+                      </>
+                    )}
                   </div>
                 </div>
 
