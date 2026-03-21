@@ -103,53 +103,88 @@ export interface StudentNote {
   createdAt: string;
 }
 
-// --- Quiz & Questions ---
+// --- Media & Quiz System ---
 
-export type QuestionType = "mcq" | "fill-blank" | "drag-drop" | "matching";
-
-export interface MCQQuestion {
-  type: "mcq";
-  id: string;
-  question: string;
+// Universal media container — any field can hold text, image, audio, video, or all together
+export interface MediaBlock {
+  text?: string;
   imageUrl?: string;
-  options: string[];
-  correctIndex: number;
-  explanation?: string;
+  audioUrl?: string;
+  videoUrl?: string;
 }
 
-export interface FillBlankQuestion {
-  type: "fill-blank";
+export type QuestionType = "mcq" | "multi-correct" | "fill-blank" | "drag-drop" | "matching" | "theory";
+
+// Unified question interface that covers ALL question types
+export interface UniversalQuestion {
   id: string;
-  question: string;
-  imageUrl?: string;
-  correctAnswer: string;
+  type: QuestionType;
+  prompt: MediaBlock;            // The question itself (text + optional media)
+  explanation?: string;
+
+  // MCQ / Multi-correct
+  options?: MediaBlock[];        // Each option can have text/image/audio/video
+  correctIndex?: number;         // For MCQ (single correct)
+  correctIndices?: number[];     // For multi-correct
+
+  // Fill-in-the-blank
+  correctAnswer?: string;
   acceptableAnswers?: string[];
-  explanation?: string;
+
+  // Matching / Drag-Drop
+  leftItems?: MediaBlock[];
+  rightItems?: MediaBlock[];
+  correctPairs?: Record<string, string>; // Maps left text → right text
+
+  // Theory / Long-answer
+  sampleAnswer?: string;         // Reference answer shown after submission
+  maxWords?: number;
 }
 
-export interface DragDropQuestion {
-  type: "drag-drop";
-  id: string;
-  question: string;
-  imageUrl?: string;
-  items: string[];
-  targets: string[];
-  correctMapping: Record<string, string>;
-  explanation?: string;
-}
+// Backward-compatible aliases
+export type Question = UniversalQuestion;
 
-export interface MatchingQuestion {
-  type: "matching";
-  id: string;
-  question: string;
-  imageUrl?: string;
-  leftItems: string[];
-  rightItems: string[];
-  correctPairs: Record<string, string>;
-  explanation?: string;
-}
+// Legacy type aliases kept for import compatibility
+export type MCQQuestion = UniversalQuestion;
+export type FillBlankQuestion = UniversalQuestion;
+export type MatchingQuestion = UniversalQuestion;
+export type DragDropQuestion = UniversalQuestion;
 
-export type Question = MCQQuestion | FillBlankQuestion | DragDropQuestion | MatchingQuestion;
+// Migration helper: converts old question format to UniversalQuestion
+export function migrateQuestion(q: any): UniversalQuestion {
+  // Already in new format
+  if (q.prompt) return q as UniversalQuestion;
+  
+  // Old format: had `question: string` and `imageUrl?: string`
+  const base: UniversalQuestion = {
+    id: q.id,
+    type: q.type,
+    prompt: { text: q.question, imageUrl: q.imageUrl },
+    explanation: q.explanation,
+  };
+
+  switch (q.type) {
+    case "mcq":
+      base.options = (q.options || []).map((o: string) => ({ text: o }));
+      base.correctIndex = q.correctIndex;
+      break;
+    case "fill-blank":
+      base.correctAnswer = q.correctAnswer;
+      base.acceptableAnswers = q.acceptableAnswers;
+      break;
+    case "matching":
+      base.leftItems = (q.leftItems || []).map((t: string) => ({ text: t }));
+      base.rightItems = (q.rightItems || []).map((t: string) => ({ text: t }));
+      base.correctPairs = q.correctPairs;
+      break;
+    case "drag-drop":
+      base.leftItems = (q.items || []).map((t: string) => ({ text: t }));
+      base.rightItems = (q.targets || []).map((t: string) => ({ text: t }));
+      base.correctPairs = q.correctMapping;
+      break;
+  }
+  return base;
+}
 
 export interface Quiz {
   id: string;
@@ -157,7 +192,7 @@ export interface Quiz {
   subjectId: string;
   title: string;
   description: string;
-  questions: Question[];
+  questions: UniversalQuestion[];
   mode: "quiz" | "chapter-test" | "brain-game";
   totalPoints: number;
 }
