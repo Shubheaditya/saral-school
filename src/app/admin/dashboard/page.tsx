@@ -501,7 +501,10 @@ function AddVideoForm({ subjectId, semesterId, chapterId, order, app, onClose }:
     }
 
     const videoId = `vid-${Date.now()}`;
-    app.addVideo({ id: videoId, chapterId, subjectId, title, description, videoUrl: finalVideoUrl || undefined, duration: duration || undefined });
+    const isYouTubeUrl = (url: string) => /(?:youtube\.com|youtu\.be)/i.test(url);
+    const youtubeUrl = finalVideoUrl && isYouTubeUrl(finalVideoUrl) ? finalVideoUrl : undefined;
+    const directUrl = finalVideoUrl && !isYouTubeUrl(finalVideoUrl) ? finalVideoUrl : undefined;
+    app.addVideo({ id: videoId, chapterId, subjectId, title, description, videoUrl: directUrl || undefined, youtubeUrl: youtubeUrl || undefined, duration: duration || undefined });
     app.addContentItem(subjectId, semesterId, chapterId, { id: `ci-${Date.now()}`, chapterId, type: "video", order, refId: videoId });
     setUploading(false);
     onClose();
@@ -521,7 +524,7 @@ function AddVideoForm({ subjectId, semesterId, chapterId, order, app, onClose }:
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-sm font-bold text-slate-600 block mb-1">Paste Video Link</label>
+            <label className="text-sm font-bold text-slate-600 block mb-1">🔗 YouTube / Video Link</label>
             <input value={videoUrl} onChange={e => setVideoUrl(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="https://youtube.com/..." disabled={!!file} />
           </div>
           <div>

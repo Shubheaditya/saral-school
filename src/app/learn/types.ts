@@ -73,6 +73,7 @@ export interface VideoLecture {
   title: string;
   description: string;
   videoUrl?: string;
+  youtubeUrl?: string;
   duration?: string;
 }
 
