@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -71,7 +71,7 @@ export default function AdminDashboard() {
       <header className="bg-white border-b border-slate-200 px-6 py-4 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-2xl">🔧</span>
+            <span className="text-2xl">ðŸ”§</span>
             <h1 className="text-xl font-black text-slate-900">Saral School Admin</h1>
           </div>
           <button onClick={handleLogout} className="px-4 py-2 bg-red-50 text-red-600 rounded-lg font-bold text-sm hover:bg-red-100">
@@ -140,13 +140,13 @@ function SubjectsScreen({ subjects, addSubject, deleteSubject, onOpen }: {
   subjects: Subject[]; addSubject: (s: Subject) => void; deleteSubject: (id: string) => void; onOpen: (id: string) => void;
 }) {
   const [showForm, setShowForm] = useState(false);
-  const [name, setName] = useState(""); const [icon, setIcon] = useState("📘"); const [color, setColor] = useState("indigo");
+  const [name, setName] = useState(""); const [icon, setIcon] = useState("ðŸ“˜"); const [color, setColor] = useState("indigo");
 
   const handleAdd = () => {
     if (!name.trim()) return;
     const id = `sub-${Date.now()}`;
     addSubject({ id, name, icon, color, semesters: generateSemesters(id) });
-    setName(""); setIcon("📘"); setShowForm(false);
+    setName(""); setIcon("ðŸ“˜"); setShowForm(false);
   };
 
   return (
@@ -277,7 +277,7 @@ function ChaptersScreen({ subject, semesterId, addChapter, deleteChapter, onOpen
 
       {semester.chapters.length === 0 ? (
         <div className="bg-white rounded-xl p-12 border border-dashed border-slate-300 text-center">
-          <span className="text-4xl block mb-2">Ã°Å¸â€œÂ</span>
+          <span className="text-4xl block mb-2">ðŸ“</span>
           <p className="text-slate-500">No chapters yet. Click &quot;Add Chapter&quot; to create your first chapter.</p>
         </div>
       ) : (
@@ -395,7 +395,7 @@ function ChapterDetailScreen({ subject, semesterId, chapterId, app }: {
 
       {items.length === 0 && !addingType ? (
         <div className="bg-white rounded-xl p-12 border border-dashed border-slate-300 text-center">
-          <span className="text-4xl block mb-2">📦</span>
+          <span className="text-4xl block mb-2">ðŸ“¦</span>
           <p className="text-slate-500 mb-3">No content yet. Add videos, notes, quizzes, tests, or formula sheets.</p>
           <button onClick={() => setShowAddMenu(true)} className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold text-sm">+ Add Content</button>
         </div>
@@ -406,8 +406,8 @@ function ChapterDetailScreen({ subject, semesterId, chapterId, app }: {
             return (
               <div key={item.id} className="bg-white rounded-xl p-4 border border-slate-200 flex items-center gap-3 group">
                 <div className="flex flex-col gap-0.5">
-                  <button onClick={() => handleMoveUp(idx)} disabled={idx === 0} className="text-slate-300 hover:text-slate-600 disabled:opacity-20 text-xs">Ã¢â€“Â²</button>
-                  <button onClick={() => handleMoveDown(idx)} disabled={idx === items.length - 1} className="text-slate-300 hover:text-slate-600 disabled:opacity-20 text-xs">Ã¢â€“Â¼</button>
+                  <button onClick={() => handleMoveUp(idx)} disabled={idx === 0} className="text-slate-300 hover:text-slate-600 disabled:opacity-20 text-xs">â–²</button>
+                  <button onClick={() => handleMoveDown(idx)} disabled={idx === items.length - 1} className="text-slate-300 hover:text-slate-600 disabled:opacity-20 text-xs">â–¼</button>
                 </div>
                 <span className="text-sm font-bold text-slate-300 w-6 text-center">{idx + 1}</span>
                 <div className={`w-8 h-8 bg-${info.color}-50 rounded-lg flex items-center justify-center text-lg shrink-0`}>{info.icon}</div>
@@ -512,7 +512,7 @@ function AddVideoForm({ subjectId, semesterId, chapterId, order, app, onClose }:
 
   return (
     <div className="bg-white rounded-xl p-6 border-2 border-indigo-200 mb-4">
-      <h4 className="font-bold text-slate-900 mb-4">🎬 Add Video Lecture</h4>
+      <h4 className="font-bold text-slate-900 mb-4">ðŸŽ¬ Add Video Lecture</h4>
       <div className="space-y-3">
         <div>
           <label className="text-sm font-bold text-slate-600 block mb-1">Title *</label>
@@ -594,7 +594,7 @@ function AddNotesForm({ subjectId, semesterId, chapterId, order, app, onClose }:
 
   return (
     <div className="bg-white rounded-xl p-6 border-2 border-emerald-200 mb-4">
-      <h4 className="font-bold text-slate-900 mb-4">Ã°Å¸â€œÂ Add Notes</h4>
+      <h4 className="font-bold text-slate-900 mb-4">ðŸ“ Add Notes</h4>
       <div className="space-y-3">
         <div>
           <label className="text-sm font-bold text-slate-600 block mb-1">Title *</label>
@@ -607,7 +607,7 @@ function AddNotesForm({ subjectId, semesterId, chapterId, order, app, onClose }:
         <div>
           <label className="text-sm font-bold text-slate-600 block mb-1">Upload Note Document (PDF, Image, Word)</label>
           <input type="file" accept=".pdf,.doc,.docx,image/*" onChange={handleFileUpload} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-emerald-50 file:text-emerald-700 font-bold hover:file:bg-emerald-100" />
-          {file && <p className="text-xs text-emerald-600 font-bold mt-1">Ã¢Å“â€œ Document Selected: {file.name}</p>}
+          {file && <p className="text-xs text-emerald-600 font-bold mt-1">âœ“ Document Selected: {file.name}</p>}
         </div>
         <div className="flex gap-2 pt-2">
           <button onClick={handleSave} disabled={uploading} className="px-4 py-2 bg-emerald-600 text-white rounded-lg font-bold text-sm disabled:opacity-50">
@@ -638,7 +638,7 @@ function AddFormulaSheetForm({ subjectId, semesterId, chapterId, order, app, onC
 
   return (
     <div className="bg-white rounded-xl p-6 border-2 border-violet-200 mb-4">
-      <h4 className="font-bold text-slate-900 mb-4">Ã°Å¸â€œÂ Add Formula Sheet</h4>
+      <h4 className="font-bold text-slate-900 mb-4">ðŸ“ Add Formula Sheet</h4>
       <div className="space-y-3">
         <div>
           <label className="text-sm font-bold text-slate-600 block mb-1">Title *</label>
@@ -748,7 +748,7 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
 
   return (
     <div className="bg-white rounded-xl p-6 border-2 border-amber-200 mb-4">
-      <h4 className="font-bold text-slate-900 mb-4">{mode === "chapter-test" ? "Ã°Å¸â€œâ€¹" : "Ã¢Ââ€œ"} Add {label}</h4>
+      <h4 className="font-bold text-slate-900 mb-4">{mode === "chapter-test" ? "ðŸ“‹" : "â“"} Add {label}</h4>
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <div><label className="text-sm font-bold text-slate-600 block mb-1">Title *</label><input value={title} onChange={e => setTitle(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder={`${label} title`} autoFocus /></div>
@@ -773,11 +773,11 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
           <div className="mb-3"><label className="text-sm font-bold text-slate-600 block mb-1">Question Text *</label><input value={qText} onChange={e => setQText(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="Enter question" /></div>
 
           <div className="mb-3 p-3 bg-white rounded-lg border border-dashed border-slate-300">
-            <p className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">📎 Attach Media to Question (optional)</p>
+            <p className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">ðŸ“Ž Attach Media to Question (optional)</p>
             <div className="grid grid-cols-3 gap-2">
-              <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Ã°Å¸â€“Â¼Ã¯Â¸Â Image</label><input type="file" accept="image/*" onChange={e => setQImageFile(e.target.files?.[0] || null)} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 file:text-xs" /></div>
-              <div><label className="text-[10px] font-bold text-slate-400 block mb-1">🎵 Audio</label><input type="file" accept="audio/*" onChange={e => setQAudioFile(e.target.files?.[0] || null)} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-violet-50 file:text-violet-700 file:text-xs" /></div>
-              <div><label className="text-[10px] font-bold text-slate-400 block mb-1">🎬 Video</label><input type="file" accept="video/*" onChange={e => setQVideoFile(e.target.files?.[0] || null)} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-amber-50 file:text-amber-700 file:text-xs" /></div>
+              <div><label className="text-[10px] font-bold text-slate-400 block mb-1">ðŸ–¼ï¸ Image</label><input type="file" accept="image/*" onChange={e => setQImageFile(e.target.files?.[0] || null)} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 file:text-xs" /></div>
+              <div><label className="text-[10px] font-bold text-slate-400 block mb-1">ðŸŽµ Audio</label><input type="file" accept="audio/*" onChange={e => setQAudioFile(e.target.files?.[0] || null)} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-violet-50 file:text-violet-700 file:text-xs" /></div>
+              <div><label className="text-[10px] font-bold text-slate-400 block mb-1">ðŸŽ¬ Video</label><input type="file" accept="video/*" onChange={e => setQVideoFile(e.target.files?.[0] || null)} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-amber-50 file:text-amber-700 file:text-xs" /></div>
             </div>
           </div>
 
@@ -816,10 +816,10 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
                 <div key={q.id} className="flex items-center gap-2 text-sm bg-white rounded-lg px-3 py-2 border border-slate-100">
                   <span className="text-xs font-bold text-slate-400 bg-slate-50 rounded px-2 py-0.5 uppercase">{q.type}</span>
                   <span className="text-slate-700 flex-1 truncate">{q.prompt.text}</span>
-                  {q.prompt.imageUrl && <span title="Has image">Ã°Å¸â€“Â¼Ã¯Â¸Â</span>}
-                  {q.prompt.audioUrl && <span title="Has audio">🎵</span>}
-                  {q.prompt.videoUrl && <span title="Has video">🎬</span>}
-                  <button onClick={() => setQuestions(questions.filter((_, j) => j !== i))} className="text-red-400 hover:text-red-600 text-xs font-bold">Ã¢Å“â€¢</button>
+                  {q.prompt.imageUrl && <span title="Has image">ðŸ–¼ï¸</span>}
+                  {q.prompt.audioUrl && <span title="Has audio">ðŸŽµ</span>}
+                  {q.prompt.videoUrl && <span title="Has video">ðŸŽ¬</span>}
+                  <button onClick={() => setQuestions(questions.filter((_, j) => j !== i))} className="text-red-400 hover:text-red-600 text-xs font-bold">âœ•</button>
                 </div>
               ))}
             </div>
