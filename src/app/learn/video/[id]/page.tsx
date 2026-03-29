@@ -32,7 +32,10 @@ export default function VideoPage() {
   const { backgroundClass, textClass, isDark } = useUniversalTheme();
 
   const video = getVideoById(videoId);
-  const youtubeId = video?.youtubeUrl ? extractYouTubeId(video.youtubeUrl) : null;
+  
+  // Try to find a YouTube ID from either the dedicated field OR if someone pasted a YT link in the old generic field
+  const possibleYtString = video?.youtubeUrl || (video?.videoUrl?.includes("youtu") ? video.videoUrl : null);
+  const youtubeId = possibleYtString ? extractYouTubeId(possibleYtString) : null;
 
   const [notes, setNotes] = useState("");
   const [showNotes, setShowNotes] = useState(false);
@@ -64,7 +67,7 @@ export default function VideoPage() {
             {youtubeId ? (
               /* YouTube Embed */
               <iframe
-                src={`https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1`}
+                src={`https://www.youtube.com/embed/${youtubeId}`}
                 title={video?.title || "Video Lecture"}
                 className="w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
