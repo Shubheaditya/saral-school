@@ -64,12 +64,11 @@ export default function VideoPage() {
             {youtubeId ? (
               /* YouTube Embed */
               <iframe
-                src={`https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1&iv_load_policy=3&disablekb=0&fs=1&color=white`}
+                src={`https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1`}
                 title={video?.title || "Video Lecture"}
                 className="w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
-                referrerPolicy="strict-origin-when-cross-origin"
                 style={{ border: 0 }}
               />
             ) : video?.videoUrl ? (
