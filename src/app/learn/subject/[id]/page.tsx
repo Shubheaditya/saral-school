@@ -132,7 +132,7 @@ export default function SubjectPage() {
 
             return (
               <div key={chapter.id} className="relative">
-                <div className={`rounded-[2rem] border-4 shadow-sm transition-all duration-500 overflow-hidden ${isOpen ? borderClass : isDark ? 'border-white/10' : 'border-slate-100'} ${isDark ? 'bg-slate-900/80' : 'bg-white'}`}>
+                <div className={`rounded-[2rem] border-4 shadow-sm transition-colors duration-150 overflow-hidden ${isOpen ? borderClass : isDark ? 'border-white/10' : 'border-slate-100'} ${isDark ? 'bg-slate-900/80' : 'bg-white'}`}>
                   
                   {/* Chapter Header — Always visible, click to toggle */}
                   <div
@@ -149,18 +149,15 @@ export default function SubjectPage() {
                           <h3 className={`text-lg md:text-xl font-black leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{chapter.title}</h3>
                         </div>
                       </div>
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg shrink-0 transition-transform duration-500 ${isOpen ? 'rotate-180' : ''} ${isDark ? 'bg-white/5' : bgClass}`}>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''} ${isDark ? 'bg-white/5' : bgClass}`}>
                         ▼
                       </div>
                     </div>
                   </div>
 
-                  {/* Expandable Content — slides open/closed */}
-                  <div
-                    className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}
-                  >
-                    <div className={`border-t mx-5 ${isDark ? 'border-white/10' : 'border-slate-100'}`}></div>
-                    <div className="p-5 pt-4 space-y-3">
+                  {/* Expandable Content — grid-rows trick for instant animation */}
+                  <div className={`grid transition-[grid-template-rows] duration-200 ease-out ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                    <div className="overflow-hidden min-h-0">
                       
                       {/* Quick Chapter Actions */}
                       <div className="flex flex-wrap gap-2 mb-4">

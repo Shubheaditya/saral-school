@@ -594,7 +594,7 @@ function AddNotesForm({ subjectId, semesterId, chapterId, order, app, onClose }:
 
   return (
     <div className="bg-white rounded-xl p-6 border-2 border-emerald-200 mb-4">
-      <h4 className="font-bold text-slate-900 mb-4">ðŸ“ Add Notes</h4>
+      <h4 className="font-bold text-slate-900 mb-4">Add Notes</h4>
       <div className="space-y-3">
         <div>
           <label className="text-sm font-bold text-slate-600 block mb-1">Title *</label>

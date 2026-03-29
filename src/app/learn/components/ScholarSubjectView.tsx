@@ -165,8 +165,8 @@ export default function ScholarSubjectView({
                 </button>
 
                 {/* Expandable Content */}
-                <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? `max-h-[2000px] border-t ${isDark ? 'border-white/5' : 'border-slate-100'}` : 'max-h-0'}`}>
-                  <div className={`${isDark ? 'bg-black/20' : 'bg-slate-50/50'} p-4`}>
+                <div className={`grid transition-[grid-template-rows] duration-200 ease-out ${isOpen ? `grid-rows-[1fr] border-t ${isDark ? 'border-white/5' : 'border-slate-100'}` : 'grid-rows-[0fr]'}`}>
+                  <div className="overflow-hidden min-h-0">
 
                     {viewMode === "journey" && contentItems.length > 0 ? (
                       /* Journey Mode: Sequential timeline */
