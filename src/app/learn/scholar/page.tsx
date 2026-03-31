@@ -22,7 +22,7 @@ const SUBJECT_STYLES: Record<string, { bg: string; border: string; glow: string;
 export default function ScholarHomepage() {
   const router = useRouter();
   const { currentUser, updateUser } = useAuth();
-  const { updateStreak, points, currentStreak, completedQuizzes, completedVideos } = useGamification();
+  const { updateStreak, totalMarks, currentStreak, completedQuizzes, completedVideos } = useGamification();
   const { subjects } = useApp();
   const { backgroundClass, textClass, isDark } = useUniversalTheme();
 
@@ -101,7 +101,7 @@ export default function ScholarHomepage() {
             <div>
               <p className="text-xs font-medium text-slate-500 mb-1">Total Knowledge Graph</p>
               <div className="flex items-end gap-3">
-                <h2 className={`text-4xl font-light tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{points.toLocaleString()}</h2>
+                <h2 className={`text-4xl font-light tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{totalMarks.toLocaleString()}</h2>
                 <span className={`text-xs font-mono mb-1.5 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>+240 this week</span>
               </div>
             </div>

@@ -13,7 +13,7 @@ import { useUniversalTheme } from "../hooks/useUniversalTheme";
 export default function ProfilePage() {
   const router = useRouter();
   const { currentUser, users, switchUser, logout, updateUser } = useAuth();
-  const { points, gems, currentStreak, longestStreak, badges, completedQuizzes, completedVideos } = useGamification();
+  const { totalMarks, currentStreak, longestStreak, badges, completedQuizzes, completedVideos } = useGamification();
   const { backgroundClass, textClass, isDark } = useUniversalTheme();
 
   // Keep internal component styling (cards, borders) separate from the universal background 
@@ -86,7 +86,7 @@ export default function ProfilePage() {
         </div>
         <h1 className="text-2xl sm:text-3xl font-black tracking-tight">{currentUser.name}</h1>
         <p className={`text-sm tracking-widest uppercase font-bold mt-1 ${currentUser.ageGroup === 'kids' ? 'text-indigo-500' : (isDark || currentUser.ageGroup === 'explorer' && isDark ? 'text-slate-400' : 'text-slate-500')}`}>
-           {currentUser.ageGroup === 'kids' ? `Level ${Math.floor(points / 100) + 1} Star` : currentUser.ageGroup === 'explorer' ? `Rank ${Math.floor(points / 100) + 1} Explorer` : 'Scholar Profile'}
+           {currentUser.ageGroup === 'kids' ? `Level ${Math.floor(totalMarks / 100) + 1} Star` : currentUser.ageGroup === 'explorer' ? `Rank ${Math.floor(totalMarks / 100) + 1} Explorer` : 'Scholar Profile'}
         </p>
       </div>
 
@@ -119,14 +119,10 @@ export default function ProfilePage() {
       {tab === "profile" ? (
         <div className="px-6 max-w-3xl mx-auto space-y-6 sm:space-y-8">
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             <div className={`p-4 sm:p-6 text-center ${theme.card} ${currentUser.ageGroup === 'kids' ? '' : 'rounded-2xl'}`}>
-              <p className={`text-3xl sm:text-4xl font-black ${currentUser.ageGroup === 'explorer' ? 'text-amber-500' : 'text-amber-500'}`}>⭐ {points}</p>
-              <p className={`text-xs sm:text-sm font-bold mt-2 ${currentUser.ageGroup === 'kids' ? 'text-slate-500' : (isDark || currentUser.ageGroup === 'explorer' && isDark ? 'text-slate-400' : 'text-slate-600')}`}>Points</p>
-            </div>
-            <div className={`p-4 sm:p-6 text-center ${theme.card} ${currentUser.ageGroup === 'kids' ? '' : 'rounded-2xl'}`}>
-              <p className={`text-3xl sm:text-4xl font-black ${currentUser.ageGroup === 'explorer' ? 'text-cyan-500' : 'text-cyan-500'}`}>💎 {gems}</p>
-              <p className={`text-xs sm:text-sm font-bold mt-2 ${currentUser.ageGroup === 'kids' ? 'text-slate-500' : (isDark || currentUser.ageGroup === 'explorer' && isDark ? 'text-slate-400' : 'text-slate-600')}`}>Gems</p>
+              <p className={`text-3xl sm:text-4xl font-black ${currentUser.ageGroup === 'explorer' ? 'text-amber-500' : 'text-amber-500'}`}>📝 {totalMarks}</p>
+              <p className={`text-xs sm:text-sm font-bold mt-2 ${currentUser.ageGroup === 'kids' ? 'text-slate-500' : (isDark || currentUser.ageGroup === 'explorer' && isDark ? 'text-slate-400' : 'text-slate-600')}`}>Total Marks</p>
             </div>
             <div className={`p-4 sm:p-6 text-center ${theme.card} ${currentUser.ageGroup === 'kids' ? '' : 'rounded-2xl'}`}>
               <p className={`text-3xl sm:text-4xl font-black ${currentUser.ageGroup === 'explorer' ? 'text-rose-500' : 'text-orange-500'}`}>🔥 {currentStreak}</p>

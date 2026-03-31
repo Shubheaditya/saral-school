@@ -28,7 +28,7 @@ export default function QuizPage() {
   const params = useParams();
   const quizId = params.id as string;
   const { getQuizById } = useApp();
-  const { addPoints, addGems, completeQuiz, checkAndAwardBadges } = useGamification();
+  const { addMarks, completeQuiz, checkAndAwardBadges } = useGamification();
   const { backgroundClass, textClass, isDark } = useUniversalTheme();
 
   const rawQuiz = getQuizById(quizId) || MOCK_QUIZ;
@@ -40,10 +40,10 @@ export default function QuizPage() {
   const [showResult, setShowResult] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
-  const [currentPointsEarned, setCurrentPointsEarned] = useState(0);
+  const [currentMarksEarned, setCurrentMarksEarned] = useState(0);
   const [finished, setFinished] = useState(false);
   const [score, setScore] = useState(0); // number of fully correct questions
-  const [totalPointsEarned, setTotalPointsEarned] = useState(0);
+  const [totalMarksEarned, setTotalMarksEarned] = useState(0);
   const [theoryText, setTheoryText] = useState("");
 
   const question = quiz.questions[current];
@@ -54,13 +54,13 @@ export default function QuizPage() {
     const answer = answers[current];
     const q = question;
     let correct = false;
-    let pointsEarned = 0;
-    const maxPoints = q.points || 10;
+    let marksEarned = 0;
+    const maxMarks = q.marks || 10;
 
     switch (q.type) {
       case "mcq":
         correct = answer === q.correctIndex;
-        pointsEarned = correct ? maxPoints : 0;
+        marksEarned = correct ? maxMarks : 0;
         break;
       case "multi-correct": {
         const selected = (answer as number[]) || [];
@@ -75,41 +75,41 @@ export default function QuizPage() {
 
            if (mode === "all-or-nothing") {
               correct = selected.length === expected.length && correctlySelected === expected.length;
-              pointsEarned = correct ? maxPoints : 0;
+              marksEarned = correct ? maxMarks : 0;
            } else if (mode === "jee-style") {
               if (incorrectlySelected > 0) {
-                 pointsEarned = -nPenalty; // flat penalty
+                 marksEarned = -nPenalty; // flat penalty
                  correct = false;
               } else if (correctlySelected === expected.length) {
-                 pointsEarned = maxPoints; // perfectly correct
+                 marksEarned = maxMarks; // perfectly correct
                  correct = true;
               } else {
-                 pointsEarned = correctlySelected * pPoints; // partial points
+                 marksEarned = correctlySelected * pPoints; // partial points
                  correct = false;
               }
            } else if (mode === "linear") {
-              pointsEarned = (correctlySelected * pPoints) - (incorrectlySelected * nPenalty); // math based
+              marksEarned = (correctlySelected * pPoints) - (incorrectlySelected * nPenalty); // math based
               correct = (correctlySelected === expected.length && incorrectlySelected === 0);
            }
         } else if (q.partialMarking) {
           if (expected.length === 0) {
              correct = selected.length === 0;
-             pointsEarned = correct ? maxPoints : 0;
+             marksEarned = correct ? maxMarks : 0;
           } else {
              const correctlySelected = selected.filter(idx => expected.includes(idx)).length;
              const incorrectlySelected = selected.filter(idx => !expected.includes(idx)).length;
              
-             let p = (correctlySelected / expected.length) * maxPoints;
+             let p = (correctlySelected / expected.length) * maxMarks;
              const totalWrongOpts = (q.options?.length || 0) - expected.length;
              if (totalWrongOpts > 0 && incorrectlySelected > 0) {
-                p -= (incorrectlySelected / totalWrongOpts) * maxPoints;
+                p -= (incorrectlySelected / totalWrongOpts) * maxMarks;
              }
-             pointsEarned = Math.max(0, Math.round(p)); 
-             correct = pointsEarned === maxPoints; 
+             marksEarned = Math.max(0, Math.round(p)); 
+             correct = marksEarned === maxMarks; 
           }
         } else {
           correct = selected.length === expected.length && selected.sort().every((v, i) => v === expected.sort()[i]);
-          pointsEarned = correct ? maxPoints : 0;
+          marksEarned = correct ? maxMarks : 0;
         }
         break;
       }
@@ -117,26 +117,26 @@ export default function QuizPage() {
         const userAnswer = (answer as string || "").trim().toLowerCase();
         correct = userAnswer === (q.correctAnswer || "").toLowerCase() ||
           (q.acceptableAnswers || []).some(a => a.toLowerCase() === userAnswer);
-        pointsEarned = correct ? maxPoints : 0;
+        marksEarned = correct ? maxMarks : 0;
         break;
       }
       case "matching":
       case "drag-drop": {
         const pairs = (answer as Record<string, string>) || {};
         correct = Object.entries(q.correctPairs || {}).every(([k, v]) => pairs[k] === v);
-        pointsEarned = correct ? maxPoints : 0;
+        marksEarned = correct ? maxMarks : 0;
         break;
       }
       case "theory":
         correct = true;
-        pointsEarned = maxPoints; // award full participation points auto
+        marksEarned = maxMarks; // award full participation points auto
         break;
     }
 
     setIsCorrect(correct);
-    setCurrentPointsEarned(pointsEarned);
+    setCurrentMarksEarned(marksEarned);
     if (correct) setScore(prev => prev + 1);
-    setTotalPointsEarned(prev => prev + pointsEarned);
+    setTotalMarksEarned(prev => prev + marksEarned);
     setSubmitted(true);
   }, [answers, current, question]);
 
@@ -147,11 +147,8 @@ export default function QuizPage() {
       setShowResult(false);
       setTheoryText("");
     } else {
-      const finalScore = score;
-      const pointsEarned = Math.max(0, totalPointsEarned);
-      const gemsEarned = finalScore === totalQ ? 5 : Math.floor(finalScore / 2);
-      addPoints(pointsEarned);
-      addGems(gemsEarned);
+      const marksEarned = Math.max(0, totalMarksEarned);
+      addMarks(marksEarned);
       completeQuiz(quizId);
       checkAndAwardBadges();
       setFinished(true);
@@ -160,10 +157,9 @@ export default function QuizPage() {
 
   // Finished screen
   if (finished) {
-    const totalPossiblePoints = quiz.questions.reduce((sum, q) => sum + (q.points || 10), 0);
-    const finalPointsEarned = Math.max(0, totalPointsEarned);
-    const percentage = Math.round((finalPointsEarned / (totalPossiblePoints || 1)) * 100);
-    const gemsEarned = score === totalQ ? 5 : Math.floor(score / 2);
+    const totalPossibleMarks = quiz.questions.reduce((sum, q) => sum + (q.marks || 10), 0);
+    const finalMarksEarned = Math.max(0, totalMarksEarned);
+    const percentage = Math.round((finalMarksEarned / (totalPossibleMarks || 1)) * 100);
 
     return (
       <main className={`min-h-screen ${backgroundClass} ${textClass} relative flex flex-col items-center justify-center px-6 py-12 transition-colors duration-500`}>
@@ -186,19 +182,15 @@ export default function QuizPage() {
             <p className={`text-5xl font-black ${isDark ? 'text-indigo-400' : 'text-indigo-600'} mb-1`}>{percentage}%</p>
             <p className={isDark ? 'text-indigo-300' : 'text-slate-500'}>{score} of {totalQ} fully correct</p>
           </div>
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            <div className={`${isDark ? 'bg-amber-500/10 border-amber-500/20' : 'bg-amber-50 border-amber-100'} rounded-xl p-3 border`}>
-              <p className={`text-2xl font-bold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>⭐ +{finalPointsEarned}</p>
-              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Points</p>
-            </div>
-            <div className={`${isDark ? 'bg-indigo-500/10 border-indigo-500/20' : 'bg-indigo-50 border-indigo-100'} rounded-xl p-3 border`}>
-              <p className={`text-2xl font-bold ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`}>💎 +{gemsEarned}</p>
-              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Gems</p>
+          <div className="flex justify-center mb-6">
+            <div className={`${isDark ? 'bg-amber-500/10 border-amber-500/20' : 'bg-amber-50 border-amber-100'} rounded-xl p-4 border text-center w-48`}>
+              <p className={`text-3xl font-bold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>📝 {finalMarksEarned}</p>
+              <p className={`text-xs font-bold mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Total Marks</p>
             </div>
           </div>
           <div className="flex gap-3">
             <button
-              onClick={() => { setCurrent(0); setAnswers({}); setScore(0); setTotalPointsEarned(0); setSubmitted(false); setFinished(false); }}
+              onClick={() => { setCurrent(0); setAnswers({}); setScore(0); setTotalMarksEarned(0); setSubmitted(false); setFinished(false); }}
               className={`flex-1 py-4 rounded-2xl text-lg font-bold bouncy-hover ${isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
             >Try Again</button>
             <button onClick={() => router.back()} className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl text-lg font-bold shadow-lg shadow-indigo-600/30 bouncy-hover">Done</button>

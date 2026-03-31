@@ -144,7 +144,7 @@ export interface UniversalQuestion {
   correctPairs?: Record<string, string>; // Maps left text → right text
 
   // Extended Google-Forms style options
-  points?: number;               // Points awarded for a fully correct answer (default 10)
+  marks?: number;               // Marks awarded for a fully correct answer (default 10)
   partialMarking?: boolean;      // Legacy: For multi-correct: if true, award partial points
   gradingRule?: GradingRule;     // Advanced grading configuration for multi-correct
 
@@ -206,7 +206,7 @@ export interface Quiz {
   description: string;
   questions: UniversalQuestion[];
   mode: "quiz" | "chapter-test" | "brain-game";
-  totalPoints: number;
+  totalMarks: number;
 }
 
 // --- Gamification ---
@@ -222,8 +222,7 @@ export interface Badge {
 }
 
 export interface GamificationState {
-  points: number;
-  gems: number;
+  totalMarks: number;
   currentStreak: number;
   longestStreak: number;
   lastActiveDate: string;
@@ -275,7 +274,7 @@ export interface ScoreboardEntry {
   userId: string;
   name: string;
   avatarIndex: number;
-  points: number;
+  totalMarks: number;
   rank: number;
 }
 

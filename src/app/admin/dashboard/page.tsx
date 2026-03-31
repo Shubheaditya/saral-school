@@ -703,9 +703,9 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
 
   const handleSave = () => {
     if (!title.trim() || questions.length === 0) return;
-    const totalPoints = questions.reduce((sum, q) => sum + (q.points || 10), 0);
+    const totalMarks = questions.reduce((sum, q) => sum + (q.marks || 10), 0);
     const quizId = `quiz-${Date.now()}`;
-    app.addQuiz({ id: quizId, chapterId, subjectId, title, description, questions, mode, totalPoints });
+    app.addQuiz({ id: quizId, chapterId, subjectId, title, description, questions, mode, totalMarks });
     app.addContentItem(subjectId, semesterId, chapterId, { id: `ci-${Date.now()}`, chapterId, type: mode === "chapter-test" ? "test" : "quiz", order, refId: quizId });
     onClose();
   };
@@ -717,7 +717,7 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
       prompt: { text: "" },
       options: [{ text: "Option A" }, { text: "Option B" }],
       correctIndex: 0,
-      points: 10
+      marks: 10
     }]);
   };
 
@@ -725,7 +725,7 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
     <div className="bg-white rounded-xl p-6 border-2 border-amber-200 mb-4">
       <div className="flex justify-between items-center mb-4">
         <h4 className="font-bold text-slate-900">{mode === "chapter-test" ? "Test" : "Quiz"} - Add {label}</h4>
-        <div className="text-sm font-bold border border-amber-200 bg-amber-50 text-amber-700 px-3 py-1 rounded-lg">Total Points: {questions.reduce((sum, q) => sum + (q.points || 10), 0)}</div>
+        <div className="text-sm font-bold border border-amber-200 bg-amber-50 text-amber-700 px-3 py-1 rounded-lg">Total Marks: {questions.reduce((sum, q) => sum + (q.marks || 10), 0)}</div>
       </div>
       
       <div className="space-y-4 mb-6">
@@ -764,8 +764,8 @@ function QuestionEditorCard({ question, index, onChange, onDelete, uploadFile, u
   uploadFile: (f: File, folder: string) => Promise<string | null>; uploading: boolean;
 }) {
   const updateType = (newType: QuestionType) => {
-    const defaultPoints = question.points || 10;
-    const base = { ...question, type: newType, points: defaultPoints };
+    const defaultMarks = question.marks || 10;
+    const base = { ...question, type: newType, marks: defaultMarks };
     if (newType === "mcq") { base.options = base.options || [{text:""},{text:""}]; base.correctIndex = base.correctIndex || 0; }
     if (newType === "multi-correct") { base.options = base.options || [{text:""},{text:""}]; base.correctIndices = base.correctIndices || []; base.partialMarking = base.partialMarking ?? false; }
     if (newType === "fill-blank") { base.correctAnswer = base.correctAnswer || ""; }
@@ -827,8 +827,8 @@ function QuestionEditorCard({ question, index, onChange, onDelete, uploadFile, u
           </select>
         </div>
         <div className="col-span-12 md:col-span-2 flex items-center gap-2">
-           <label className="text-xs font-bold text-slate-400">Pts:</label>
-           <input type="number" min="0" value={question.points || 0} onChange={e => onChange({ ...question, points: parseInt(e.target.value) || 0 })} className="w-full px-3 py-2 rounded-lg border-2 border-slate-100 text-sm font-bold text-indigo-600 bg-indigo-50 focus:border-indigo-400 outline-none" title="Points" />
+           <label className="text-xs font-bold text-slate-400">Marks:</label>
+           <input type="number" min="0" value={question.marks || 0} onChange={e => onChange({ ...question, marks: parseInt(e.target.value) || 0 })} className="w-full px-3 py-2 rounded-lg border-2 border-slate-100 text-sm font-bold text-indigo-600 bg-indigo-50 focus:border-indigo-400 outline-none" title="Marks" />
         </div>
       </div>
 

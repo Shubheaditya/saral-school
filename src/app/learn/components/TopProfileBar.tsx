@@ -8,7 +8,6 @@ import { useUniversalTheme } from "../hooks/useUniversalTheme";
 
 export default function TopProfileBar() {
   const { currentUser, updateUser } = useAuth();
-  const { points, gems } = useGamification();
 
   if (!currentUser) return null;
 
@@ -53,12 +52,8 @@ export default function TopProfileBar() {
         <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl ${theme.iconBg}`}>
           {AVATARS[currentUser.avatarIndex] || "🦊"}
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col justify-center">
           <span className={`text-sm font-bold leading-tight ${theme.textName}`}>{currentUser.name}</span>
-          <div className="flex items-center gap-2">
-            <span className={`text-xs font-bold ${theme.textPoints}`}>⭐ {points}</span>
-            <span className={`text-xs font-bold ${theme.textGems}`}>💎 {gems}</span>
-          </div>
         </div>
       </Link>
 
