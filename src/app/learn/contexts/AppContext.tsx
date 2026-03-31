@@ -94,54 +94,46 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [stateId, setStateId] = useState<string | null>(null);
 
   useEffect(() => {
-    async function initSupabase() {
-      if (!isSupabaseConfigured) {
-        console.warn("Supabase not configured. Using local storage mode.");
-        setContent(loadContent());
-        setLoaded(true);
-        return;
-      }
+    async function initDb() {
       try {
-        const { data, error } = await supabase.from('saral_state').select('*').limit(1).maybeSingle();
-        if (data && data.content) {
-          const loadedData = data.content as AdminContent;
-          if (loadedData.subjects && loadedData.subjects.length > 0 && !loadedData.subjects[0].semesters) {
-            loadedData.subjects = loadedData.subjects.map(s => ({ ...s, semesters: generateSemesters(s.id) }));
-          }
-          if (!loadedData.chapterNotes) loadedData.chapterNotes = [];
-          if (!loadedData.formulaSheets) loadedData.formulaSheets = [];
-          if (!loadedData.studentNotes) loadedData.studentNotes = [];
-          
-          setContent(loadedData);
-          setStateId(data.id);
-        } else {
-           const defaultState = loadContent(); 
-           const { data: insertData } = await supabase.from('saral_state').insert({ content: defaultState }).select().single();
-           setContent(defaultState);
-           if (insertData) setStateId(insertData.id);
+        const res = await fetch('/api/db/sync');
+        if (res.ok) {
+           const dbContent = await res.json() as AdminContent;
+           if (dbContent.subjects && dbContent.subjects.length > 0) {
+             setContent(dbContent);
+             setLoaded(true);
+             return;
+           }
         }
       } catch (err) {
-        console.error("Failed to load from Supabase:", err);
-        setContent(loadContent());
-      } finally {
-        setLoaded(true);
+        console.error("Failed to load from Turso:", err);
       }
+      
+      // Fallback
+      setContent(loadContent());
+      setLoaded(true);
     }
-    initSupabase();
+    initDb();
   }, []);
 
   useEffect(() => {
-    if (loaded && stateId && isSupabaseConfigured) {
-      supabase.from('saral_state').update({ content, updated_at: new Date().toISOString() }).eq('id', stateId).then();
-    }
     if (loaded) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
     }
-  }, [content, loaded, stateId]);
+  }, [content, loaded]);
+
+  const syncDb = async (action: string, payload: any) => {
+    try {
+      await fetch('/api/db/sync', { method: 'POST', body: JSON.stringify({ action, payload }) });
+    } catch (e) {
+      console.error("Failed to sync DB", e);
+    }
+  };
 
 
   // --- Subject ops ---
   const addSubject = useCallback((subject: Subject) => {
+    syncDb("ADD_SUBJECT", { subject, semesters: subject.semesters });
     setContent(prev => ({ ...prev, subjects: [...prev.subjects, subject] }));
   }, []);
 
@@ -153,11 +145,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const deleteSubject = useCallback((id: string) => {
+    syncDb("DELETE_SUBJECT", { id });
     setContent(prev => ({ ...prev, subjects: prev.subjects.filter(s => s.id !== id) }));
   }, []);
 
   // --- Chapter ops ---
   const addChapter = useCallback((subjectId: string, semesterId: string, chapter: Chapter) => {
+    syncDb("ADD_CHAPTER", chapter);
     setContent(prev => ({
       ...prev,
       subjects: prev.subjects.map(s =>
@@ -176,6 +170,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const deleteChapter = useCallback((subjectId: string, semesterId: string, chapterId: string) => {
+    syncDb("DELETE_CHAPTER", { id: chapterId });
     setContent(prev => ({
       ...prev,
       subjects: prev.subjects.map(s =>
@@ -213,6 +208,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // --- Content item ops ---
   const addContentItem = useCallback((subjectId: string, semesterId: string, chapterId: string, item: ContentItem) => {
+    syncDb("ADD_CONTENT_ITEM", item);
     setContent(prev => ({
       ...prev,
       subjects: prev.subjects.map(s =>
@@ -238,6 +234,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const removeContentItem = useCallback((subjectId: string, semesterId: string, chapterId: string, itemId: string) => {
+    syncDb("DELETE_CONTENT_ITEM", { id: itemId });
     setContent(prev => ({
       ...prev,
       subjects: prev.subjects.map(s =>
@@ -287,41 +284,51 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // --- Video ops ---
   const addVideo = useCallback((video: VideoLecture) => {
+    syncDb("ADD_VIDEO", video);
     setContent(prev => ({ ...prev, videos: [...prev.videos, video] }));
   }, []);
   const deleteVideo = useCallback((id: string) => {
+    syncDb("DELETE_VIDEO", { id });
     setContent(prev => ({ ...prev, videos: prev.videos.filter(v => v.id !== id) }));
   }, []);
 
   // --- Quiz ops ---
   const addQuiz = useCallback((quiz: Quiz) => {
+    syncDb("ADD_QUIZ", { quiz, questions: quiz.questions });
     setContent(prev => ({ ...prev, quizzes: [...prev.quizzes, quiz] }));
   }, []);
   const deleteQuiz = useCallback((id: string) => {
+    syncDb("DELETE_QUIZ", { id });
     setContent(prev => ({ ...prev, quizzes: prev.quizzes.filter(q => q.id !== id) }));
   }, []);
 
   // --- Chapter notes ops ---
   const addChapterNote = useCallback((note: ChapterNotes) => {
+    syncDb("ADD_CHAPTER_NOTE", note);
     setContent(prev => ({ ...prev, chapterNotes: [...prev.chapterNotes, note] }));
   }, []);
   const deleteChapterNote = useCallback((id: string) => {
+    syncDb("DELETE_CHAPTER_NOTE", { id });
     setContent(prev => ({ ...prev, chapterNotes: prev.chapterNotes.filter(n => n.id !== id) }));
   }, []);
 
   // --- Formula sheet ops ---
   const addFormulaSheet = useCallback((sheet: FormulaSheet) => {
+    syncDb("ADD_FORMULA_SHEET", sheet);
     setContent(prev => ({ ...prev, formulaSheets: [...prev.formulaSheets, sheet] }));
   }, []);
   const deleteFormulaSheet = useCallback((id: string) => {
+    syncDb("DELETE_FORMULA_SHEET", { id });
     setContent(prev => ({ ...prev, formulaSheets: prev.formulaSheets.filter(f => f.id !== id) }));
   }, []);
 
   // --- Student note ops ---
   const addStudentNote = useCallback((note: StudentNote) => {
+    syncDb("ADD_STUDENT_NOTE", note);
     setContent(prev => ({ ...prev, studentNotes: [...prev.studentNotes, note] }));
   }, []);
   const deleteStudentNote = useCallback((id: string) => {
+    syncDb("DELETE_STUDENT_NOTE", { id });
     setContent(prev => ({ ...prev, studentNotes: prev.studentNotes.filter(n => n.id !== id) }));
   }, []);
 
