@@ -137,6 +137,10 @@ export interface UniversalQuestion {
   rightItems?: MediaBlock[];
   correctPairs?: Record<string, string>; // Maps left text → right text
 
+  // Extended Google-Forms style options
+  points?: number;               // Points awarded for a fully correct answer (default 10)
+  partialMarking?: boolean;      // For multi-correct: if true, award partial points
+
   // Theory / Long-answer
   sampleAnswer?: string;         // Reference answer shown after submission
   maxWords?: number;

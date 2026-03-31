@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useApp } from "../../learn/contexts/AppContext";
 import {
   Subject, Semester, Chapter, ContentItem, ContentType,
-  VideoLecture, Quiz, Question, QuestionType, ChapterNotes, FormulaSheet,
+  VideoLecture, Quiz, Question, QuestionType, ChapterNotes, FormulaSheet, MediaBlock,
   generateSemesters, CONTENT_TYPE_INFO,
 } from "../../learn/types";
 import { supabase, isSupabaseConfigured } from "../../../lib/supabase";
@@ -669,23 +669,10 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [qType, setQType] = useState<QuestionType>("mcq");
-  const [qText, setQText] = useState("");
-  const [qImageFile, setQImageFile] = useState<File | null>(null);
-  const [qAudioFile, setQAudioFile] = useState<File | null>(null);
-  const [qVideoFile, setQVideoFile] = useState<File | null>(null);
-  const [qOptions, setQOptions] = useState<{ text: string; imageFile?: File | null }[]>([{ text: "" }, { text: "" }, { text: "" }, { text: "" }]);
-  const [qCorrectIdx, setQCorrectIdx] = useState(0);
-  const [qCorrectIndices, setQCorrectIndices] = useState<number[]>([]);
-  const [qFillAnswer, setQFillAnswer] = useState("");
-  const [qMatchLeft, setQMatchLeft] = useState("");
-  const [qMatchRight, setQMatchRight] = useState("");
-  const [qExplanation, setQExplanation] = useState("");
-  const [qSampleAnswer, setQSampleAnswer] = useState("");
-  const [qMaxWords, setQMaxWords] = useState<number | "">("");
   const [uploading, setUploading] = useState(false);
 
   const uploadFile = async (file: File, folder: string): Promise<string | null> => {
+    setUploading(true);
     const formData = new FormData();
     formData.append('file', file);
     try {
@@ -695,153 +682,283 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
       });
       if (!res.ok) throw new Error('Failed to upload file');
       const data = await res.json();
+      setUploading(false);
       return data.url;
     } catch (error: any) {
       alert(`Upload failed: ${error.message}`);
+      setUploading(false);
       return null;
     }
   };
 
-  const addQuestion = async () => {
-    if (!qText.trim()) return;
-    setUploading(true);
-    let imageUrl: string | undefined, audioUrl: string | undefined, videoUrl: string | undefined;
-    if (qImageFile) imageUrl = (await uploadFile(qImageFile, 'quiz-media')) || undefined;
-    if (qAudioFile) audioUrl = (await uploadFile(qAudioFile, 'quiz-media')) || undefined;
-    if (qVideoFile) videoUrl = (await uploadFile(qVideoFile, 'quiz-media')) || undefined;
+  const handleApplyQuestionUpdate = (index: number, updatedQ: Question) => {
+    const newQs = [...questions];
+    newQs[index] = updatedQ;
+    setQuestions(newQs);
+  };
 
-    const prompt = { text: qText, imageUrl, audioUrl, videoUrl };
-    let options: { text?: string; imageUrl?: string }[] | undefined;
-    if (qType === "mcq" || qType === "multi-correct") {
-      options = [];
-      for (const opt of qOptions) {
-        let optImg: string | undefined;
-        if (opt.imageFile) optImg = (await uploadFile(opt.imageFile, 'quiz-media')) || undefined;
-        options.push({ text: opt.text, imageUrl: optImg });
-      }
-    }
-
-    const question: Question = { id: `q-${Date.now()}`, type: qType, prompt, explanation: qExplanation || undefined };
-    switch (qType) {
-      case "mcq": question.options = options; question.correctIndex = qCorrectIdx; break;
-      case "multi-correct": question.options = options; question.correctIndices = [...qCorrectIndices]; break;
-      case "fill-blank": question.correctAnswer = qFillAnswer; break;
-      case "matching": case "drag-drop": {
-        const left = qMatchLeft.split(",").map(s => s.trim()).filter(Boolean);
-        const right = qMatchRight.split(",").map(s => s.trim()).filter(Boolean);
-        const pairs: Record<string, string> = {};
-        left.forEach((l, i) => { if (right[i]) pairs[l] = right[i]; });
-        question.leftItems = left.map(t => ({ text: t }));
-        question.rightItems = right.map(t => ({ text: t }));
-        question.correctPairs = pairs;
-        break;
-      }
-      case "theory": question.sampleAnswer = qSampleAnswer; question.maxWords = typeof qMaxWords === "number" ? qMaxWords : undefined; break;
-    }
-
-    setQuestions([...questions, question]);
-    setQText(""); setQImageFile(null); setQAudioFile(null); setQVideoFile(null);
-    setQOptions([{ text: "" }, { text: "" }, { text: "" }, { text: "" }]);
-    setQCorrectIdx(0); setQCorrectIndices([]); setQFillAnswer("");
-    setQMatchLeft(""); setQMatchRight(""); setQExplanation("");
-    setQSampleAnswer(""); setQMaxWords("");
-    setUploading(false);
+  const handleDeleteQuestion = (index: number) => {
+    setQuestions(questions.filter((_, i) => i !== index));
   };
 
   const handleSave = () => {
     if (!title.trim() || questions.length === 0) return;
+    const totalPoints = questions.reduce((sum, q) => sum + (q.points || 10), 0);
     const quizId = `quiz-${Date.now()}`;
-    app.addQuiz({ id: quizId, chapterId, subjectId, title, description, questions, mode, totalPoints: questions.length * 10 });
+    app.addQuiz({ id: quizId, chapterId, subjectId, title, description, questions, mode, totalPoints });
     app.addContentItem(subjectId, semesterId, chapterId, { id: `ci-${Date.now()}`, chapterId, type: mode === "chapter-test" ? "test" : "quiz", order, refId: quizId });
     onClose();
   };
 
-  const toggleIdx = (idx: number) => setQCorrectIndices(prev => prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]);
+  const handleAddQuestion = () => {
+    setQuestions([...questions, {
+      id: `q-${Date.now()}`,
+      type: "mcq",
+      prompt: { text: "" },
+      options: [{ text: "Option A" }, { text: "Option B" }],
+      correctIndex: 0,
+      points: 10
+    }]);
+  };
 
   return (
     <div className="bg-white rounded-xl p-6 border-2 border-amber-200 mb-4">
-      <h4 className="font-bold text-slate-900 mb-4">{mode === "chapter-test" ? "Test" : "Quiz"} - Add {label}</h4>
-      <div className="space-y-3">
-        <div className="grid grid-cols-2 gap-3">
-          <div><label className="text-sm font-bold text-slate-600 block mb-1">Title *</label><input value={title} onChange={e => setTitle(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder={`${label} title`} autoFocus /></div>
-          <div><label className="text-sm font-bold text-slate-600 block mb-1">Description</label><input value={description} onChange={e => setDescription(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="Brief description" /></div>
-        </div>
-
-        <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-          <h5 className="font-bold text-slate-900 mb-3">Questions ({questions.length})</h5>
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <div><label className="text-sm font-bold text-slate-600 block mb-1">Type</label>
-              <select value={qType} onChange={e => setQType(e.target.value as QuestionType)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm">
-                <option value="mcq">Multiple Choice (Single)</option>
-                <option value="multi-correct">Multiple Correct</option>
-                <option value="fill-blank">Fill in the Blank</option>
-                <option value="matching">Matching</option>
-                <option value="drag-drop">Drag and Drop</option>
-                <option value="theory">Theory / Long Answer</option>
-              </select>
-            </div>
-            <div><label className="text-sm font-bold text-slate-600 block mb-1">Explanation (optional)</label><input value={qExplanation} onChange={e => setQExplanation(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="Shown after answering" /></div>
+      <div className="flex justify-between items-center mb-4">
+        <h4 className="font-bold text-slate-900">{mode === "chapter-test" ? "Test" : "Quiz"} - Add {label}</h4>
+        <div className="text-sm font-bold border border-amber-200 bg-amber-50 text-amber-700 px-3 py-1 rounded-lg">Total Points: {questions.reduce((sum, q) => sum + (q.points || 10), 0)}</div>
+      </div>
+      
+      <div className="space-y-4 mb-6">
+        <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div><label className="text-sm font-bold text-slate-600 block mb-1">Title *</label><input value={title} onChange={e => setTitle(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder={`${label} title`} autoFocus /></div>
+            <div><label className="text-sm font-bold text-slate-600 block mb-1">Description</label><input value={description} onChange={e => setDescription(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="Brief description" /></div>
           </div>
-          <div className="mb-3"><label className="text-sm font-bold text-slate-600 block mb-1">Question Text *</label><input value={qText} onChange={e => setQText(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="Enter question" /></div>
+        </div>
 
-          <div className="mb-3 p-3 bg-white rounded-lg border border-dashed border-slate-300">
-            <p className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Attach Media to Question (optional)</p>
-            <div className="grid grid-cols-3 gap-2">
-              <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Image</label><input type="file" accept="image/*" onChange={e => setQImageFile(e.target.files?.[0] || null)} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 file:text-xs" /></div>
-              <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Audio</label><input type="file" accept="audio/*" onChange={e => setQAudioFile(e.target.files?.[0] || null)} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-violet-50 file:text-violet-700 file:text-xs" /></div>
-              <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Video</label><input type="file" accept="video/*" onChange={e => setQVideoFile(e.target.files?.[0] || null)} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-amber-50 file:text-amber-700 file:text-xs" /></div>
-            </div>
+        {questions.map((q, idx) => (
+          <QuestionEditorCard 
+            key={q.id} 
+            question={q} 
+            index={idx} 
+            onChange={(uq) => handleApplyQuestionUpdate(idx, uq)}
+            onDelete={() => handleDeleteQuestion(idx)}
+            uploadFile={uploadFile}
+            uploading={uploading}
+          />
+        ))}
+
+        <button onClick={handleAddQuestion} disabled={uploading} className="w-full py-4 bg-indigo-50 text-indigo-600 border border-indigo-200 border-dashed rounded-xl font-bold text-sm hover:bg-indigo-100 transition-colors">+ Add Question</button>
+      </div>
+
+      <div className="flex gap-2">
+        <button onClick={handleSave} disabled={questions.length === 0 || uploading || !title.trim()} className={`px-4 py-2 rounded-lg font-bold text-sm ${questions.length > 0 && !uploading && title.trim() ? "bg-emerald-600 text-white hover:bg-emerald-700" : "bg-slate-200 text-slate-400"}`}>Save {label} ({questions.length} questions)</button>
+        <button onClick={() => { onClose(); setQuestions([]); }} className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg font-bold text-sm">Cancel</button>
+      </div>
+    </div>
+  );
+}
+
+function QuestionEditorCard({ question, index, onChange, onDelete, uploadFile, uploading }: {
+  question: Question; index: number; onChange: (q: Question) => void; onDelete: () => void;
+  uploadFile: (f: File, folder: string) => Promise<string | null>; uploading: boolean;
+}) {
+  const updateType = (newType: QuestionType) => {
+    const defaultPoints = question.points || 10;
+    const base = { ...question, type: newType, points: defaultPoints };
+    if (newType === "mcq") { base.options = base.options || [{text:""},{text:""}]; base.correctIndex = base.correctIndex || 0; }
+    if (newType === "multi-correct") { base.options = base.options || [{text:""},{text:""}]; base.correctIndices = base.correctIndices || []; base.partialMarking = base.partialMarking ?? false; }
+    if (newType === "fill-blank") { base.correctAnswer = base.correctAnswer || ""; }
+    if (newType === "matching" || newType === "drag-drop") {
+       base.leftItems = base.leftItems || [{text:"Item A"},{text:"Item B"}];
+       base.rightItems = base.rightItems || [{text:"Target A"},{text:"Target B"}];
+       base.correctPairs = base.correctPairs || {"Item A": "Target A", "Item B": "Target B"};
+    }
+    if (newType === "theory") { base.sampleAnswer = base.sampleAnswer || ""; }
+    onChange(base);
+  };
+
+  const handleMediaUpload = async (file: File, field: 'imageUrl'|'videoUrl'|'audioUrl', target: 'prompt' | number = 'prompt') => {
+    const url = await uploadFile(file, 'quiz-media');
+    if (!url) return;
+    if (target === 'prompt') {
+      onChange({ ...question, prompt: { ...question.prompt, [field]: url } });
+    } else {
+      const opts = [...(question.options || [])];
+      opts[target] = { ...opts[target], [field]: url };
+      onChange({ ...question, options: opts });
+    }
+  };
+
+  const removeMedia = (field: keyof MediaBlock, target: 'prompt' | number = 'prompt') => {
+    if (target === 'prompt') {
+      onChange({ ...question, prompt: { ...question.prompt, [field]: undefined } });
+    } else {
+       const opts = [...(question.options || [])];
+       opts[target] = { ...opts[target], [field]: undefined };
+       onChange({ ...question, options: opts });
+    }
+  };
+
+  return (
+    <div className="bg-white border-2 border-slate-100 shadow-sm rounded-2xl p-6 relative group transition-all hover:border-indigo-100 mb-4 focus-within:border-indigo-300 focus-within:shadow-md">
+      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity flex gap-2">
+        <button onClick={onDelete} className="text-red-500 hover:text-white hover:bg-red-500 font-bold text-xs bg-red-50 px-3 py-1.5 rounded-lg transition-colors">Delete</button>
+      </div>
+
+      <div className="grid grid-cols-12 gap-4 mb-4 items-center">
+        <div className="col-span-12 md:col-span-7 flex items-center gap-3">
+          <span className="text-sm font-black text-slate-300 w-4">{index + 1}.</span>
+          <input 
+            value={question.prompt.text || ""} 
+            onChange={e => onChange({ ...question, prompt: { ...question.prompt, text: e.target.value } })}
+            placeholder="Question Text" 
+            className="w-full text-lg font-bold border-b-2 border-slate-100 focus:border-indigo-400 bg-transparent py-1.5 outline-none transition-colors" 
+          />
+        </div>
+        <div className="col-span-12 md:col-span-3">
+          <select value={question.type} onChange={e => updateType(e.target.value as QuestionType)} className="w-full px-3 py-2 rounded-lg border-2 border-slate-100 text-sm font-bold text-slate-700 bg-slate-50 focus:border-indigo-400 outline-none">
+            <option value="mcq">Multiple Choice</option>
+            <option value="multi-correct">Checkboxes</option>
+            <option value="fill-blank">Fill in Blank</option>
+            <option value="matching">Matching</option>
+            <option value="drag-drop">Drag Drop</option>
+            <option value="theory">Theory (Long Answer)</option>
+          </select>
+        </div>
+        <div className="col-span-12 md:col-span-2 flex items-center gap-2">
+           <label className="text-xs font-bold text-slate-400">Pts:</label>
+           <input type="number" min="0" value={question.points || 0} onChange={e => onChange({ ...question, points: parseInt(e.target.value) || 0 })} className="w-full px-3 py-2 rounded-lg border-2 border-slate-100 text-sm font-bold text-indigo-600 bg-indigo-50 focus:border-indigo-400 outline-none" title="Points" />
+        </div>
+      </div>
+
+      <div className="mb-5 flex gap-2 pl-7">
+        <label className="text-xs bg-slate-50 border border-slate-200 hover:bg-slate-100 px-3 py-1.5 rounded-lg cursor-pointer text-slate-600 font-bold transition-colors">
+          {uploading ? "..." : "🖼 Add Image"} <input type="file" accept="image/*" className="hidden" onChange={e => e.target.files?.[0] && handleMediaUpload(e.target.files[0], 'imageUrl')} />
+        </label>
+        <label className="text-xs bg-slate-50 border border-slate-200 hover:bg-slate-100 px-3 py-1.5 rounded-lg cursor-pointer text-slate-600 font-bold transition-colors">
+          {uploading ? "..." : "🎵 Add Audio"} <input type="file" accept="audio/*" className="hidden" onChange={e => e.target.files?.[0] && handleMediaUpload(e.target.files[0], 'audioUrl')} />
+        </label>
+        <label className="text-xs bg-slate-50 border border-slate-200 hover:bg-slate-100 px-3 py-1.5 rounded-lg cursor-pointer text-slate-600 font-bold transition-colors">
+          {uploading ? "..." : "🎥 Add Video"} <input type="file" accept="video/*" className="hidden" onChange={e => e.target.files?.[0] && handleMediaUpload(e.target.files[0], 'videoUrl')} />
+        </label>
+      </div>
+
+      {(question.prompt.imageUrl || question.prompt.audioUrl || question.prompt.videoUrl) && (
+        <div className="flex gap-4 mb-5 ml-7 p-3 bg-slate-50 rounded-xl border border-slate-100">
+          {question.prompt.imageUrl && <div className="relative group/media"><img src={question.prompt.imageUrl} alt="" className="h-20 rounded-lg object-cover" /><button onClick={() => removeMedia('imageUrl')} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] opacity-0 group-hover/media:opacity-100 font-bold">x</button></div>}
+          {question.prompt.audioUrl && <div className="relative group/media"><audio src={question.prompt.audioUrl} controls className="h-10" /><button onClick={() => removeMedia('audioUrl')} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] opacity-0 group-hover/media:opacity-100 font-bold">x</button></div>}
+          {question.prompt.videoUrl && <div className="relative group/media"><video src={question.prompt.videoUrl} className="h-20 rounded-lg object-cover" /><button onClick={() => removeMedia('videoUrl')} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] opacity-0 group-hover/media:opacity-100 font-bold">x</button></div>}
+        </div>
+      )}
+
+      <div className="border-t border-slate-100 pt-5 ml-7">
+        { /* Type specifics */ }
+        {(question.type === "mcq" || question.type === "multi-correct") && (
+          <div className="space-y-3">
+            {question.type === "multi-correct" && (
+               <div className="mb-3 flex items-center gap-2 bg-indigo-50 p-3 rounded-lg border border-indigo-100">
+                 <input type="checkbox" id={`pm-${question.id}`} checked={question.partialMarking || false} onChange={e => onChange({ ...question, partialMarking: e.target.checked })} className="w-4 h-4 text-indigo-600 rounded border-indigo-300 focus:ring-indigo-500" />
+                 <label htmlFor={`pm-${question.id}`} className="text-sm font-bold text-indigo-900 cursor-pointer">Enable Partial Marking</label>
+                 <span className="text-xs text-indigo-600 ml-1">(Points are divided evenly among correct options. Wrong choices yield 0 partial points overall.)</span>
+               </div>
+            )}
+            {(question.options || []).map((opt, oIdx) => (
+              <div key={oIdx} className="flex items-center gap-3 group/opt">
+                {question.type === "mcq" ? (
+                  <input type="radio" name={`corr-${question.id}`} checked={question.correctIndex === oIdx} onChange={() => onChange({ ...question, correctIndex: oIdx })} className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 cursor-pointer" />
+                ) : (
+                  <input type="checkbox" checked={(question.correctIndices || []).includes(oIdx)} onChange={() => {
+                     const curr = question.correctIndices || [];
+                     onChange({ ...question, correctIndices: curr.includes(oIdx) ? curr.filter(i => i !== oIdx) : [...curr, oIdx] })
+                  }} className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer" />
+                )}
+                <div className="flex-1 flex bg-slate-50 border-2 border-slate-100 rounded-lg overflow-hidden focus-within:border-indigo-400 transition-colors">
+                  <input value={opt.text || ""} onChange={e => {
+                    const newOpts = [...(question.options || [])];
+                    newOpts[oIdx] = { ...newOpts[oIdx], text: e.target.value };
+                    onChange({ ...question, options: newOpts });
+                  }} className="flex-1 px-4 py-2 text-sm bg-transparent outline-none" placeholder={`Option ${oIdx + 1}`} />
+                  
+                  {opt.imageUrl && <div className="p-1"><img src={opt.imageUrl} alt="" className="h-8 rounded" /></div>}
+                  
+                  <label className="flex items-center justify-center px-3 bg-slate-100 hover:bg-slate-200 cursor-pointer transition-colors" title="Add Image to Option">
+                     🖼 <input type="file" accept="image/*" className="hidden" onChange={e => e.target.files?.[0] && handleMediaUpload(e.target.files[0], 'imageUrl', oIdx)} />
+                  </label>
+                </div>
+                
+                <button onClick={() => {
+                  const newOpts = [...(question.options || [])];
+                  newOpts.splice(oIdx, 1);
+                  let newIdx = question.correctIndex || 0;
+                  if (question.type === "mcq" && newIdx === oIdx) newIdx = 0;
+                  if (question.type === "mcq" && newIdx > oIdx) newIdx -= 1;
+                  
+                  let newIndices = [...(question.correctIndices || [])];
+                  if (question.type === "multi-correct") {
+                     newIndices = newIndices.filter(i => i !== oIdx).map(i => i > oIdx ? i - 1 : i);
+                  }
+                  onChange({ ...question, options: newOpts, correctIndex: newIdx, correctIndices: newIndices });
+                }} className="text-slate-400 hover:text-red-500 px-2 py-2 opacity-0 group-hover/opt:opacity-100 transition-all font-bold" title="Remove Option">✕</button>
+              </div>
+            ))}
+            <button onClick={() => onChange({ ...question, options: [...(question.options || []), { text: "" }] })} className="text-sm text-indigo-600 font-bold hover:text-indigo-800 flex items-center gap-1 mt-2"><span>+</span> Add Option</button>
           </div>
+        )}
 
-          {(qType === "mcq" || qType === "multi-correct") && (
-            <div className="space-y-2 mb-3">
-              <label className="text-sm font-bold text-slate-600">Options ({qType === "mcq" ? "select one correct" : "check all correct"})</label>
-              {qOptions.map((opt, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  {qType === "mcq" ? <input type="radio" name="correct" checked={qCorrectIdx === i} onChange={() => setQCorrectIdx(i)} /> : <input type="checkbox" checked={qCorrectIndices.includes(i)} onChange={() => toggleIdx(i)} />}
-                  <input value={opt.text} onChange={e => { const o = [...qOptions]; o[i] = { ...o[i], text: e.target.value }; setQOptions(o); }} className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder={`Option ${String.fromCharCode(65 + i)}`} />
-                  <input type="file" accept="image/*" onChange={e => { const o = [...qOptions]; o[i] = { ...o[i], imageFile: e.target.files?.[0] || null }; setQOptions(o); }} className="w-24 text-[10px] file:py-0.5 file:px-1 file:rounded file:border-0 file:bg-slate-100 file:text-slate-600 file:text-[10px]" title="Option image" />
-                </div>
-              ))}
-              <button onClick={() => setQOptions([...qOptions, { text: "" }])} className="text-xs text-indigo-600 font-bold hover:text-indigo-800">+ Add Option</button>
-            </div>
-          )}
-          {qType === "fill-blank" && (<div className="mb-3"><label className="text-sm font-bold text-slate-600 block mb-1">Correct Answer</label><input value={qFillAnswer} onChange={e => setQFillAnswer(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" /></div>)}
-          {(qType === "matching" || qType === "drag-drop") && (
-            <div className="grid grid-cols-2 gap-3 mb-3">
-              <div><label className="text-sm font-bold text-slate-600 block mb-1">{qType === "matching" ? "Left Items" : "Items"} (comma-separated)</label><input value={qMatchLeft} onChange={e => setQMatchLeft(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="Dog, Cat, Duck" /></div>
-              <div><label className="text-sm font-bold text-slate-600 block mb-1">{qType === "matching" ? "Right Items" : "Targets"} (matching order)</label><input value={qMatchRight} onChange={e => setQMatchRight(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="Bark, Meow, Quack" /></div>
-            </div>
-          )}
-          {qType === "theory" && (
-            <div className="space-y-3 mb-3">
-              <div><label className="text-sm font-bold text-slate-600 block mb-1">Sample Answer</label><textarea value={qSampleAnswer} onChange={e => setQSampleAnswer(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-24 resize-y" placeholder="Reference answer..." /></div>
-              <div><label className="text-sm font-bold text-slate-600 block mb-1">Max Words (optional)</label><input type="number" value={qMaxWords} onChange={e => setQMaxWords(e.target.value ? parseInt(e.target.value) : "")} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="e.g. 200" /></div>
-            </div>
-          )}
+        {question.type === "fill-blank" && (
+           <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+             <label className="text-sm font-bold text-slate-700 block mb-2">Correct Answer (Exact Match)</label>
+             <input value={question.correctAnswer || ""} onChange={e => onChange({ ...question, correctAnswer: e.target.value })} className="w-full px-4 py-3 rounded-lg border-2 border-slate-100 text-base font-medium focus:border-indigo-400 outline-none" placeholder="Enter the exact answer" />
+           </div>
+        )}
 
-          <button onClick={addQuestion} disabled={uploading} className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold text-sm disabled:opacity-50">{uploading ? "Uploading Media..." : "+ Add Question"}</button>
+        {(question.type === "matching" || question.type === "drag-drop") && (
+          <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
+             <div className="grid grid-cols-2 gap-4">
+               <div>
+                 <label className="text-xs font-bold text-slate-500 mb-1 block">Left Items (comma separated)</label>
+                 <input value={(question.leftItems || []).map(i => i.text).join(", ")} onChange={e => {
+                    const parts = e.target.value.split(",");
+                    onChange({ ...question, leftItems: parts.map(t => ({text:t.trim()})) })
+                 }} className="w-full px-3 py-2 rounded-lg border-2 border-slate-100 text-sm outline-none focus:border-indigo-400" placeholder="Apple, Banana, Car" />
+               </div>
+               <div>
+                 <label className="text-xs font-bold text-slate-500 mb-1 block">Right Items / Targets (comma separated)</label>
+                 <input value={(question.rightItems || []).map(i => i.text).join(", ")} onChange={e => {
+                    const parts = e.target.value.split(",");
+                    onChange({ ...question, rightItems: parts.map(t => ({text:t.trim()})) })
+                 }} className="w-full px-3 py-2 rounded-lg border-2 border-slate-100 text-sm outline-none focus:border-indigo-400" placeholder="Fruit, Fruit, Vehicle" />
+               </div>
+             </div>
+             <div>
+               <label className="text-xs font-bold text-slate-500 mb-1 flex justify-between items-center">
+                 <span>Correct Mapping Configuration (JSON)</span>
+               </label>
+               <input value={JSON.stringify(question.correctPairs || {})} onChange={e => {
+                  try { const parsed = JSON.parse(e.target.value); onChange({ ...question, correctPairs: parsed }); } catch (e) {}
+               }} className="w-full px-3 py-2 rounded-lg border-2 border-slate-100 text-sm font-mono bg-slate-100 focus:bg-white focus:border-indigo-400 outline-none" placeholder='{"Apple":"Fruit", "Banana":"Fruit"}' />
+             </div>
+          </div>
+        )}
 
-          {questions.length > 0 && (
-            <div className="mt-3 space-y-1">
-              {questions.map((q, i) => (
-                <div key={q.id} className="flex items-center gap-2 text-sm bg-white rounded-lg px-3 py-2 border border-slate-100">
-                  <span className="text-xs font-bold text-slate-400 bg-slate-50 rounded px-2 py-0.5 uppercase">{q.type}</span>
-                  <span className="text-slate-700 flex-1 truncate">{q.prompt.text}</span>
-                  {q.prompt.imageUrl && <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded" title="Has image">img</span>}
-                  {q.prompt.audioUrl && <span className="text-xs bg-violet-100 text-violet-700 px-1 rounded" title="Has audio">aud</span>}
-                  {q.prompt.videoUrl && <span className="text-xs bg-amber-100 text-amber-700 px-1 rounded" title="Has video">vid</span>}
-                  <button onClick={() => setQuestions(questions.filter((_, j) => j !== i))} className="text-red-400 hover:text-red-600 text-xs font-bold">x</button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        {question.type === "theory" && (
+          <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+             <label className="text-sm font-bold text-slate-700 block mb-2">Reference Answer / Grading Rubric</label>
+             <textarea value={question.sampleAnswer || ""} onChange={e => onChange({ ...question, sampleAnswer: e.target.value })} className="w-full px-4 py-3 rounded-lg border-2 border-slate-100 text-sm font-medium focus:border-indigo-400 outline-none h-24 resize-y mb-3" placeholder="What the student should roughly cover..." />
+             <div className="flex items-center gap-2">
+               <label className="text-xs font-bold text-slate-500">Suggested Max Word Count:</label>
+               <input type="number" min="0" value={question.maxWords || ""} onChange={e => onChange({ ...question, maxWords: e.target.value ? parseInt(e.target.value) : undefined })} className="w-24 px-3 py-1.5 rounded-lg border-2 border-slate-100 text-sm outline-none focus:border-indigo-400" placeholder="e.g. 250" />
+             </div>
+          </div>
+        )}
+      </div>
 
-        <div className="flex gap-2">
-          <button onClick={handleSave} disabled={questions.length === 0} className={`px-4 py-2 rounded-lg font-bold text-sm ${questions.length > 0 ? "bg-emerald-600 text-white" : "bg-slate-200 text-slate-400"}`}>Save {label} ({questions.length} questions)</button>
-          <button onClick={() => { onClose(); setQuestions([]); }} className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg font-bold text-sm">Cancel</button>
-        </div>
+      <div className="mt-4 pt-4 ml-7">
+         <div className="flex items-start gap-2 bg-slate-50 rounded-lg p-1 border-2 border-transparent focus-within:border-indigo-200 transition-colors">
+            <span className="text-lg p-2 opacity-50">💡</span>
+            <input value={question.explanation || ""} onChange={e => onChange({ ...question, explanation: e.target.value })} className="w-full bg-transparent py-2.5 text-sm outline-none font-medium text-slate-700 placeholder:text-slate-400" placeholder="Add answer feedback / explanation (shows after they submit)" />
+         </div>
       </div>
     </div>
   );
