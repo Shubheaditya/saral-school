@@ -567,21 +567,24 @@ function AddNotesForm({ subjectId, semesterId, chapterId, order, app, onClose }:
 
     let finalPdfUrl = "";
     if (file) {
-      if (!isSupabaseConfigured) {
-        alert("Cannot upload file: Supabase is not configured (missing environment variables).");
-        setUploading(false);
-        return;
-      }
-      const fileName = `notes/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-      const { data, error } = await supabase.storage.from('saral_files').upload(fileName, file);
-      if (error) {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      try {
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!res.ok) throw new Error('Failed to upload file');
+        
+        const data = await res.json();
+        finalPdfUrl = data.url;
+      } catch (error) {
         console.error("File upload failed:", error);
-        alert(`Failed to upload document to Supabase Storage: ${error.message}\nEnsure 'saral_files' bucket exists and RLS policies allow inserts.`);
+        alert(`Failed to upload document to Cloudinary. Please try again.`);
         setUploading(false);
         return;
-      }
-      if (data) {
-        finalPdfUrl = supabase.storage.from('saral_files').getPublicUrl(fileName).data.publicUrl;
       }
     }
 
@@ -683,11 +686,20 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
   const [uploading, setUploading] = useState(false);
 
   const uploadFile = async (file: File, folder: string): Promise<string | null> => {
-    if (!isSupabaseConfigured) { alert("Cannot upload: Supabase not configured."); return null; }
-    const fileName = `${folder}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-    const { error } = await supabase.storage.from('saral_files').upload(fileName, file);
-    if (error) { alert(`Upload failed: ${error.message}`); return null; }
-    return supabase.storage.from('saral_files').getPublicUrl(fileName).data.publicUrl;
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      if (!res.ok) throw new Error('Failed to upload file');
+      const data = await res.json();
+      return data.url;
+    } catch (error: any) {
+      alert(`Upload failed: ${error.message}`);
+      return null;
+    }
   };
 
   const addQuestion = async () => {
