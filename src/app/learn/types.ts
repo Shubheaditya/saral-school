@@ -116,6 +116,12 @@ export interface MediaBlock {
 
 export type QuestionType = "mcq" | "multi-correct" | "fill-blank" | "drag-drop" | "matching" | "theory";
 
+export interface GradingRule {
+  mode: "all-or-nothing" | "jee-style" | "linear";
+  partialMarks?: number;   // +X per correct option (for jee-style or linear)
+  penaltyMarks?: number;   // -Y for selecting wrong options (flat for jee, per-option for linear)
+}
+
 // Unified question interface that covers ALL question types
 export interface UniversalQuestion {
   id: string;
@@ -139,7 +145,8 @@ export interface UniversalQuestion {
 
   // Extended Google-Forms style options
   points?: number;               // Points awarded for a fully correct answer (default 10)
-  partialMarking?: boolean;      // For multi-correct: if true, award partial points
+  partialMarking?: boolean;      // Legacy: For multi-correct: if true, award partial points
+  gradingRule?: GradingRule;     // Advanced grading configuration for multi-correct
 
   // Theory / Long-answer
   sampleAnswer?: string;         // Reference answer shown after submission

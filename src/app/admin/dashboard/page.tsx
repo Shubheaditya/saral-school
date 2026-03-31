@@ -857,10 +857,38 @@ function QuestionEditorCard({ question, index, onChange, onDelete, uploadFile, u
         {(question.type === "mcq" || question.type === "multi-correct") && (
           <div className="space-y-3">
             {question.type === "multi-correct" && (
-               <div className="mb-3 flex items-center gap-2 bg-indigo-50 p-3 rounded-lg border border-indigo-100">
-                 <input type="checkbox" id={`pm-${question.id}`} checked={question.partialMarking || false} onChange={e => onChange({ ...question, partialMarking: e.target.checked })} className="w-4 h-4 text-indigo-600 rounded border-indigo-300 focus:ring-indigo-500" />
-                 <label htmlFor={`pm-${question.id}`} className="text-sm font-bold text-indigo-900 cursor-pointer">Enable Partial Marking</label>
-                 <span className="text-xs text-indigo-600 ml-1">(Points are divided evenly among correct options. Wrong choices yield 0 partial points overall.)</span>
+               <div className="mb-3 flex flex-col gap-2 bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                 <label className="text-sm font-bold text-indigo-900 mb-1">Grading Logic</label>
+                 <select 
+                   value={question.gradingRule?.mode || (question.partialMarking ? "linear" : "all-or-nothing")} 
+                   onChange={e => {
+                     const mode = e.target.value as "all-or-nothing" | "jee-style" | "linear";
+                     if (mode === "all-or-nothing") onChange({ ...question, partialMarking: false, gradingRule: { mode } });
+                     else onChange({ ...question, partialMarking: true, gradingRule: { mode, partialMarks: 1, penaltyMarks: 1 } });
+                   }}
+                   className="w-full px-3 py-2 rounded-lg border border-indigo-200 text-sm bg-white focus:border-indigo-400 outline-none font-medium"
+                 >
+                   <option value="all-or-nothing">All or Nothing (Full pts only if perfectly correct)</option>
+                   <option value="jee-style">JEE Style (Partial sum if no wrong options selected, flat penalty otherwise)</option>
+                   <option value="linear">Linear (+Pts per correct option, -Pts per wrong option)</option>
+                 </select>
+
+                 {(question.gradingRule?.mode === "jee-style" || question.gradingRule?.mode === "linear" || (question.partialMarking && !question.gradingRule)) && (
+                   <div className="grid grid-cols-2 gap-3 mt-2">
+                     <div>
+                       <label className="text-xs font-bold text-indigo-700 block mb-1">Points per correct option (+)</label>
+                       <input type="number" min="0" step="any" value={question.gradingRule?.partialMarks !== undefined ? question.gradingRule.partialMarks : 1} onChange={e => {
+                           onChange({ ...question, gradingRule: { ...question.gradingRule!, mode: question.gradingRule?.mode || "linear", partialMarks: parseFloat(e.target.value) || 0 } })
+                       }} className="w-full px-3 py-1.5 rounded-lg border border-indigo-200 text-sm outline-none bg-white" />
+                     </div>
+                     <div>
+                       <label className="text-xs font-bold text-indigo-700 block mb-1">{question.gradingRule?.mode === "jee-style" ? "Flat Penalty if ANY wrong (-)" : "Penalty per wrong option (-)"}</label>
+                       <input type="number" min="0" step="any" value={question.gradingRule?.penaltyMarks !== undefined ? question.gradingRule.penaltyMarks : (question.gradingRule?.mode === "jee-style" ? 1 : 0)} onChange={e => {
+                           onChange({ ...question, gradingRule: { ...question.gradingRule!, mode: question.gradingRule?.mode || "linear", penaltyMarks: parseFloat(e.target.value) || 0 } })
+                       }} className="w-full px-3 py-1.5 rounded-lg border border-indigo-200 text-sm outline-none bg-white" />
+                     </div>
+                   </div>
+                 )}
                </div>
             )}
             {(question.options || []).map((opt, oIdx) => (

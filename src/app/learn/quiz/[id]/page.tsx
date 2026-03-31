@@ -66,7 +66,32 @@ export default function QuizPage() {
         const selected = (answer as number[]) || [];
         const expected = q.correctIndices || [];
         
-        if (q.partialMarking) {
+        if (q.gradingRule) {
+           const correctlySelected = selected.filter(idx => expected.includes(idx)).length;
+           const incorrectlySelected = selected.filter(idx => !expected.includes(idx)).length;
+           const mode = q.gradingRule.mode;
+           const pPoints = q.gradingRule.partialMarks ?? 1;
+           const nPenalty = q.gradingRule.penaltyMarks ?? 0;
+
+           if (mode === "all-or-nothing") {
+              correct = selected.length === expected.length && correctlySelected === expected.length;
+              pointsEarned = correct ? maxPoints : 0;
+           } else if (mode === "jee-style") {
+              if (incorrectlySelected > 0) {
+                 pointsEarned = -nPenalty; // flat penalty
+                 correct = false;
+              } else if (correctlySelected === expected.length) {
+                 pointsEarned = maxPoints; // perfectly correct
+                 correct = true;
+              } else {
+                 pointsEarned = correctlySelected * pPoints; // partial points
+                 correct = false;
+              }
+           } else if (mode === "linear") {
+              pointsEarned = (correctlySelected * pPoints) - (incorrectlySelected * nPenalty); // math based
+              correct = (correctlySelected === expected.length && incorrectlySelected === 0);
+           }
+        } else if (q.partialMarking) {
           if (expected.length === 0) {
              correct = selected.length === 0;
              pointsEarned = correct ? maxPoints : 0;
@@ -123,7 +148,7 @@ export default function QuizPage() {
       setTheoryText("");
     } else {
       const finalScore = score;
-      const pointsEarned = totalPointsEarned;
+      const pointsEarned = Math.max(0, totalPointsEarned);
       const gemsEarned = finalScore === totalQ ? 5 : Math.floor(finalScore / 2);
       addPoints(pointsEarned);
       addGems(gemsEarned);
@@ -136,8 +161,8 @@ export default function QuizPage() {
   // Finished screen
   if (finished) {
     const totalPossiblePoints = quiz.questions.reduce((sum, q) => sum + (q.points || 10), 0);
-    const percentage = Math.round((totalPointsEarned / (totalPossiblePoints || 1)) * 100);
-    const pointsEarned = totalPointsEarned;
+    const finalPointsEarned = Math.max(0, totalPointsEarned);
+    const percentage = Math.round((finalPointsEarned / (totalPossiblePoints || 1)) * 100);
     const gemsEarned = score === totalQ ? 5 : Math.floor(score / 2);
 
     return (
@@ -163,7 +188,7 @@ export default function QuizPage() {
           </div>
           <div className="grid grid-cols-2 gap-3 mb-6">
             <div className={`${isDark ? 'bg-amber-500/10 border-amber-500/20' : 'bg-amber-50 border-amber-100'} rounded-xl p-3 border`}>
-              <p className={`text-2xl font-bold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>⭐ +{pointsEarned}</p>
+              <p className={`text-2xl font-bold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>⭐ +{finalPointsEarned}</p>
               <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Points</p>
             </div>
             <div className={`${isDark ? 'bg-indigo-500/10 border-indigo-500/20' : 'bg-indigo-50 border-indigo-100'} rounded-xl p-3 border`}>
