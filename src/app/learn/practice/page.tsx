@@ -139,7 +139,7 @@ export default function PracticePage() {
                           <span className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-black transition-colors ${user.ageGroup === 'kids' ? 'bg-indigo-100 text-indigo-600' : isDark ? 'bg-indigo-500/20 text-indigo-400 group-hover:bg-indigo-500/40' : 'bg-indigo-50 text-indigo-600 group-hover:bg-indigo-100'}`}>▶</span>
                           <div className="flex-1">
                             <p className="font-bold text-base">{quiz.title}</p>
-                            <p className={`text-xs mt-0.5 ${isDark || user.ageGroup === 'explorer' ? 'text-slate-400' : 'text-slate-500'}`}>{quiz.questions.length} questions • <span className={isDark ? 'text-amber-400' : 'text-amber-600'}>{quiz.totalMarks} Marks</span></p>
+                            <p className={`text-xs mt-0.5 ${isDark || user.ageGroup === 'explorer' ? 'text-slate-400' : 'text-slate-500'}`}>{quiz.questions.length} questions • <span className={isDark ? 'text-amber-400' : 'text-amber-600'}>{quiz.totalPoints} pts</span></p>
                           </div>
                         </button>
                       ))}

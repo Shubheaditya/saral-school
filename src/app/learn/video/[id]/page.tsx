@@ -28,7 +28,7 @@ export default function VideoPage() {
   const videoId = params.id as string;
   const { currentUser } = useAuth();
   const { getVideoById } = useApp();
-  const { completeVideo, checkAndAwardBadges } = useGamification();
+  const { completeVideo, addPoints, checkAndAwardBadges } = useGamification();
   const { backgroundClass, textClass, isDark } = useUniversalTheme();
 
   const video = getVideoById(videoId);
@@ -43,6 +43,7 @@ export default function VideoPage() {
 
   const handleComplete = () => {
     completeVideo(videoId);
+    addPoints(10);
     checkAndAwardBadges();
     setCompleted(true);
   };
@@ -110,7 +111,7 @@ export default function VideoPage() {
                 onClick={handleComplete}
                 className="flex-1 py-3 bg-emerald-600 text-white rounded-2xl font-bold shadow-lg shadow-emerald-200 bouncy-hover"
               >
-                ✅ Mark as Complete
+                ✅ Mark as Complete (+10 pts)
               </button>
             ) : (
               <div className="flex-1 py-3 bg-emerald-100 text-emerald-700 rounded-2xl font-bold text-center">

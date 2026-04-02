@@ -259,7 +259,7 @@ export const MOCK_QUIZ: Quiz = {
   description: "Test your basic math skills!",
   questions: MOCK_QUIZ_QUESTIONS,
   mode: "quiz",
-  totalMarks: 50,
+  totalPoints: 50,
 };
 
 // ============================================================
@@ -274,7 +274,7 @@ export const DEFAULT_BADGES: Badge[] = [
   { id: "seven-streak", name: "Week Warrior", description: "Maintain a 7-day streak", icon: "⚡", requirement: "7-day streak", earned: false },
   { id: "first-video", name: "Video Watcher", description: "Watch your first video lecture", icon: "📹", requirement: "Watch 1 video", earned: false },
   { id: "all-subjects", name: "Explorer", description: "Try all 6 subjects", icon: "🗺️", requirement: "Access all 6 subjects", earned: false },
-  { id: "hundred-points", name: "Century", description: "Earn 100 marks", icon: "📝", requirement: "Earn 100 marks", earned: false },
+  { id: "hundred-points", name: "Century", description: "Earn 100 points", icon: "💎", requirement: "Earn 100 points", earned: false },
 ];
 
 // ============================================================
@@ -282,12 +282,12 @@ export const DEFAULT_BADGES: Badge[] = [
 // ============================================================
 
 export const MOCK_SCOREBOARD: ScoreboardEntry[] = [
-  { userId: "mock-1", name: "Aarav", avatarIndex: 0, totalMarks: 1250, rank: 1 },
-  { userId: "mock-2", name: "Priya", avatarIndex: 3, totalMarks: 1100, rank: 2 },
-  { userId: "mock-3", name: "Rahul", avatarIndex: 1, totalMarks: 980, rank: 3 },
-  { userId: "mock-4", name: "Ananya", avatarIndex: 6, totalMarks: 870, rank: 4 },
-  { userId: "mock-5", name: "Vikram", avatarIndex: 2, totalMarks: 750, rank: 5 },
-  { userId: "mock-6", name: "Diya", avatarIndex: 7, totalMarks: 620, rank: 6 },
-  { userId: "mock-7", name: "Arjun", avatarIndex: 4, totalMarks: 510, rank: 7 },
-  { userId: "mock-8", name: "Meera", avatarIndex: 5, totalMarks: 430, rank: 8 },
+  { userId: "mock-1", name: "Aarav", avatarIndex: 0, points: 1250, rank: 1 },
+  { userId: "mock-2", name: "Priya", avatarIndex: 3, points: 1100, rank: 2 },
+  { userId: "mock-3", name: "Rahul", avatarIndex: 1, points: 980, rank: 3 },
+  { userId: "mock-4", name: "Ananya", avatarIndex: 6, points: 870, rank: 4 },
+  { userId: "mock-5", name: "Vikram", avatarIndex: 2, points: 750, rank: 5 },
+  { userId: "mock-6", name: "Diya", avatarIndex: 7, points: 620, rank: 6 },
+  { userId: "mock-7", name: "Arjun", avatarIndex: 4, points: 510, rank: 7 },
+  { userId: "mock-8", name: "Meera", avatarIndex: 5, points: 430, rank: 8 },
 ];

@@ -267,7 +267,7 @@ export default function HowItWorks() {
                             {
                                 icon: "🏆",
                                 title: "Scoreboard & Gamification",
-                                desc: "Badges and streaks provide constant positive reinforcement for completing lessons and earning marks.",
+                                desc: "Ranked leaderboard with \"Friends\" and \"Global\" views. Each entry shows rank, avatar, name, and points. Badges, streaks, and gems provide constant positive reinforcement.",
                                 color: "bg-amber-50 border-amber-100",
                             },
                             {

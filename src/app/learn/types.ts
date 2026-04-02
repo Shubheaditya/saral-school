@@ -116,12 +116,6 @@ export interface MediaBlock {
 
 export type QuestionType = "mcq" | "multi-correct" | "fill-blank" | "drag-drop" | "matching" | "theory";
 
-export interface GradingRule {
-  mode: "all-or-nothing" | "jee-style" | "linear";
-  partialMarks?: number;   // +X per correct option (for jee-style or linear)
-  penaltyMarks?: number;   // -Y for selecting wrong options (flat for jee, per-option for linear)
-}
-
 // Unified question interface that covers ALL question types
 export interface UniversalQuestion {
   id: string;
@@ -142,11 +136,6 @@ export interface UniversalQuestion {
   leftItems?: MediaBlock[];
   rightItems?: MediaBlock[];
   correctPairs?: Record<string, string>; // Maps left text → right text
-
-  // Extended Google-Forms style options
-  marks?: number;               // Marks awarded for a fully correct answer (default 10)
-  partialMarking?: boolean;      // Legacy: For multi-correct: if true, award partial points
-  gradingRule?: GradingRule;     // Advanced grading configuration for multi-correct
 
   // Theory / Long-answer
   sampleAnswer?: string;         // Reference answer shown after submission
@@ -206,7 +195,7 @@ export interface Quiz {
   description: string;
   questions: UniversalQuestion[];
   mode: "quiz" | "chapter-test" | "brain-game";
-  totalMarks: number;
+  totalPoints: number;
 }
 
 // --- Gamification ---
@@ -222,7 +211,8 @@ export interface Badge {
 }
 
 export interface GamificationState {
-  totalMarks: number;
+  points: number;
+  gems: number;
   currentStreak: number;
   longestStreak: number;
   lastActiveDate: string;
@@ -274,7 +264,7 @@ export interface ScoreboardEntry {
   userId: string;
   name: string;
   avatarIndex: number;
-  totalMarks: number;
+  points: number;
   rank: number;
 }
 

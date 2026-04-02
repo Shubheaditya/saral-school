@@ -5,7 +5,8 @@ import { GamificationState, Badge } from "../types";
 import { DEFAULT_BADGES } from "../mockData";
 
 interface GamificationContextType extends GamificationState {
-  addMarks: (amount: number) => void;
+  addPoints: (amount: number) => void;
+  addGems: (amount: number) => void;
   updateStreak: () => void;
   completeQuiz: (quizId: string) => void;
   completeVideo: (videoId: string) => void;
@@ -19,7 +20,8 @@ const STORAGE_KEY = "saral_gamification";
 
 function getDefaultState(): GamificationState {
   return {
-    totalMarks: 0,
+    points: 0,
+    gems: 0,
     currentStreak: 0,
     longestStreak: 0,
     lastActiveDate: "",
@@ -53,8 +55,12 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     }
   }, [state, loaded]);
 
-  const addMarks = useCallback((amount: number) => {
-    setState((prev) => ({ ...prev, totalMarks: prev.totalMarks + amount }));
+  const addPoints = useCallback((amount: number) => {
+    setState((prev) => ({ ...prev, points: prev.points + amount }));
+  }, []);
+
+  const addGems = useCallback((amount: number) => {
+    setState((prev) => ({ ...prev, gems: prev.gems + amount }));
   }, []);
 
   const updateStreak = useCallback(() => {
@@ -124,7 +130,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
             shouldEarn = prev.completedVideos.length >= 1;
             break;
           case "hundred-points":
-            shouldEarn = prev.totalMarks >= 100;
+            shouldEarn = prev.points >= 100;
             break;
         }
 
@@ -143,7 +149,8 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     <GamificationContext.Provider
       value={{
         ...state,
-        addMarks,
+        addPoints,
+        addGems,
         updateStreak,
         completeQuiz,
         completeVideo,
