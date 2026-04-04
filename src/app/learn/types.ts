@@ -116,12 +116,22 @@ export interface MediaBlock {
 
 export type QuestionType = "mcq" | "multi-correct" | "fill-blank" | "drag-drop" | "matching" | "theory";
 
+// Per-question marking scheme
+export interface MarkingScheme {
+  maxMarks: number;                           // Total marks for this question
+  negativeMarks?: number;                     // Marks deducted for each wrong answer (positive = subtracted)
+  multiCorrectMode?: "all-or-nothing" | "partial"; // How to score multi-correct questions
+  // "all-or-nothing": Full marks only if ALL correct options selected, else 0 (or negative if negative marking on)
+  // "partial": Each correct selected option gives (maxMarks / numCorrect), wrong selected deducts negativeMarks
+}
+
 // Unified question interface that covers ALL question types
 export interface UniversalQuestion {
   id: string;
   type: QuestionType;
   prompt: MediaBlock;            // The question itself (text + optional media)
   explanation?: string;
+  markingScheme?: MarkingScheme; // Per-question marks & grading rules
 
   // MCQ / Multi-correct
   options?: MediaBlock[];        // Each option can have text/image/audio/video
@@ -195,7 +205,8 @@ export interface Quiz {
   description: string;
   questions: UniversalQuestion[];
   mode: "quiz" | "chapter-test" | "brain-game";
-  totalPoints: number;
+  totalMarks: number; // Auto-calculated sum of all question maxMarks
+  totalPoints?: number; // Legacy field kept for backward compatibility
 }
 
 // --- Gamification ---

@@ -260,6 +260,7 @@ export const MOCK_QUIZ: Quiz = {
   questions: MOCK_QUIZ_QUESTIONS,
   mode: "quiz",
   totalPoints: 50,
+  totalMarks: 50,
 };
 
 // ============================================================

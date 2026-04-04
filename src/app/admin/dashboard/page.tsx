@@ -277,7 +277,7 @@ function ChaptersScreen({ subject, semesterId, addChapter, deleteChapter, onOpen
 
       {semester.chapters.length === 0 ? (
         <div className="bg-white rounded-xl p-12 border border-dashed border-slate-300 text-center">
-          <span className="text-4xl block mb-2">📂</span>
+          <span className="text-4xl block mb-2">ðŸ“‚</span>
           <p className="text-slate-500">No chapters yet. Click &quot;Add Chapter&quot; to create your first chapter.</p>
         </div>
       ) : (
@@ -395,7 +395,7 @@ function ChapterDetailScreen({ subject, semesterId, chapterId, app }: {
 
       {items.length === 0 && !addingType ? (
         <div className="bg-white rounded-xl p-12 border border-dashed border-slate-300 text-center">
-          <span className="text-4xl block mb-2">📦</span>
+          <span className="text-4xl block mb-2">ðŸ“¦</span>
           <p className="text-slate-500 mb-3">No content yet. Add videos, notes, quizzes, tests, or formula sheets.</p>
           <button onClick={() => setShowAddMenu(true)} className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold text-sm">+ Add Content</button>
         </div>
@@ -524,7 +524,7 @@ function AddVideoForm({ subjectId, semesterId, chapterId, order, app, onClose }:
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-sm font-bold text-slate-600 block mb-1">🔗 YouTube / Video Link</label>
+            <label className="text-sm font-bold text-slate-600 block mb-1">ðŸ”— YouTube / Video Link</label>
             <input value={videoUrl} onChange={e => setVideoUrl(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="https://youtube.com/..." disabled={!!file} />
           </div>
           <div>
@@ -610,7 +610,7 @@ function AddNotesForm({ subjectId, semesterId, chapterId, order, app, onClose }:
         <div>
           <label className="text-sm font-bold text-slate-600 block mb-1">Upload Note Document (PDF, Image, Word)</label>
           <input type="file" accept=".pdf,.doc,.docx,image/*" onChange={handleFileUpload} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-emerald-50 file:text-emerald-700 font-bold hover:file:bg-emerald-100" />
-          {file && <p className="text-xs text-emerald-600 font-bold mt-1">âœ“ Document Selected: {file.name}</p>}
+          {file && <p className="text-xs text-emerald-600 font-bold mt-1">Ã¢Å“â€œ Document Selected: {file.name}</p>}
         </div>
         <div className="flex gap-2 pt-2">
           <button onClick={handleSave} disabled={uploading} className="px-4 py-2 bg-emerald-600 text-white rounded-lg font-bold text-sm disabled:opacity-50">
@@ -660,7 +660,35 @@ function AddFormulaSheetForm({ subjectId, semesterId, chapterId, order, app, onC
   );
 }
 
+
+
 // ==================== ADD QUIZ/TEST FORM ====================
+// Blank question template
+function blankQuestion() {
+  return {
+    id: `q-${Date.now()}-${Math.random()}`,
+    type: "mcq" as QuestionType,
+    prompt: { text: "" } as { text?: string; imageUrl?: string; audioUrl?: string; videoUrl?: string },
+    options: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }] as { text?: string; imageUrl?: string }[],
+    correctIndex: 0 as number,
+    correctIndices: [] as number[],
+    correctAnswer: "" as string,
+    explanation: "" as string,
+    markingScheme: { maxMarks: 1, negativeMarks: 0, multiCorrectMode: "all-or-nothing" as "all-or-nothing" | "partial" },
+    sampleAnswer: "" as string,
+    maxWords: undefined as number | undefined,
+    leftItems: undefined as { text?: string }[] | undefined,
+    rightItems: undefined as { text?: string }[] | undefined,
+    correctPairs: undefined as Record<string, string> | undefined,
+    _promptImageFile: null as File | null,
+    _promptAudioFile: null as File | null,
+    _promptVideoFile: null as File | null,
+    _optionFiles: [null, null, null, null] as (File | null)[],
+    _matchLeft: "" as string,
+    _matchRight: "" as string,
+  };
+}
+
 function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app, onClose }: {
   subjectId: string; semesterId: string; chapterId: string; order: number;
   mode: "quiz" | "chapter-test"; label: string;
@@ -669,178 +697,305 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [qType, setQType] = useState<QuestionType>("mcq");
-  const [qText, setQText] = useState("");
-  const [qImageFile, setQImageFile] = useState<File | null>(null);
-  const [qAudioFile, setQAudioFile] = useState<File | null>(null);
-  const [qVideoFile, setQVideoFile] = useState<File | null>(null);
-  const [qOptions, setQOptions] = useState<{ text: string; imageFile?: File | null }[]>([{ text: "" }, { text: "" }, { text: "" }, { text: "" }]);
-  const [qCorrectIdx, setQCorrectIdx] = useState(0);
-  const [qCorrectIndices, setQCorrectIndices] = useState<number[]>([]);
-  const [qFillAnswer, setQFillAnswer] = useState("");
-  const [qMatchLeft, setQMatchLeft] = useState("");
-  const [qMatchRight, setQMatchRight] = useState("");
-  const [qExplanation, setQExplanation] = useState("");
-  const [qSampleAnswer, setQSampleAnswer] = useState("");
-  const [qMaxWords, setQMaxWords] = useState<number | "">("");
+  const [editingIdx, setEditingIdx] = useState<number | null>(null);
+  const [builderOpen, setBuilderOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [draft, setDraft] = useState(blankQuestion());
 
-  const uploadFile = async (file: File, folder: string): Promise<string | null> => {
+  const uploadFile = async (file: File): Promise<string | null> => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
     try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      if (!res.ok) throw new Error('Failed to upload file');
-      const data = await res.json();
-      return data.url;
-    } catch (error: any) {
-      alert(`Upload failed: ${error.message}`);
-      return null;
-    }
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      if (!res.ok) throw new Error("Failed to upload");
+      return (await res.json()).url;
+    } catch (e: any) { alert(`Upload failed: ${e.message}`); return null; }
   };
 
-  const addQuestion = async () => {
-    if (!qText.trim()) return;
+  const openNewQuestion = () => { setDraft(blankQuestion()); setEditingIdx(null); setBuilderOpen(true); };
+
+  const openEditQuestion = (idx: number) => {
+    const q = questions[idx];
+    const base = blankQuestion();
+    setDraft({
+      ...base,
+      ...q,
+      markingScheme: (q.markingScheme || base.markingScheme) as ReturnType<typeof blankQuestion>["markingScheme"],
+      _promptImageFile: null, _promptAudioFile: null, _promptVideoFile: null,
+      _optionFiles: (q.options || []).map((): (File | null) => null),
+      _matchLeft: (q.leftItems || []).map((i: { text?: string }) => i.text ?? "").filter(Boolean).join(", "),
+      _matchRight: (q.rightItems || []).map((i: { text?: string }) => i.text ?? "").filter(Boolean).join(", "),
+    } as ReturnType<typeof blankQuestion>);
+
+    setEditingIdx(idx);
+    setBuilderOpen(true);
+  };
+
+  const deleteQuestion = (idx: number) => {
+    setQuestions(prev => prev.filter((_, i) => i !== idx));
+    if (editingIdx === idx) { setBuilderOpen(false); setEditingIdx(null); }
+  };
+
+  const addOption = () => setDraft(prev => ({ ...prev, options: [...(prev.options || []), { text: "" }], _optionFiles: [...(prev._optionFiles || []), null] }));
+
+  const removeOption = (idx: number) => setDraft(prev => ({
+    ...prev,
+    options: (prev.options || []).filter((_, i) => i !== idx),
+    _optionFiles: (prev._optionFiles || []).filter((_, i) => i !== idx),
+    correctIndex: prev.correctIndex === idx ? 0 : (prev.correctIndex || 0) > idx ? (prev.correctIndex || 0) - 1 : prev.correctIndex,
+    correctIndices: (prev.correctIndices || []).filter(i => i !== idx).map(i => i > idx ? i - 1 : i),
+  }));
+
+  const toggleCorrectIdx = (idx: number) => setDraft(prev => ({
+    ...prev,
+    correctIndices: (prev.correctIndices || []).includes(idx)
+      ? (prev.correctIndices || []).filter(i => i !== idx)
+      : [...(prev.correctIndices || []), idx],
+  }));
+
+  const commitQuestion = async () => {
+    if (!draft.prompt.text?.trim()) { alert("Please enter question text."); return; }
+    if ((draft.type === "mcq" || draft.type === "multi-correct") && !(draft.options || []).some(o => o.text?.trim())) {
+      alert("Please add at least one option with text."); return;
+    }
     setUploading(true);
-    let imageUrl: string | undefined, audioUrl: string | undefined, videoUrl: string | undefined;
-    if (qImageFile) imageUrl = (await uploadFile(qImageFile, 'quiz-media')) || undefined;
-    if (qAudioFile) audioUrl = (await uploadFile(qAudioFile, 'quiz-media')) || undefined;
-    if (qVideoFile) videoUrl = (await uploadFile(qVideoFile, 'quiz-media')) || undefined;
 
-    const prompt = { text: qText, imageUrl, audioUrl, videoUrl };
-    let options: { text?: string; imageUrl?: string }[] | undefined;
-    if (qType === "mcq" || qType === "multi-correct") {
-      options = [];
-      for (const opt of qOptions) {
-        let optImg: string | undefined;
-        if (opt.imageFile) optImg = (await uploadFile(opt.imageFile, 'quiz-media')) || undefined;
-        options.push({ text: opt.text, imageUrl: optImg });
+    const q: Question = {
+      id: draft.id, type: draft.type,
+      prompt: { ...draft.prompt },
+      explanation: draft.explanation || undefined,
+      markingScheme: draft.markingScheme,
+      options: (draft.type === "mcq" || draft.type === "multi-correct") ? [...(draft.options || [])] : undefined,
+      correctIndex: draft.type === "mcq" ? draft.correctIndex : undefined,
+      correctIndices: draft.type === "multi-correct" ? [...(draft.correctIndices || [])] : undefined,
+      correctAnswer: draft.type === "fill-blank" ? draft.correctAnswer : undefined,
+      sampleAnswer: draft.type === "theory" ? draft.sampleAnswer : undefined,
+      maxWords: draft.type === "theory" ? draft.maxWords : undefined,
+    };
+
+    if (draft._promptImageFile) q.prompt = { ...q.prompt, imageUrl: (await uploadFile(draft._promptImageFile)) || q.prompt.imageUrl };
+    if (draft._promptAudioFile) q.prompt = { ...q.prompt, audioUrl: (await uploadFile(draft._promptAudioFile)) || q.prompt.audioUrl };
+    if (draft._promptVideoFile) q.prompt = { ...q.prompt, videoUrl: (await uploadFile(draft._promptVideoFile)) || q.prompt.videoUrl };
+
+    if ((draft.type === "mcq" || draft.type === "multi-correct") && draft._optionFiles) {
+      const opts = [...(q.options || [])];
+      for (let i = 0; i < draft._optionFiles.length; i++) {
+        if (draft._optionFiles[i]) {
+          const url = await uploadFile(draft._optionFiles[i]!);
+          if (url && opts[i]) opts[i] = { ...opts[i], imageUrl: url };
+        }
       }
+      q.options = opts;
     }
 
-    const question: Question = { id: `q-${Date.now()}`, type: qType, prompt, explanation: qExplanation || undefined };
-    switch (qType) {
-      case "mcq": question.options = options; question.correctIndex = qCorrectIdx; break;
-      case "multi-correct": question.options = options; question.correctIndices = [...qCorrectIndices]; break;
-      case "fill-blank": question.correctAnswer = qFillAnswer; break;
-      case "matching": case "drag-drop": {
-        const left = qMatchLeft.split(",").map(s => s.trim()).filter(Boolean);
-        const right = qMatchRight.split(",").map(s => s.trim()).filter(Boolean);
-        const pairs: Record<string, string> = {};
-        left.forEach((l, i) => { if (right[i]) pairs[l] = right[i]; });
-        question.leftItems = left.map(t => ({ text: t }));
-        question.rightItems = right.map(t => ({ text: t }));
-        question.correctPairs = pairs;
-        break;
-      }
-      case "theory": question.sampleAnswer = qSampleAnswer; question.maxWords = typeof qMaxWords === "number" ? qMaxWords : undefined; break;
+    if (draft.type === "matching" || draft.type === "drag-drop") {
+      const left = draft._matchLeft.split(",").map(s => s.trim()).filter(Boolean);
+      const right = draft._matchRight.split(",").map(s => s.trim()).filter(Boolean);
+      const pairs: Record<string, string> = {};
+      left.forEach((l, i) => { if (right[i]) pairs[l] = right[i]; });
+      q.leftItems = left.map(t => ({ text: t }));
+      q.rightItems = right.map(t => ({ text: t }));
+      q.correctPairs = pairs;
     }
 
-    setQuestions([...questions, question]);
-    setQText(""); setQImageFile(null); setQAudioFile(null); setQVideoFile(null);
-    setQOptions([{ text: "" }, { text: "" }, { text: "" }, { text: "" }]);
-    setQCorrectIdx(0); setQCorrectIndices([]); setQFillAnswer("");
-    setQMatchLeft(""); setQMatchRight(""); setQExplanation("");
-    setQSampleAnswer(""); setQMaxWords("");
     setUploading(false);
+    if (editingIdx !== null) {
+      setQuestions(prev => prev.map((existing, i) => i === editingIdx ? q : existing));
+    } else {
+      setQuestions(prev => [...prev, q]);
+    }
+    setBuilderOpen(false);
+    setEditingIdx(null);
   };
 
   const handleSave = () => {
     if (!title.trim() || questions.length === 0) return;
     const quizId = `quiz-${Date.now()}`;
-    app.addQuiz({ id: quizId, chapterId, subjectId, title, description, questions, mode, totalPoints: questions.length * 10 });
+    const totalMarks = questions.reduce((sum, q) => sum + (q.markingScheme?.maxMarks || 1), 0);
+    app.addQuiz({ id: quizId, chapterId, subjectId, title, description, questions, mode, totalMarks, totalPoints: totalMarks });
     app.addContentItem(subjectId, semesterId, chapterId, { id: `ci-${Date.now()}`, chapterId, type: mode === "chapter-test" ? "test" : "quiz", order, refId: quizId });
     onClose();
   };
 
-  const toggleIdx = (idx: number) => setQCorrectIndices(prev => prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]);
+  const totalMarks = questions.reduce((sum, q) => sum + (q.markingScheme?.maxMarks || 1), 0);
 
   return (
-    <div className="bg-white rounded-xl p-6 border-2 border-amber-200 mb-4">
-      <h4 className="font-bold text-slate-900 mb-4">{mode === "chapter-test" ? "Test" : "Quiz"} - Add {label}</h4>
-      <div className="space-y-3">
+    <div className="bg-white rounded-xl border-2 border-amber-200 mb-4 overflow-hidden">
+      <div className="bg-amber-50 px-6 py-4 border-b border-amber-100">
+        <h4 className="font-bold text-slate-900 text-lg">{mode === "chapter-test" ? "Create Test" : "Create Quiz"}</h4>
+        <p className="text-xs text-slate-500 mt-1">Build your {label} â€” add questions, set marks per question, and define correct answers</p>
+      </div>
+      <div className="p-6 space-y-5">
+        {/* Title & Description */}
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="text-sm font-bold text-slate-600 block mb-1">Title *</label><input value={title} onChange={e => setTitle(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder={`${label} title`} autoFocus /></div>
-          <div><label className="text-sm font-bold text-slate-600 block mb-1">Description</label><input value={description} onChange={e => setDescription(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="Brief description" /></div>
+          <div><label className="text-sm font-bold text-slate-600 block mb-1">Quiz Title *</label><input value={title} onChange={e => setTitle(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-amber-400" placeholder="e.g. Chapter 3 Quiz" autoFocus /></div>
+          <div><label className="text-sm font-bold text-slate-600 block mb-1">Description (optional)</label><input value={description} onChange={e => setDescription(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-amber-400" placeholder="Brief description" /></div>
         </div>
 
-        <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-          <h5 className="font-bold text-slate-900 mb-3">Questions ({questions.length})</h5>
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <div><label className="text-sm font-bold text-slate-600 block mb-1">Type</label>
-              <select value={qType} onChange={e => setQType(e.target.value as QuestionType)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm">
-                <option value="mcq">Multiple Choice (Single)</option>
-                <option value="multi-correct">Multiple Correct</option>
-                <option value="fill-blank">Fill in the Blank</option>
-                <option value="matching">Matching</option>
-                <option value="drag-drop">Drag and Drop</option>
-                <option value="theory">Theory / Long Answer</option>
-              </select>
-            </div>
-            <div><label className="text-sm font-bold text-slate-600 block mb-1">Explanation (optional)</label><input value={qExplanation} onChange={e => setQExplanation(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="Shown after answering" /></div>
+        {/* Question List */}
+        <div className="bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
+          <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+            <span className="font-bold text-slate-800 text-sm">Questions ({questions.length}) Â· Total: {totalMarks} Marks</span>
+            <button onClick={openNewQuestion} className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors">+ Add Question</button>
           </div>
-          <div className="mb-3"><label className="text-sm font-bold text-slate-600 block mb-1">Question Text *</label><input value={qText} onChange={e => setQText(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="Enter question" /></div>
-
-          <div className="mb-3 p-3 bg-white rounded-lg border border-dashed border-slate-300">
-            <p className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Attach Media to Question (optional)</p>
-            <div className="grid grid-cols-3 gap-2">
-              <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Image</label><input type="file" accept="image/*" onChange={e => setQImageFile(e.target.files?.[0] || null)} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 file:text-xs" /></div>
-              <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Audio</label><input type="file" accept="audio/*" onChange={e => setQAudioFile(e.target.files?.[0] || null)} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-violet-50 file:text-violet-700 file:text-xs" /></div>
-              <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Video</label><input type="file" accept="video/*" onChange={e => setQVideoFile(e.target.files?.[0] || null)} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-amber-50 file:text-amber-700 file:text-xs" /></div>
-            </div>
-          </div>
-
-          {(qType === "mcq" || qType === "multi-correct") && (
-            <div className="space-y-2 mb-3">
-              <label className="text-sm font-bold text-slate-600">Options ({qType === "mcq" ? "select one correct" : "check all correct"})</label>
-              {qOptions.map((opt, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  {qType === "mcq" ? <input type="radio" name="correct" checked={qCorrectIdx === i} onChange={() => setQCorrectIdx(i)} /> : <input type="checkbox" checked={qCorrectIndices.includes(i)} onChange={() => toggleIdx(i)} />}
-                  <input value={opt.text} onChange={e => { const o = [...qOptions]; o[i] = { ...o[i], text: e.target.value }; setQOptions(o); }} className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder={`Option ${String.fromCharCode(65 + i)}`} />
-                  <input type="file" accept="image/*" onChange={e => { const o = [...qOptions]; o[i] = { ...o[i], imageFile: e.target.files?.[0] || null }; setQOptions(o); }} className="w-24 text-[10px] file:py-0.5 file:px-1 file:rounded file:border-0 file:bg-slate-100 file:text-slate-600 file:text-[10px]" title="Option image" />
-                </div>
-              ))}
-              <button onClick={() => setQOptions([...qOptions, { text: "" }])} className="text-xs text-indigo-600 font-bold hover:text-indigo-800">+ Add Option</button>
-            </div>
+          {questions.length === 0 && !builderOpen && (
+            <div className="px-4 py-8 text-center text-slate-400 text-sm"><p className="text-2xl mb-2">ðŸ“‹</p><p className="font-bold">No questions yet</p><p className="text-xs mt-1">Click &ldquo;+ Add Question&rdquo; to get started</p></div>
           )}
-          {qType === "fill-blank" && (<div className="mb-3"><label className="text-sm font-bold text-slate-600 block mb-1">Correct Answer</label><input value={qFillAnswer} onChange={e => setQFillAnswer(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" /></div>)}
-          {(qType === "matching" || qType === "drag-drop") && (
-            <div className="grid grid-cols-2 gap-3 mb-3">
-              <div><label className="text-sm font-bold text-slate-600 block mb-1">{qType === "matching" ? "Left Items" : "Items"} (comma-separated)</label><input value={qMatchLeft} onChange={e => setQMatchLeft(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="Dog, Cat, Duck" /></div>
-              <div><label className="text-sm font-bold text-slate-600 block mb-1">{qType === "matching" ? "Right Items" : "Targets"} (matching order)</label><input value={qMatchRight} onChange={e => setQMatchRight(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="Bark, Meow, Quack" /></div>
-            </div>
-          )}
-          {qType === "theory" && (
-            <div className="space-y-3 mb-3">
-              <div><label className="text-sm font-bold text-slate-600 block mb-1">Sample Answer</label><textarea value={qSampleAnswer} onChange={e => setQSampleAnswer(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-24 resize-y" placeholder="Reference answer..." /></div>
-              <div><label className="text-sm font-bold text-slate-600 block mb-1">Max Words (optional)</label><input type="number" value={qMaxWords} onChange={e => setQMaxWords(e.target.value ? parseInt(e.target.value) : "")} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" placeholder="e.g. 200" /></div>
-            </div>
-          )}
-
-          <button onClick={addQuestion} disabled={uploading} className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold text-sm disabled:opacity-50">{uploading ? "Uploading Media..." : "+ Add Question"}</button>
-
           {questions.length > 0 && (
-            <div className="mt-3 space-y-1">
+            <div className="divide-y divide-slate-100">
               {questions.map((q, i) => (
-                <div key={q.id} className="flex items-center gap-2 text-sm bg-white rounded-lg px-3 py-2 border border-slate-100">
-                  <span className="text-xs font-bold text-slate-400 bg-slate-50 rounded px-2 py-0.5 uppercase">{q.type}</span>
-                  <span className="text-slate-700 flex-1 truncate">{q.prompt.text}</span>
-                  {q.prompt.imageUrl && <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded" title="Has image">img</span>}
-                  {q.prompt.audioUrl && <span className="text-xs bg-violet-100 text-violet-700 px-1 rounded" title="Has audio">aud</span>}
-                  {q.prompt.videoUrl && <span className="text-xs bg-amber-100 text-amber-700 px-1 rounded" title="Has video">vid</span>}
-                  <button onClick={() => setQuestions(questions.filter((_, j) => j !== i))} className="text-red-400 hover:text-red-600 text-xs font-bold">x</button>
+                <div key={q.id} className="px-4 py-3 flex items-center gap-3 hover:bg-slate-50 group">
+                  <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-xs font-black flex items-center justify-center flex-shrink-0">{i + 1}</span>
+                  <span className="text-[10px] font-bold bg-amber-100 text-amber-700 rounded px-1.5 py-0.5 uppercase flex-shrink-0">{q.type}</span>
+                  <span className="text-slate-700 text-sm flex-1 truncate">{q.prompt.text || "(no text)"}</span>
+                  <span className="text-xs font-bold text-slate-500 flex-shrink-0">{q.markingScheme?.maxMarks || 1}M{(q.markingScheme?.negativeMarks || 0) > 0 ? ` / -${q.markingScheme?.negativeMarks}` : ""}</span>
+                  <button onClick={() => openEditQuestion(i)} className="text-indigo-400 hover:text-indigo-700 text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 hover:bg-indigo-50 rounded">âœï¸ Edit</button>
+                  <button onClick={() => deleteQuestion(i)} className="text-red-400 hover:text-red-700 text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 hover:bg-red-50 rounded">ðŸ—‘ï¸</button>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        <div className="flex gap-2">
-          <button onClick={handleSave} disabled={questions.length === 0} className={`px-4 py-2 rounded-lg font-bold text-sm ${questions.length > 0 ? "bg-emerald-600 text-white" : "bg-slate-200 text-slate-400"}`}>Save {label} ({questions.length} questions)</button>
-          <button onClick={() => { onClose(); setQuestions([]); }} className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg font-bold text-sm">Cancel</button>
+        {/* Question Builder Panel */}
+        {builderOpen && (
+          <div className="border-2 border-indigo-200 rounded-xl bg-indigo-50/30 p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <h5 className="font-bold text-slate-900">{editingIdx !== null ? `Editing Question ${editingIdx + 1}` : "New Question"}</h5>
+              <button onClick={() => setBuilderOpen(false)} className="text-xs text-slate-400 hover:text-slate-700 px-2 py-1 rounded hover:bg-slate-100">âœ• Close</button>
+            </div>
+
+            {/* Question Type */}
+            <div className="grid grid-cols-3 gap-2">
+              {(["mcq", "multi-correct", "fill-blank", "matching", "drag-drop", "theory"] as QuestionType[]).map(t => (
+                <button key={t} onClick={() => setDraft(prev => ({ ...prev, type: t }))}
+                  className={`px-2 py-2 rounded-lg text-xs font-bold border transition-all text-center ${draft.type === t ? "bg-indigo-600 text-white border-indigo-600" : "bg-white text-slate-600 border-slate-200 hover:border-indigo-300"}`}>
+                  {t === "mcq" ? "Single Choice" : t === "multi-correct" ? "Multiple Correct" : t === "fill-blank" ? "Fill in Blank" : t === "matching" ? "Matching" : t === "drag-drop" ? "Drag & Drop" : "Long Answer"}
+                </button>
+              ))}
+            </div>
+
+            {/* Question Text */}
+            <div>
+              <label className="text-sm font-bold text-slate-600 block mb-1">Question Text *</label>
+              <textarea value={draft.prompt.text || ""} onChange={e => setDraft(prev => ({ ...prev, prompt: { ...prev.prompt, text: e.target.value } }))}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-20 resize-y focus:outline-none focus:border-indigo-400" placeholder="Enter your question..." />
+            </div>
+
+            {/* Prompt Media */}
+            <div className="p-3 bg-white rounded-lg border border-dashed border-slate-300">
+              <p className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Attach Media to Question (optional)</p>
+              <div className="grid grid-cols-3 gap-2">
+                <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Image</label><input type="file" accept="image/*" onChange={e => setDraft(prev => ({ ...prev, _promptImageFile: e.target.files?.[0] || null }))} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 file:text-xs" />{draft.prompt.imageUrl && !draft._promptImageFile && <p className="text-[10px] text-emerald-600 mt-0.5">âœ“ Has image</p>}</div>
+                <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Audio</label><input type="file" accept="audio/*" onChange={e => setDraft(prev => ({ ...prev, _promptAudioFile: e.target.files?.[0] || null }))} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-violet-50 file:text-violet-700 file:text-xs" />{draft.prompt.audioUrl && !draft._promptAudioFile && <p className="text-[10px] text-emerald-600 mt-0.5">âœ“ Has audio</p>}</div>
+                <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Video</label><input type="file" accept="video/*" onChange={e => setDraft(prev => ({ ...prev, _promptVideoFile: e.target.files?.[0] || null }))} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-amber-50 file:text-amber-700 file:text-xs" />{draft.prompt.videoUrl && !draft._promptVideoFile && <p className="text-[10px] text-emerald-600 mt-0.5">âœ“ Has video</p>}</div>
+              </div>
+            </div>
+
+            {/* MCQ / Multi-Correct Options */}
+            {(draft.type === "mcq" || draft.type === "multi-correct") && (
+              <div>
+                <label className="text-sm font-bold text-slate-600 block mb-2">{draft.type === "mcq" ? "Options â€” Select ONE correct:" : "Options â€” Check ALL correct:"}</label>
+                <div className="space-y-2">
+                  {(draft.options || []).map((opt, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      {draft.type === "mcq"
+                        ? <input type="radio" name="correct" checked={draft.correctIndex === i} onChange={() => setDraft(prev => ({ ...prev, correctIndex: i }))} className="w-4 h-4 accent-indigo-600 flex-shrink-0" />
+                        : <input type="checkbox" checked={(draft.correctIndices || []).includes(i)} onChange={() => toggleCorrectIdx(i)} className="w-4 h-4 accent-indigo-600 flex-shrink-0" />
+                      }
+                      <input value={opt.text || ""} onChange={e => { const opts = [...(draft.options || [])]; opts[i] = { ...opts[i], text: e.target.value }; setDraft(prev => ({ ...prev, options: opts })); }}
+                        className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400" placeholder={`Option ${String.fromCharCode(65 + i)}`} />
+                      <input type="file" accept="image/*" onChange={e => { const files = [...(draft._optionFiles || [])]; files[i] = e.target.files?.[0] || null; setDraft(prev => ({ ...prev, _optionFiles: files })); }}
+                        className="w-24 text-[10px] file:py-0.5 file:px-1 file:rounded file:border-0 file:bg-slate-100 file:text-slate-600 file:text-[10px]" title="Attach image" />
+                      {opt.imageUrl && <span className="text-[10px] text-emerald-600 flex-shrink-0">âœ“img</span>}
+                      {(draft.options || []).length > 2 && <button onClick={() => removeOption(i)} className="text-red-400 hover:text-red-600 text-sm font-bold px-1 flex-shrink-0">Ã—</button>}
+                    </div>
+                  ))}
+                </div>
+                <button onClick={addOption} className="mt-2 text-xs text-indigo-600 font-bold hover:text-indigo-800">+ Add Option</button>
+                {draft.type === "multi-correct" && (
+                  <div className="mt-3 p-3 bg-indigo-50 rounded-lg border border-indigo-200">
+                    <label className="text-xs font-bold text-indigo-700 block mb-2">Multi-Correct Marking Mode</label>
+                    <div className="space-y-1.5">
+                      {([["all-or-nothing", "All-or-Nothing: Full marks only if ALL correct selected, else 0"], ["partial", "Partial Marking: Marks per correct option, deduct per wrong"]] as const).map(([val, desc]) => (
+                        <label key={val} className="flex items-start gap-2 cursor-pointer">
+                          <input type="radio" name="mcMode" value={val} checked={(draft.markingScheme?.multiCorrectMode || "all-or-nothing") === val}
+                            onChange={() => setDraft(prev => ({ ...prev, markingScheme: { ...(prev.markingScheme), multiCorrectMode: val } }))}
+                            className="mt-0.5 accent-indigo-600 flex-shrink-0" />
+                          <span className="text-xs text-indigo-800">{desc}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {draft.type === "fill-blank" && (
+              <div><label className="text-sm font-bold text-slate-600 block mb-1">Correct Answer *</label>
+                <input value={draft.correctAnswer || ""} onChange={e => setDraft(prev => ({ ...prev, correctAnswer: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400" placeholder="Exact correct answer" /></div>
+            )}
+
+            {(draft.type === "matching" || draft.type === "drag-drop") && (
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="text-sm font-bold text-slate-600 block mb-1">{draft.type === "matching" ? "Left Items" : "Items"} (comma-separated)</label>
+                  <input value={draft._matchLeft || ""} onChange={e => setDraft(prev => ({ ...prev, _matchLeft: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400" placeholder="Dog, Cat, Duck" /></div>
+                <div><label className="text-sm font-bold text-slate-600 block mb-1">{draft.type === "matching" ? "Right Items" : "Targets"} (matching order)</label>
+                  <input value={draft._matchRight || ""} onChange={e => setDraft(prev => ({ ...prev, _matchRight: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400" placeholder="Bark, Meow, Quack" /></div>
+              </div>
+            )}
+
+            {draft.type === "theory" && (
+              <div className="space-y-3">
+                <div><label className="text-sm font-bold text-slate-600 block mb-1">Sample / Reference Answer</label>
+                  <textarea value={draft.sampleAnswer || ""} onChange={e => setDraft(prev => ({ ...prev, sampleAnswer: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-24 resize-y focus:outline-none focus:border-indigo-400" placeholder="Model answer shown to student after submission..." />
+                </div>
+                <div><label className="text-sm font-bold text-slate-600 block mb-1">Max Words (optional)</label>
+                  <input type="number" value={draft.maxWords || ""} onChange={e => setDraft(prev => ({ ...prev, maxWords: parseInt(e.target.value) || undefined }))}
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400" placeholder="e.g. 200" />
+                </div>
+              </div>
+            )}
+
+            <div><label className="text-sm font-bold text-slate-600 block mb-1">Explanation (shown after answering)</label>
+              <input value={draft.explanation || ""} onChange={e => setDraft(prev => ({ ...prev, explanation: e.target.value }))}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400" placeholder="Why is this the correct answer?" /></div>
+
+            {/* Marking Scheme */}
+            <div className="bg-emerald-50 rounded-xl border border-emerald-200 p-4">
+              <p className="text-sm font-bold text-emerald-800 mb-3">Marking Scheme</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="text-xs font-bold text-slate-600 block mb-1">Marks for Correct Answer</label>
+                  <input type="number" min={0} step={0.5} value={draft.markingScheme?.maxMarks ?? 1}
+                    onChange={e => setDraft(prev => ({ ...prev, markingScheme: { ...prev.markingScheme, maxMarks: parseFloat(e.target.value) || 1 } }))}
+                    className="w-full px-3 py-2 rounded-lg border border-emerald-200 text-sm focus:outline-none focus:border-emerald-500 bg-white" /></div>
+                <div><label className="text-xs font-bold text-slate-600 block mb-1">Negative Marks (enter as positive, e.g. 1)</label>
+                  <input type="number" min={0} step={0.25} value={draft.markingScheme?.negativeMarks ?? 0}
+                    onChange={e => setDraft(prev => ({ ...prev, markingScheme: { ...prev.markingScheme, negativeMarks: parseFloat(e.target.value) || 0 } }))}
+                    className="w-full px-3 py-2 rounded-lg border border-emerald-200 text-sm focus:outline-none focus:border-emerald-500 bg-white" /></div>
+              </div>
+              <p className="text-[10px] text-slate-500 mt-2">{draft.markingScheme?.negativeMarks ? `Wrong answer deducts ${draft.markingScheme.negativeMarks} mark(s).` : "No negative marking for this question."}</p>
+            </div>
+
+            <div className="flex gap-2 pt-1">
+              <button onClick={commitQuestion} disabled={uploading} className="px-5 py-2 bg-indigo-600 text-white rounded-lg font-bold text-sm hover:bg-indigo-700 disabled:opacity-50 transition-colors">
+                {uploading ? "Uploading Media..." : editingIdx !== null ? "âœ“ Update Question" : "âœ“ Add Question"}
+              </button>
+              <button onClick={() => { setBuilderOpen(false); setEditingIdx(null); }} className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg font-bold text-sm hover:bg-slate-200">Cancel</button>
+            </div>
+          </div>
+        )}
+
+        <div className="flex gap-3 pt-2 border-t border-slate-100">
+          <button onClick={handleSave} disabled={!title.trim() || questions.length === 0}
+            className={`px-5 py-2.5 rounded-lg font-bold text-sm transition-colors ${title.trim() && questions.length > 0 ? "bg-emerald-600 text-white hover:bg-emerald-700" : "bg-slate-200 text-slate-400 cursor-not-allowed"}`}>
+            Save {label} ({questions.length} questions Â· {totalMarks} marks)
+          </button>
+          <button onClick={onClose} className="px-4 py-2.5 bg-slate-100 text-slate-600 rounded-lg font-bold text-sm hover:bg-slate-200">Cancel</button>
         </div>
       </div>
     </div>
