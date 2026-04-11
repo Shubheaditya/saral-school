@@ -58,8 +58,8 @@ export default function LoginPage() {
   };
 
   const handleOtpSubmit = async () => {
-    if (otp.length !== 6) {
-      setError("Please enter a valid 6-digit OTP");
+    if (otp.length < 6 || otp.length > 8) {
+      setError("Please enter a valid OTP code");
       return;
     }
     setError("");
@@ -151,11 +151,11 @@ export default function LoginPage() {
               <label className="text-sm font-bold text-slate-700 block mb-2">OTP Code</label>
               <input
                 type="text"
-                maxLength={6}
+                maxLength={8}
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                placeholder="000000"
-                className="w-full px-4 py-4 rounded-2xl border-2 border-indigo-100 focus:border-indigo-400 focus:outline-none text-2xl font-bold text-center text-slate-900 tracking-[0.5em] placeholder:text-slate-300 placeholder:tracking-normal placeholder:text-lg"
+                placeholder="OTP Code"
+                className="w-full px-4 py-4 rounded-2xl border-2 border-indigo-100 focus:border-indigo-400 focus:outline-none text-2xl font-bold text-center text-slate-900 tracking-[0.25em] placeholder:text-slate-300 placeholder:tracking-normal placeholder:text-lg"
               />
             </div>
             {error && <p className="text-red-500 text-sm font-bold">{error}</p>}
