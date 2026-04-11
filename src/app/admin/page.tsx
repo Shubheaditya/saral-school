@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import Image from "next/image";
+
 const ADMIN_USER = "admin";
 const ADMIN_PASS = "saralschool2026";
 
@@ -27,7 +29,7 @@ export default function AdminLoginPage() {
     <main className="min-h-screen flex items-center justify-center px-6 bg-slate-50">
       <div className="w-full max-w-sm bg-white rounded-2xl p-8 shadow-xl border border-slate-200">
         <div className="text-center mb-6">
-          <span className="text-4xl block mb-2">🔧</span>
+          <Image src="/logo.png" alt="Saral School Logo" width={48} height={48} className="mx-auto mb-2 object-contain" />
           <h1 className="text-2xl font-black text-slate-900">Admin Panel</h1>
           <p className="text-slate-500 text-sm">Saral School Content Management</p>
         </div>

@@ -1,13 +1,15 @@
 import Link from "next/link";
 
+import Image from "next/image";
+
 export default function Footer() {
     return (
         <footer className="bg-slate-800 text-white py-16 px-6">
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
                 <div className="md:col-span-2">
                     <div className="flex items-center gap-2 mb-6">
-                        <div className="w-10 h-10 bg-brand-primary rounded-xl flex items-center justify-center text-2xl font-bold text-indigo-600">
-                            S
+                        <div className="w-10 h-10 rounded-xl overflow-hidden bg-white flex items-center justify-center p-0.5">
+                            <Image src="/logo.png" alt="Saral School Logo" width={40} height={40} className="object-contain w-full h-full" />
                         </div>
                         <span className="text-2xl font-extrabold tracking-tight">Saral School</span>
                     </div>

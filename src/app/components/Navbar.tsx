@@ -1,11 +1,13 @@
 import Link from "next/link";
 
+import Image from "next/image";
+
 export default function Navbar() {
     return (
         <nav className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 backdrop-blur-md bg-white/80 border-b border-indigo-100">
             <Link href="/" className="flex items-center gap-2">
-                <div className="w-10 h-10 bg-brand-primary rounded-xl flex items-center justify-center text-2xl font-bold text-indigo-600 shadow-sm bouncy-hover cursor-pointer">
-                    S
+                <div className="w-10 h-10 rounded-xl overflow-hidden shadow-sm bouncy-hover cursor-pointer bg-white flex items-center justify-center p-0.5">
+                    <Image src="/logo.png" alt="Saral School Logo" width={40} height={40} className="object-contain w-full h-full" />
                 </div>
                 <span className="text-xl font-extrabold tracking-tight text-slate-900">Saral School</span>
             </Link>
