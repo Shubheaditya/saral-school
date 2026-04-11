@@ -120,9 +120,10 @@ export type QuestionType = "mcq" | "multi-correct" | "fill-blank" | "drag-drop" 
 export interface MarkingScheme {
   maxMarks: number;                           // Total marks for this question
   negativeMarks?: number;                     // Marks deducted for each wrong answer (positive = subtracted)
-  multiCorrectMode?: "all-or-nothing" | "partial"; // How to score multi-correct questions
+  multiCorrectMode?: "all-or-nothing" | "partial" | "any-wrong-full-negative";
   // "all-or-nothing": Full marks only if ALL correct options selected, else 0 (or negative if negative marking on)
   // "partial": Each correct selected option gives (maxMarks / numCorrect), wrong selected deducts negativeMarks
+  // "any-wrong-full-negative": If ANY wrong option is selected, full negative marks are applied
 }
 
 // Unified question interface that covers ALL question types

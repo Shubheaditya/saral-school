@@ -56,13 +56,13 @@ export default function ScholarHomepage() {
   };
 
   return (
-    <main className={`min-h-screen ${backgroundClass} ${textClass} font-sans selection:bg-indigo-500/30 transition-colors duration-500`}>
+    <main className={`min-h-screen ${backgroundClass} ${textClass} font-sans selection:bg-indigo-500/30 transition-colors duration-200`}>
       <UniversalBackground />
 
       <div className="relative z-10 max-w-6xl mx-auto p-6 lg:p-10 flex flex-col gap-8 min-h-screen">
         
         {/* TOP NAVIGATION / COMMAND PALETTE TRIGGER */}
-        <header className="flex items-center justify-between">
+        <header className="flex items-center justify-between animate-fade-in-up">
           <div className="flex items-center gap-4">
             <div className={`w-10 h-10 rounded-full ${isDark ? 'bg-slate-800 border-slate-700 text-white hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-900 hover:bg-slate-50 shadow-sm'} border font-black flex items-center justify-center cursor-pointer transition-colors`} onClick={() => router.push("/learn/profile")}>
               {currentUser.name.charAt(0)}
@@ -94,7 +94,7 @@ export default function ScholarHomepage() {
         </header>
 
         {/* OVERVIEW PANEL - Glassmorphic */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in-up">
           
           {/* Main Stat Block */}
           <div className={`lg:col-span-1 border rounded-2xl p-6 flex flex-col justify-between ${isDark ? 'bg-slate-900/50 backdrop-blur-xl border-white/10' : 'bg-white shadow-sm border-slate-200'}`}>
@@ -177,7 +177,7 @@ export default function ScholarHomepage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 stagger-children">
             {subjects.map((subject) => {
               const style = SUBJECT_STYLES[subject.id] || { bg: "bg-slate-800/30", border: "border-slate-700/50", glow: "group-hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]", text: "text-slate-400" };
               const progress = getSubjectProgress(subject.id);
@@ -190,7 +190,7 @@ export default function ScholarHomepage() {
                 <button
                   key={subject.id}
                   onClick={() => router.push(`/learn/subject/${subject.id}`)}
-                  className={`group relative text-left border p-5 rounded-xl transition-all duration-500 ease-out ${cardBg} ${isDark ? style.glow : ''}`}
+                  className={`group relative text-left border p-5 rounded-xl transition-all duration-200 ease-out ${cardBg} ${isDark ? style.glow : ''}`}
                 >
                   <div className="flex items-start justify-between mb-6">
                     <div className="flex items-center gap-3">
@@ -206,7 +206,7 @@ export default function ScholarHomepage() {
                     <div className="relative w-10 h-10 flex items-center justify-center">
                        <svg className="w-full h-full transform -rotate-90">
                           <circle cx="20" cy="20" r="16" fill="transparent" stroke="currentColor" strokeWidth="2" className={isDark ? "text-slate-800" : "text-slate-100"} />
-                          <circle cx="20" cy="20" r="16" fill="transparent" stroke="currentColor" strokeWidth="2" strokeDasharray="100" strokeDashoffset={100 - progress} className={`${style.text} transition-all duration-1000 ease-out`} />
+                          <circle cx="20" cy="20" r="16" fill="transparent" stroke="currentColor" strokeWidth="2" strokeDasharray="100" strokeDashoffset={100 - progress} className={`${style.text} transition-all duration-200 ease-out`} />
                        </svg>
                        <span className={`absolute text-[9px] font-mono ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{progress}%</span>
                     </div>

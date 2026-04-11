@@ -65,7 +65,7 @@ export default function ProfilePage() {
   const unearnedBadges = badges.filter(b => !b.earned);
 
   return (
-    <main className={`min-h-screen ${backgroundClass} ${textClass} relative pb-24 transition-colors duration-500 overflow-x-hidden`}>
+    <main className={`min-h-screen ${backgroundClass} ${textClass} relative pb-24 transition-colors duration-200 overflow-x-hidden`}>
       <UniversalBackground />
 
       <div className="relative z-10 w-full">

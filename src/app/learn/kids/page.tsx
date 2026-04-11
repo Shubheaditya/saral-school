@@ -1,33 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../contexts/AuthContext";
 import { useGamification } from "../contexts/GamificationContext";
 import { useApp } from "../contexts/AppContext";
-import Sparky from "../components/Sparky";
 import TopProfileBar from "../components/TopProfileBar";
 import UniversalBackground from "../components/UniversalBackground";
 import { useUniversalTheme } from "../hooks/useUniversalTheme";
 
-// Edible High-Contrast Color Palette
-const EDIBLE_COLORS = [
-  { bg: "bg-rose-400", border: "border-rose-600", shadow: "shadow-rose-300" },     // Watermelon
-  { bg: "bg-amber-400", border: "border-amber-600", shadow: "shadow-amber-300" },  // Mango
-  { bg: "bg-lime-400", border: "border-lime-600", shadow: "shadow-lime-300" },     // Apple
-  { bg: "bg-violet-400", border: "border-violet-600", shadow: "shadow-violet-300" }, // Grape
-  { bg: "bg-cyan-400", border: "border-cyan-600", shadow: "shadow-cyan-300" },      // Blueberry
-  { bg: "bg-orange-400", border: "border-orange-600", shadow: "shadow-orange-300" }, // Orange
+// Bright candy colors for subject cards
+const CANDY_COLORS = [
+  { bg: "bg-rose-50", border: "border-rose-200", accent: "bg-rose-400", text: "text-rose-700", hover: "hover:border-rose-400 hover:shadow-rose-200/50" },
+  { bg: "bg-amber-50", border: "border-amber-200", accent: "bg-amber-400", text: "text-amber-700", hover: "hover:border-amber-400 hover:shadow-amber-200/50" },
+  { bg: "bg-emerald-50", border: "border-emerald-200", accent: "bg-emerald-400", text: "text-emerald-700", hover: "hover:border-emerald-400 hover:shadow-emerald-200/50" },
+  { bg: "bg-violet-50", border: "border-violet-200", accent: "bg-violet-400", text: "text-violet-700", hover: "hover:border-violet-400 hover:shadow-violet-200/50" },
+  { bg: "bg-cyan-50", border: "border-cyan-200", accent: "bg-cyan-400", text: "text-cyan-700", hover: "hover:border-cyan-400 hover:shadow-cyan-200/50" },
+  { bg: "bg-pink-50", border: "border-pink-200", accent: "bg-pink-400", text: "text-pink-700", hover: "hover:border-pink-400 hover:shadow-pink-200/50" },
 ];
 
 export default function KidsHomepage() {
   const router = useRouter();
   const { currentUser } = useAuth();
-  const { updateStreak } = useGamification();
+  const { updateStreak, currentStreak, completedQuizzes, completedVideos } = useGamification();
   const { subjects } = useApp();
   const { backgroundClass, textClass } = useUniversalTheme();
-
-  const [clickedSubject, setClickedSubject] = useState<string | null>(null);
 
   useEffect(() => {
     if (!currentUser) { router.replace("/learn/login"); return; }
@@ -36,86 +33,75 @@ export default function KidsHomepage() {
 
   if (!currentUser) return null;
 
-  const handleSubjectClick = (id: string) => {
-    setClickedSubject(id);
-    // Play a squish animation and delay routing slightly to allow it to finish
-    setTimeout(() => {
-      router.push(`/learn/subject/${id}`);
-    }, 400);
-  };
-
   return (
     <main className={`min-h-screen relative overflow-hidden select-none ${backgroundClass} ${textClass}`}>
       <UniversalBackground />
 
-      <div className="relative z-10 min-h-screen flex flex-col">
-        {/* Top bar */}
-        <div className="p-4 md:p-6 flex justify-between items-center bg-transparent">
-           <TopProfileBar />
-        </div>
+      <div className="relative z-10 max-w-5xl mx-auto p-5 md:p-8 flex flex-col gap-6 min-h-screen">
 
-        {/* Center: Sparky guiding the user and Subject toys */}
-        <div className="flex-1 flex flex-col items-center justify-center gap-10 px-4 pb-12">
-          
-          <div className="flex flex-col items-center gap-6">
-            <div className="relative animate-bounce" style={{ animationDuration: "3s" }}>
-              <Sparky mood="celebrating" size="xl" />
+        {/* Header */}
+        <header className="flex items-center justify-between animate-fade-in-up">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-300 to-rose-400 border-4 border-white shadow-lg flex items-center justify-center text-2xl font-black text-white">
+              {currentUser.name.charAt(0)}
             </div>
-
-            {/* Squishy Start Button - Giant Size */}
-            <button
-              onClick={() => {
-                const firstSubject = subjects[0];
-                if (firstSubject) handleSubjectClick(firstSubject.id);
-              }}
-              className="group relative"
-            >
-              <div className="absolute inset-0 bg-emerald-600 rounded-[3rem] top-3"></div>
-              <div className="relative bg-lime-400 border-4 border-lime-300 rounded-[3rem] px-16 py-8 text-6xl shadow-xl flex items-center justify-center transform transition-transform duration-150 active:translate-y-3 group-active:translate-y-3 hover:brightness-110">
-                🚀
-              </div>
-            </button>
+            <div>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Welcome back!</p>
+              <h1 className="text-lg font-black text-slate-900">{currentUser.name}</h1>
+            </div>
           </div>
+          <TopProfileBar />
+        </header>
 
-          {/* Subject toys - Skeuomorphic blocks */}
-          <div className="flex items-center justify-center gap-4 md:gap-8 flex-wrap mt-4">
-            {subjects.map((subject, idx) => {
-              const color = EDIBLE_COLORS[idx % EDIBLE_COLORS.length];
-              const isClicked = clickedSubject === subject.id;
-              
-              return (
-                <button
-                  key={subject.id}
-                  onClick={() => handleSubjectClick(subject.id)}
-                  className={`relative group touch-manipulation transition-transform duration-300 ${isClicked ? "scale-125 z-50 animate-pulse" : ""}`}
-                  style={{ transformOrigin: "center bottom" }}
-                >
-                  {/* 3D Base (Shadow/Bottom edge) */}
-                  <div className={`absolute inset-0 ${color.border} rounded-[2.5rem] top-3`}></div>
-                  
-                  {/* 3D Top surface */}
-                  <div className={`relative ${color.bg} border-4 border-white/40 rounded-[2.5rem] w-28 h-28 md:w-36 md:h-36 flex items-center justify-center text-6xl md:text-7xl shadow-lg transform transition-transform duration-150 group-active:translate-y-3 hover:brightness-110`}>
-                    
-                    {/* Highlight sheen for jelly effect */}
-                    <div className="absolute top-2 left-4 right-4 h-4 bg-white/30 rounded-full blur-[2px]"></div>
-                    
-                    <span className="relative z-10 drop-shadow-md">{subject.icon}</span>
-                    
-                    {/* Click Particles (Simple CSS implementation) */}
-                    {isClicked && (
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="absolute w-full h-full border-8 border-white rounded-[2.5rem] animate-ping opacity-0"></div>
-                        <span className="absolute -top-10 text-3xl animate-bounce">✨</span>
-                        <span className="absolute -left-8 top-10 text-3xl animate-bounce" style={{ animationDelay: '0.1s' }}>✨</span>
-                        <span className="absolute -right-8 top-10 text-3xl animate-bounce" style={{ animationDelay: '0.2s' }}>✨</span>
-                      </div>
-                    )}
-                  </div>
-                </button>
-              );
-            })}
+        {/* Stats Row - Playful version */}
+        <div className="grid grid-cols-3 gap-3 animate-fade-in-up">
+          <div className="bg-white rounded-3xl p-4 border-2 border-orange-200 shadow-sm text-center bouncy-hover">
+            <p className="text-3xl font-black text-orange-500">{currentStreak}</p>
+            <p className="text-xs font-bold text-slate-500 mt-1">Day Streak</p>
+          </div>
+          <div className="bg-white rounded-3xl p-4 border-2 border-emerald-200 shadow-sm text-center bouncy-hover">
+            <p className="text-3xl font-black text-emerald-500">{completedQuizzes.length}</p>
+            <p className="text-xs font-bold text-slate-500 mt-1">Quizzes Done</p>
+          </div>
+          <div className="bg-white rounded-3xl p-4 border-2 border-indigo-200 shadow-sm text-center bouncy-hover">
+            <p className="text-3xl font-black text-indigo-500">{completedVideos.length}</p>
+            <p className="text-xs font-bold text-slate-500 mt-1">Videos</p>
           </div>
         </div>
+
+        {/* Subjects Label */}
+        <div className="animate-fade-in-up">
+          <h2 className="text-2xl font-black text-slate-900">My Subjects</h2>
+          <p className="text-sm text-slate-500 font-medium mt-0.5">Tap a subject to start learning!</p>
+        </div>
+
+        {/* Subject Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 stagger-children">
+          {subjects.map((subject, idx) => {
+            const color = CANDY_COLORS[idx % CANDY_COLORS.length];
+            const totalChapters = subject.semesters.reduce((sum, sem) => sum + sem.chapters.length, 0);
+
+            return (
+              <button
+                key={subject.id}
+                onClick={() => router.push(`/learn/subject/${subject.id}`)}
+                className={`group relative text-left ${color.bg} border-2 ${color.border} p-5 rounded-3xl transition-all duration-150 ${color.hover} hover:shadow-lg hover:-translate-y-1 active:scale-95 animate-fade-in-up`}
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`w-16 h-16 rounded-2xl ${color.accent} flex items-center justify-center text-3xl shadow-inner border-2 border-white/50 group-hover:scale-110 transition-transform duration-150`}>
+                    {subject.icon}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className={`text-xl font-black ${color.text} mb-0.5`}>{subject.name}</h3>
+                    <p className="text-sm font-bold text-slate-400">{totalChapters} Chapters</p>
+                  </div>
+                  <span className="text-slate-300 text-xl font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-150 transform translate-x-2 group-hover:translate-x-0">&rarr;</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
       </div>
     </main>
   );

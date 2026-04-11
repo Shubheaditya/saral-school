@@ -87,7 +87,7 @@ export default function SubjectPage() {
   };
 
   return (
-    <main className={`min-h-screen ${backgroundClass} ${textClass} overflow-x-hidden relative pb-32 transition-colors duration-500`}>
+    <main className={`min-h-screen ${backgroundClass} ${textClass} overflow-x-hidden relative pb-32 transition-colors duration-200`}>
       <UniversalBackground />
 
       <div className="relative z-10 w-full">
@@ -136,7 +136,7 @@ export default function SubjectPage() {
                   
                   {/* Chapter Header — Always visible, click to toggle */}
                   <div
-                    className={`p-5 cursor-pointer select-none transition-colors duration-300 ${isOpen ? (isDark ? 'bg-white/5' : bgClass.replace('100', '50')) : ''}`}
+                    className={`p-5 cursor-pointer select-none transition-colors duration-150 ${isOpen ? (isDark ? 'bg-white/5' : bgClass.replace('100', '50')) : ''}`}
                     onClick={() => handleChapterToggle(chapter.id)}
                   >
                     <div className="flex justify-between items-center">

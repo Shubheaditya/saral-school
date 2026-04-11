@@ -42,6 +42,13 @@ function calculateMarks(q: Question, answer: string | number | number[] | Record
       if (multiCorrectMode === "all-or-nothing") {
         const perfect = selected.length === expected.length && selected.sort().every((v, i) => v === expected.slice().sort()[i]);
         return perfect ? maxMarks : (negativeMarks > 0 ? -negativeMarks : 0);
+      } else if (multiCorrectMode === "any-wrong-full-negative") {
+        // If ANY selected option is wrong, apply full negative marks
+        const hasAnyWrong = selected.some(s => !expected.includes(s));
+        if (hasAnyWrong) return -negativeMarks;
+        // All selected are correct — check if ALL correct are selected
+        const perfect = selected.length === expected.length && selected.slice().sort().every((v, i) => v === expected.slice().sort()[i]);
+        return perfect ? maxMarks : 0; // Partial correct but no wrong = 0 (not negative)
       } else {
         // Partial marking
         const perCorrectOption = expected.length > 0 ? maxMarks / expected.length : 0;

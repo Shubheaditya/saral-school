@@ -610,7 +610,7 @@ function AddNotesForm({ subjectId, semesterId, chapterId, order, app, onClose }:
         <div>
           <label className="text-sm font-bold text-slate-600 block mb-1">Upload Note Document (PDF, Image, Word)</label>
           <input type="file" accept=".pdf,.doc,.docx,image/*" onChange={handleFileUpload} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-emerald-50 file:text-emerald-700 font-bold hover:file:bg-emerald-100" />
-          {file && <p className="text-xs text-emerald-600 font-bold mt-1">Ã¢Å“â€œ Document Selected: {file.name}</p>}
+          {file && <p className="text-xs text-emerald-600 font-bold mt-1">Document Selected: {file.name}</p>}
         </div>
         <div className="flex gap-2 pt-2">
           <button onClick={handleSave} disabled={uploading} className="px-4 py-2 bg-emerald-600 text-white rounded-lg font-bold text-sm disabled:opacity-50">
@@ -674,7 +674,7 @@ function blankQuestion() {
     correctIndices: [] as number[],
     correctAnswer: "" as string,
     explanation: "" as string,
-    markingScheme: { maxMarks: 1, negativeMarks: 0, multiCorrectMode: "all-or-nothing" as "all-or-nothing" | "partial" },
+    markingScheme: { maxMarks: 1, negativeMarks: 0, multiCorrectMode: "all-or-nothing" as "all-or-nothing" | "partial" | "any-wrong-full-negative" },
     sampleAnswer: "" as string,
     maxWords: undefined as number | undefined,
     leftItems: undefined as { text?: string }[] | undefined,
@@ -820,37 +820,37 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
   const totalMarks = questions.reduce((sum, q) => sum + (q.markingScheme?.maxMarks || 1), 0);
 
   return (
-    <div className="bg-white rounded-xl border-2 border-amber-200 mb-4 overflow-hidden">
+    <div className="bg-white rounded-xl border-2 border-amber-200 mb-4 overflow-hidden animate-fade-in-up">
       <div className="bg-amber-50 px-6 py-4 border-b border-amber-100">
         <h4 className="font-bold text-slate-900 text-lg">{mode === "chapter-test" ? "Create Test" : "Create Quiz"}</h4>
-        <p className="text-xs text-slate-500 mt-1">Build your {label} â€” add questions, set marks per question, and define correct answers</p>
+        <p className="text-xs text-slate-500 mt-1">Build your {label} - add questions, set marks per question, and define correct answers</p>
       </div>
       <div className="p-6 space-y-5">
         {/* Title & Description */}
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="text-sm font-bold text-slate-600 block mb-1">Quiz Title *</label><input value={title} onChange={e => setTitle(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-amber-400" placeholder="e.g. Chapter 3 Quiz" autoFocus /></div>
-          <div><label className="text-sm font-bold text-slate-600 block mb-1">Description (optional)</label><input value={description} onChange={e => setDescription(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-amber-400" placeholder="Brief description" /></div>
+          <div><label className="text-sm font-bold text-slate-600 block mb-1">Quiz Title *</label><input value={title} onChange={e => setTitle(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-amber-400 transition-colors duration-150" placeholder="e.g. Chapter 3 Quiz" autoFocus /></div>
+          <div><label className="text-sm font-bold text-slate-600 block mb-1">Description (optional)</label><input value={description} onChange={e => setDescription(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-amber-400 transition-colors duration-150" placeholder="Brief description" /></div>
         </div>
 
         {/* Question List */}
         <div className="bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
           <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
-            <span className="font-bold text-slate-800 text-sm">Questions ({questions.length}) Â· Total: {totalMarks} Marks</span>
-            <button onClick={openNewQuestion} className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors">+ Add Question</button>
+            <span className="font-bold text-slate-800 text-sm">Questions ({questions.length}) | Total: {totalMarks} Marks</span>
+            <button onClick={openNewQuestion} className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors duration-150">+ Add Question</button>
           </div>
           {questions.length === 0 && !builderOpen && (
-            <div className="px-4 py-8 text-center text-slate-400 text-sm"><p className="text-2xl mb-2">ðŸ“‹</p><p className="font-bold">No questions yet</p><p className="text-xs mt-1">Click &ldquo;+ Add Question&rdquo; to get started</p></div>
+            <div className="px-4 py-8 text-center text-slate-400 text-sm"><p className="text-lg mb-1">No questions yet</p><p className="text-xs">Click "+ Add Question" to get started</p></div>
           )}
           {questions.length > 0 && (
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-slate-100 stagger-children">
               {questions.map((q, i) => (
-                <div key={q.id} className="px-4 py-3 flex items-center gap-3 hover:bg-slate-50 group">
+                <div key={q.id} className="px-4 py-3 flex items-center gap-3 hover:bg-slate-50 group animate-fade-in-up">
                   <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-xs font-black flex items-center justify-center flex-shrink-0">{i + 1}</span>
                   <span className="text-[10px] font-bold bg-amber-100 text-amber-700 rounded px-1.5 py-0.5 uppercase flex-shrink-0">{q.type}</span>
                   <span className="text-slate-700 text-sm flex-1 truncate">{q.prompt.text || "(no text)"}</span>
                   <span className="text-xs font-bold text-slate-500 flex-shrink-0">{q.markingScheme?.maxMarks || 1}M{(q.markingScheme?.negativeMarks || 0) > 0 ? ` / -${q.markingScheme?.negativeMarks}` : ""}</span>
-                  <button onClick={() => openEditQuestion(i)} className="text-indigo-400 hover:text-indigo-700 text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 hover:bg-indigo-50 rounded">âœï¸ Edit</button>
-                  <button onClick={() => deleteQuestion(i)} className="text-red-400 hover:text-red-700 text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 hover:bg-red-50 rounded">ðŸ—‘ï¸</button>
+                  <button onClick={() => openEditQuestion(i)} className="text-indigo-500 hover:text-indigo-700 text-xs font-bold opacity-0 group-hover:opacity-100 transition-all duration-150 px-2 py-1 hover:bg-indigo-50 rounded">Edit</button>
+                  <button onClick={() => deleteQuestion(i)} className="text-red-400 hover:text-red-700 text-xs font-bold opacity-0 group-hover:opacity-100 transition-all duration-150 px-2 py-1 hover:bg-red-50 rounded">Delete</button>
                 </div>
               ))}
             </div>
@@ -859,17 +859,17 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
 
         {/* Question Builder Panel */}
         {builderOpen && (
-          <div className="border-2 border-indigo-200 rounded-xl bg-indigo-50/30 p-5 space-y-4">
+          <div className="border-2 border-indigo-200 rounded-xl bg-indigo-50/30 p-5 space-y-4 animate-fade-in-up">
             <div className="flex items-center justify-between">
               <h5 className="font-bold text-slate-900">{editingIdx !== null ? `Editing Question ${editingIdx + 1}` : "New Question"}</h5>
-              <button onClick={() => setBuilderOpen(false)} className="text-xs text-slate-400 hover:text-slate-700 px-2 py-1 rounded hover:bg-slate-100">âœ• Close</button>
+              <button onClick={() => setBuilderOpen(false)} className="text-xs text-slate-400 hover:text-slate-700 px-2 py-1 rounded hover:bg-slate-100 transition-colors duration-150">x Close</button>
             </div>
 
             {/* Question Type */}
             <div className="grid grid-cols-3 gap-2">
               {(["mcq", "multi-correct", "fill-blank", "matching", "drag-drop", "theory"] as QuestionType[]).map(t => (
                 <button key={t} onClick={() => setDraft(prev => ({ ...prev, type: t }))}
-                  className={`px-2 py-2 rounded-lg text-xs font-bold border transition-all text-center ${draft.type === t ? "bg-indigo-600 text-white border-indigo-600" : "bg-white text-slate-600 border-slate-200 hover:border-indigo-300"}`}>
+                  className={`px-2 py-2 rounded-lg text-xs font-bold border transition-all duration-150 text-center ${draft.type === t ? "bg-indigo-600 text-white border-indigo-600" : "bg-white text-slate-600 border-slate-200 hover:border-indigo-300"}`}>
                   {t === "mcq" ? "Single Choice" : t === "multi-correct" ? "Multiple Correct" : t === "fill-blank" ? "Fill in Blank" : t === "matching" ? "Matching" : t === "drag-drop" ? "Drag & Drop" : "Long Answer"}
                 </button>
               ))}
@@ -879,23 +879,23 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
             <div>
               <label className="text-sm font-bold text-slate-600 block mb-1">Question Text *</label>
               <textarea value={draft.prompt.text || ""} onChange={e => setDraft(prev => ({ ...prev, prompt: { ...prev.prompt, text: e.target.value } }))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-20 resize-y focus:outline-none focus:border-indigo-400" placeholder="Enter your question..." />
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-20 resize-y focus:outline-none focus:border-indigo-400 transition-colors duration-150" placeholder="Enter your question..." />
             </div>
 
             {/* Prompt Media */}
             <div className="p-3 bg-white rounded-lg border border-dashed border-slate-300">
-              <p className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Attach Media to Question (optional)</p>
+              <p className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Attach Media (optional)</p>
               <div className="grid grid-cols-3 gap-2">
-                <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Image</label><input type="file" accept="image/*" onChange={e => setDraft(prev => ({ ...prev, _promptImageFile: e.target.files?.[0] || null }))} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 file:text-xs" />{draft.prompt.imageUrl && !draft._promptImageFile && <p className="text-[10px] text-emerald-600 mt-0.5">âœ“ Has image</p>}</div>
-                <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Audio</label><input type="file" accept="audio/*" onChange={e => setDraft(prev => ({ ...prev, _promptAudioFile: e.target.files?.[0] || null }))} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-violet-50 file:text-violet-700 file:text-xs" />{draft.prompt.audioUrl && !draft._promptAudioFile && <p className="text-[10px] text-emerald-600 mt-0.5">âœ“ Has audio</p>}</div>
-                <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Video</label><input type="file" accept="video/*" onChange={e => setDraft(prev => ({ ...prev, _promptVideoFile: e.target.files?.[0] || null }))} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-amber-50 file:text-amber-700 file:text-xs" />{draft.prompt.videoUrl && !draft._promptVideoFile && <p className="text-[10px] text-emerald-600 mt-0.5">âœ“ Has video</p>}</div>
+                <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Image</label><input type="file" accept="image/*" onChange={e => setDraft(prev => ({ ...prev, _promptImageFile: e.target.files?.[0] || null }))} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 file:text-xs" />{draft.prompt.imageUrl && !draft._promptImageFile && <p className="text-[10px] text-emerald-600 mt-0.5">Has image</p>}</div>
+                <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Audio</label><input type="file" accept="audio/*" onChange={e => setDraft(prev => ({ ...prev, _promptAudioFile: e.target.files?.[0] || null }))} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-violet-50 file:text-violet-700 file:text-xs" />{draft.prompt.audioUrl && !draft._promptAudioFile && <p className="text-[10px] text-emerald-600 mt-0.5">Has audio</p>}</div>
+                <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Video</label><input type="file" accept="video/*" onChange={e => setDraft(prev => ({ ...prev, _promptVideoFile: e.target.files?.[0] || null }))} className="w-full text-xs file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-amber-50 file:text-amber-700 file:text-xs" />{draft.prompt.videoUrl && !draft._promptVideoFile && <p className="text-[10px] text-emerald-600 mt-0.5">Has video</p>}</div>
               </div>
             </div>
 
             {/* MCQ / Multi-Correct Options */}
             {(draft.type === "mcq" || draft.type === "multi-correct") && (
               <div>
-                <label className="text-sm font-bold text-slate-600 block mb-2">{draft.type === "mcq" ? "Options â€” Select ONE correct:" : "Options â€” Check ALL correct:"}</label>
+                <label className="text-sm font-bold text-slate-600 block mb-2">{draft.type === "mcq" ? "Options - Select ONE correct:" : "Options - Check ALL correct:"}</label>
                 <div className="space-y-2">
                   {(draft.options || []).map((opt, i) => (
                     <div key={i} className="flex items-center gap-2">
@@ -904,11 +904,11 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
                         : <input type="checkbox" checked={(draft.correctIndices || []).includes(i)} onChange={() => toggleCorrectIdx(i)} className="w-4 h-4 accent-indigo-600 flex-shrink-0" />
                       }
                       <input value={opt.text || ""} onChange={e => { const opts = [...(draft.options || [])]; opts[i] = { ...opts[i], text: e.target.value }; setDraft(prev => ({ ...prev, options: opts })); }}
-                        className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400" placeholder={`Option ${String.fromCharCode(65 + i)}`} />
+                        className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400 transition-colors duration-150" placeholder={`Option ${String.fromCharCode(65 + i)}`} />
                       <input type="file" accept="image/*" onChange={e => { const files = [...(draft._optionFiles || [])]; files[i] = e.target.files?.[0] || null; setDraft(prev => ({ ...prev, _optionFiles: files })); }}
                         className="w-24 text-[10px] file:py-0.5 file:px-1 file:rounded file:border-0 file:bg-slate-100 file:text-slate-600 file:text-[10px]" title="Attach image" />
-                      {opt.imageUrl && <span className="text-[10px] text-emerald-600 flex-shrink-0">âœ“img</span>}
-                      {(draft.options || []).length > 2 && <button onClick={() => removeOption(i)} className="text-red-400 hover:text-red-600 text-sm font-bold px-1 flex-shrink-0">Ã—</button>}
+                      {opt.imageUrl && <span className="text-[10px] text-emerald-600 flex-shrink-0">img</span>}
+                      {(draft.options || []).length > 2 && <button onClick={() => removeOption(i)} className="text-red-400 hover:text-red-600 text-sm font-bold px-1 flex-shrink-0">x</button>}
                     </div>
                   ))}
                 </div>
@@ -917,14 +917,24 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
                   <div className="mt-3 p-3 bg-indigo-50 rounded-lg border border-indigo-200">
                     <label className="text-xs font-bold text-indigo-700 block mb-2">Multi-Correct Marking Mode</label>
                     <div className="space-y-1.5">
-                      {([["all-or-nothing", "All-or-Nothing: Full marks only if ALL correct selected, else 0"], ["partial", "Partial Marking: Marks per correct option, deduct per wrong"]] as const).map(([val, desc]) => (
-                        <label key={val} className="flex items-start gap-2 cursor-pointer">
-                          <input type="radio" name="mcMode" value={val} checked={(draft.markingScheme?.multiCorrectMode || "all-or-nothing") === val}
-                            onChange={() => setDraft(prev => ({ ...prev, markingScheme: { ...(prev.markingScheme), multiCorrectMode: val } }))}
-                            className="mt-0.5 accent-indigo-600 flex-shrink-0" />
-                          <span className="text-xs text-indigo-800">{desc}</span>
-                        </label>
-                      ))}
+                      <label className="flex items-start gap-2 cursor-pointer">
+                        <input type="radio" name="mcMode" value="all-or-nothing" checked={(draft.markingScheme?.multiCorrectMode || "all-or-nothing") === "all-or-nothing"}
+                          onChange={() => setDraft(prev => ({ ...prev, markingScheme: { ...prev.markingScheme, multiCorrectMode: "all-or-nothing" } }))}
+                          className="mt-0.5 accent-indigo-600 flex-shrink-0" />
+                        <span className="text-xs text-indigo-800">All-or-Nothing: Full marks only if ALL correct options are selected, else 0</span>
+                      </label>
+                      <label className="flex items-start gap-2 cursor-pointer">
+                        <input type="radio" name="mcMode" value="partial" checked={draft.markingScheme?.multiCorrectMode === "partial"}
+                          onChange={() => setDraft(prev => ({ ...prev, markingScheme: { ...prev.markingScheme, multiCorrectMode: "partial" } }))}
+                          className="mt-0.5 accent-indigo-600 flex-shrink-0" />
+                        <span className="text-xs text-indigo-800">Partial Marking: Marks per correct option, deduct per wrong option selected</span>
+                      </label>
+                      <label className="flex items-start gap-2 cursor-pointer">
+                        <input type="radio" name="mcMode" value="any-wrong-full-negative" checked={draft.markingScheme?.multiCorrectMode === "any-wrong-full-negative"}
+                          onChange={() => setDraft(prev => ({ ...prev, markingScheme: { ...prev.markingScheme, multiCorrectMode: "any-wrong-full-negative" } }))}
+                          className="mt-0.5 accent-indigo-600 flex-shrink-0" />
+                        <span className="text-xs text-indigo-800">Any Wrong = Full Negative: If any wrong option is selected, full negative marks are deducted</span>
+                      </label>
                     </div>
                   </div>
                 )}
@@ -934,17 +944,17 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
             {draft.type === "fill-blank" && (
               <div><label className="text-sm font-bold text-slate-600 block mb-1">Correct Answer *</label>
                 <input value={draft.correctAnswer || ""} onChange={e => setDraft(prev => ({ ...prev, correctAnswer: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400" placeholder="Exact correct answer" /></div>
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400 transition-colors duration-150" placeholder="Exact correct answer" /></div>
             )}
 
             {(draft.type === "matching" || draft.type === "drag-drop") && (
               <div className="grid grid-cols-2 gap-3">
                 <div><label className="text-sm font-bold text-slate-600 block mb-1">{draft.type === "matching" ? "Left Items" : "Items"} (comma-separated)</label>
                   <input value={draft._matchLeft || ""} onChange={e => setDraft(prev => ({ ...prev, _matchLeft: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400" placeholder="Dog, Cat, Duck" /></div>
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400 transition-colors duration-150" placeholder="Dog, Cat, Duck" /></div>
                 <div><label className="text-sm font-bold text-slate-600 block mb-1">{draft.type === "matching" ? "Right Items" : "Targets"} (matching order)</label>
                   <input value={draft._matchRight || ""} onChange={e => setDraft(prev => ({ ...prev, _matchRight: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400" placeholder="Bark, Meow, Quack" /></div>
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400 transition-colors duration-150" placeholder="Bark, Meow, Quack" /></div>
               </div>
             )}
 
@@ -952,18 +962,16 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
               <div className="space-y-3">
                 <div><label className="text-sm font-bold text-slate-600 block mb-1">Sample / Reference Answer</label>
                   <textarea value={draft.sampleAnswer || ""} onChange={e => setDraft(prev => ({ ...prev, sampleAnswer: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-24 resize-y focus:outline-none focus:border-indigo-400" placeholder="Model answer shown to student after submission..." />
-                </div>
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-24 resize-y focus:outline-none focus:border-indigo-400 transition-colors duration-150" placeholder="Model answer..." /></div>
                 <div><label className="text-sm font-bold text-slate-600 block mb-1">Max Words (optional)</label>
                   <input type="number" value={draft.maxWords || ""} onChange={e => setDraft(prev => ({ ...prev, maxWords: parseInt(e.target.value) || undefined }))}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400" placeholder="e.g. 200" />
-                </div>
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400 transition-colors duration-150" placeholder="e.g. 200" /></div>
               </div>
             )}
 
             <div><label className="text-sm font-bold text-slate-600 block mb-1">Explanation (shown after answering)</label>
               <input value={draft.explanation || ""} onChange={e => setDraft(prev => ({ ...prev, explanation: e.target.value }))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400" placeholder="Why is this the correct answer?" /></div>
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400 transition-colors duration-150" placeholder="Why is this the correct answer?" /></div>
 
             {/* Marking Scheme */}
             <div className="bg-emerald-50 rounded-xl border border-emerald-200 p-4">
@@ -972,30 +980,30 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
                 <div><label className="text-xs font-bold text-slate-600 block mb-1">Marks for Correct Answer</label>
                   <input type="number" min={0} step={0.5} value={draft.markingScheme?.maxMarks ?? 1}
                     onChange={e => setDraft(prev => ({ ...prev, markingScheme: { ...prev.markingScheme, maxMarks: parseFloat(e.target.value) || 1 } }))}
-                    className="w-full px-3 py-2 rounded-lg border border-emerald-200 text-sm focus:outline-none focus:border-emerald-500 bg-white" /></div>
+                    className="w-full px-3 py-2 rounded-lg border border-emerald-200 text-sm focus:outline-none focus:border-emerald-500 bg-white transition-colors duration-150" /></div>
                 <div><label className="text-xs font-bold text-slate-600 block mb-1">Negative Marks (enter as positive, e.g. 1)</label>
                   <input type="number" min={0} step={0.25} value={draft.markingScheme?.negativeMarks ?? 0}
                     onChange={e => setDraft(prev => ({ ...prev, markingScheme: { ...prev.markingScheme, negativeMarks: parseFloat(e.target.value) || 0 } }))}
-                    className="w-full px-3 py-2 rounded-lg border border-emerald-200 text-sm focus:outline-none focus:border-emerald-500 bg-white" /></div>
+                    className="w-full px-3 py-2 rounded-lg border border-emerald-200 text-sm focus:outline-none focus:border-emerald-500 bg-white transition-colors duration-150" /></div>
               </div>
               <p className="text-[10px] text-slate-500 mt-2">{draft.markingScheme?.negativeMarks ? `Wrong answer deducts ${draft.markingScheme.negativeMarks} mark(s).` : "No negative marking for this question."}</p>
             </div>
 
             <div className="flex gap-2 pt-1">
-              <button onClick={commitQuestion} disabled={uploading} className="px-5 py-2 bg-indigo-600 text-white rounded-lg font-bold text-sm hover:bg-indigo-700 disabled:opacity-50 transition-colors">
-                {uploading ? "Uploading Media..." : editingIdx !== null ? "âœ“ Update Question" : "âœ“ Add Question"}
+              <button onClick={commitQuestion} disabled={uploading} className="px-5 py-2 bg-indigo-600 text-white rounded-lg font-bold text-sm hover:bg-indigo-700 disabled:opacity-50 transition-colors duration-150">
+                {uploading ? "Uploading Media..." : editingIdx !== null ? "Update Question" : "Add Question"}
               </button>
-              <button onClick={() => { setBuilderOpen(false); setEditingIdx(null); }} className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg font-bold text-sm hover:bg-slate-200">Cancel</button>
+              <button onClick={() => { setBuilderOpen(false); setEditingIdx(null); }} className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg font-bold text-sm hover:bg-slate-200 transition-colors duration-150">Cancel</button>
             </div>
           </div>
         )}
 
         <div className="flex gap-3 pt-2 border-t border-slate-100">
           <button onClick={handleSave} disabled={!title.trim() || questions.length === 0}
-            className={`px-5 py-2.5 rounded-lg font-bold text-sm transition-colors ${title.trim() && questions.length > 0 ? "bg-emerald-600 text-white hover:bg-emerald-700" : "bg-slate-200 text-slate-400 cursor-not-allowed"}`}>
-            Save {label} ({questions.length} questions Â· {totalMarks} marks)
+            className={`px-5 py-2.5 rounded-lg font-bold text-sm transition-colors duration-150 ${title.trim() && questions.length > 0 ? "bg-emerald-600 text-white hover:bg-emerald-700" : "bg-slate-200 text-slate-400 cursor-not-allowed"}`}>
+            Save {label} ({questions.length} questions | {totalMarks} marks)
           </button>
-          <button onClick={onClose} className="px-4 py-2.5 bg-slate-100 text-slate-600 rounded-lg font-bold text-sm hover:bg-slate-200">Cancel</button>
+          <button onClick={onClose} className="px-4 py-2.5 bg-slate-100 text-slate-600 rounded-lg font-bold text-sm hover:bg-slate-200 transition-colors duration-150">Cancel</button>
         </div>
       </div>
     </div>

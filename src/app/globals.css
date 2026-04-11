@@ -28,32 +28,87 @@ body {
   overflow-x: hidden;
 }
 
+/* ============ UTILITY ANIMATIONS ============ */
 @layer utilities {
+  /* Bouncy hover — fast and snappy */
   .bouncy-hover {
-    @apply transition-transform duration-300 ease-out;
+    @apply transition-transform duration-150 ease-out;
   }
-
   .bouncy-hover:hover {
-    @apply scale-105 -rotate-1;
+    @apply scale-105;
   }
-
   .bouncy-hover:active {
     @apply scale-95;
+  }
+
+  /* Fade in from below — for page elements */
+  .animate-fade-in-up {
+    animation: fadeInUp 0.25s ease-out both;
+  }
+
+  /* Staggered children: apply to parent, children get delayed */
+  .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger-children > *:nth-child(2) { animation-delay: 40ms; }
+  .stagger-children > *:nth-child(3) { animation-delay: 80ms; }
+  .stagger-children > *:nth-child(4) { animation-delay: 120ms; }
+  .stagger-children > *:nth-child(5) { animation-delay: 160ms; }
+  .stagger-children > *:nth-child(6) { animation-delay: 200ms; }
+  .stagger-children > *:nth-child(7) { animation-delay: 240ms; }
+  .stagger-children > *:nth-child(8) { animation-delay: 280ms; }
+
+  /* Slide in from right */
+  .animate-slide-in {
+    animation: slideIn 0.2s ease-out both;
+  }
+
+  /* Scale pop */
+  .animate-pop {
+    animation: scalePop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scalePop {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
 @keyframes bounce-slow {
-
-  0%,
-  100% {
+  0%, 100% {
     transform: translateY(0);
   }
-
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-8px);
   }
 }
 
 .animate-float {
-  animation: bounce-slow 4s ease-in-out infinite;
+  animation: bounce-slow 2.5s ease-in-out infinite;
 }
