@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../contexts/AuthContext";
 import Sparky from "../components/Sparky";
@@ -8,12 +8,28 @@ import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, currentUser } = useAuth();
   const [step, setStep] = useState<"email" | "otp">("email");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // If Supabase automatically logs us in via Magic Link click, handle it!
+  useEffect(() => {
+    if (currentUser) {
+      if (currentUser.ageGroup) {
+         switch (currentUser.ageGroup) {
+           case "kids": router.push("/learn/kids"); break;
+           case "explorer": router.push("/learn/explorer"); break;
+           case "scholar": router.push("/learn/scholar"); break;
+           default: router.push("/learn/kids"); break;
+         }
+      } else {
+         router.push("/learn/onboarding");
+      }
+    }
+  }, [currentUser, router]);
 
   const handleEmailSubmit = async () => {
     if (!email || !email.includes("@")) {
@@ -27,7 +43,8 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          shouldCreateUser: true
+          shouldCreateUser: true,
+          emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/learn/login` : undefined
         }
       });
 
