@@ -72,55 +72,55 @@ export default function KidsSubjectView({
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-6 relative space-y-12">
-        {/* Winding Map of Chapters */}
+      <div className="w-full max-w-6xl mx-auto px-6 relative mb-32">
+        <div className="flex flex-wrap items-start justify-center gap-8 md:gap-12">
+        {/* Playful Spread of Chapters */}
         {semestersToDisplay.filter(s => s.chapters.length > 0).map((chapter, chapIdx) => {
           const color = EDIBLE_COLORS[chapIdx % EDIBLE_COLORS.length];
           const isOpen = activeChapter === chapter.id;
 
           return (
-            <div key={chapter.id} className="relative flex flex-col items-center">
-              {/* Path line to next chapter */}
-              {chapIdx < semestersToDisplay.length - 1 && !isOpen && (
-                <div className="absolute top-[110px] w-4 h-16 bg-white/60 rounded-full -z-10"></div>
-              )}
+            <div key={chapter.id} className={`relative flex flex-col items-center transition-all duration-500 ${isOpen ? 'w-full basis-full mt-4 mb-12' : 'w-full max-w-[280px]'}`}>
 
               {/* Big Squishy Chapter Button */}
               <button
                 onClick={() => setActiveChapter(isOpen ? null : chapter.id)}
-                className="group relative transition-transform duration-300 w-full max-w-[280px]"
-                style={{ transformOrigin: "center bottom" }}
+                className={`group relative transition-transform duration-300 w-full ${!isOpen && 'hover:-translate-y-2'}`}
+                style={{ maxWidth: isOpen ? "320px" : "100%", transformOrigin: "center bottom" }}
               >
-                <div className={`absolute inset-0 ${color.border} rounded-[3rem] top-3`}></div>
-                <div className={`relative ${color.bg} border-4 border-white/40 rounded-[3rem] px-6 py-8 shadow-xl transform transition-transform duration-150 active:translate-y-3 flex items-center justify-center gap-4`}>
+                <div className={`absolute inset-0 ${color.border} rounded-[3rem] top-3 shadow-lg`}></div>
+                <div className={`relative ${color.bg} border-4 border-white/40 rounded-[3rem] px-6 py-8 shadow-xl flex items-center justify-center gap-4 active:translate-y-2 transition-all`}>
                     <div className="absolute top-2 left-6 right-6 h-4 bg-white/30 rounded-full blur-[2px]"></div>
                     <span className="text-6xl text-white font-black drop-shadow-md">{chapIdx + 1}</span>
-                    <span className="text-4xl">{isOpen ? "🔽" : "▶️"}</span>
+                    <span className={`text-4xl transition-transform duration-300 ${isOpen ? '-rotate-180' : ''}`}>🔽</span>
                 </div>
               </button>
 
               {/* Opened Subtopics directly below */}
               {isOpen && (
-                <div className="w-full bg-white/60 backdrop-blur-md rounded-[3rem] p-6 mt-6 border-4 border-white/80 shadow-inner flex flex-col gap-6 relative">
+                <div className="w-full bg-white/50 backdrop-blur-xl rounded-[3rem] p-6 md:p-10 mt-8 border-[6px] border-white/80 shadow-2xl flex flex-col gap-6 relative animate-fade-in-up">
+                  <h3 className="text-2xl font-black text-slate-800 text-center mb-4">Activities & Lessons</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {chapter.chapters.sort((a, b) => a.order - b.order).map((subtopic, subIdx) => (
-                    <div key={subtopic.id} className="bg-white rounded-[2rem] p-4 shadow-sm border-2 border-slate-100 flex flex-col gap-3">
+                    <div key={subtopic.id} className="bg-white rounded-[2rem] p-5 shadow-md border-2 border-slate-100 flex flex-col gap-4 bouncy-hover">
                       
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 font-black text-xl">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-12 h-12 bg-slate-100 rounded-full flex shrink-0 items-center justify-center text-slate-500 font-black text-xl shadow-inner border border-slate-200">
                           {subIdx + 1}
                         </div>
-                        {/* Notice we still have a title here for parental guidance, but the actions are purely icons */}
-                        <h4 className="text-lg font-bold text-slate-700 leading-tight">{subtopic.title}</h4>
+                        <h4 className="text-md font-bold text-slate-700 leading-tight">{subtopic.title}</h4>
                       </div>
 
                       {/* Pure Icon Action Buttons inside squishy containers */}
-                      <div className="flex gap-2">
+                      <div className="flex gap-3 mt-auto">
                         <button 
                           onClick={() => handleActionClick("video", `sub-${subtopic.id}`)}
                           className="flex-1 relative group"
+                          title="Watch Video"
                         >
                            <div className="absolute inset-0 bg-indigo-500 rounded-[1.5rem] top-2"></div>
-                           <div className={`relative bg-indigo-400 border-2 border-indigo-200 rounded-[1.5rem] py-4 flex items-center justify-center text-4xl transform transition-transform duration-100 active:translate-y-2 ${clickedItem === `video-sub-${subtopic.id}` ? 'scale-110' : ''}`}>
+                           <div className={`relative bg-indigo-400 border-2 border-indigo-200 rounded-[1.5rem] py-3 flex items-center justify-center text-3xl transform transition-transform duration-100 active:translate-y-2 ${clickedItem === `video-sub-${subtopic.id}` ? 'scale-110' : 'group-hover:-translate-y-1'}`}>
                              <div className="absolute top-1 left-3 right-3 h-2 bg-white/30 rounded-full blur-[1px]"></div>
                              🎬
                            </div>
@@ -128,9 +128,10 @@ export default function KidsSubjectView({
                         <button 
                           onClick={() => handleActionClick("notes", `sub-${subtopic.id}`)}
                           className="flex-1 relative group"
+                          title="Read Notes"
                         >
                            <div className="absolute inset-0 bg-emerald-600 rounded-[1.5rem] top-2"></div>
-                           <div className={`relative bg-emerald-500 border-2 border-emerald-300 rounded-[1.5rem] py-4 flex items-center justify-center text-4xl transform transition-transform duration-100 active:translate-y-2 ${clickedItem === `notes-sub-${subtopic.id}` ? 'scale-110' : ''}`}>
+                           <div className={`relative bg-emerald-500 border-2 border-emerald-300 rounded-[1.5rem] py-3 flex items-center justify-center text-3xl transform transition-transform duration-100 active:translate-y-2 ${clickedItem === `notes-sub-${subtopic.id}` ? 'scale-110' : 'group-hover:-translate-y-1'}`}>
                              <div className="absolute top-1 left-3 right-3 h-2 bg-white/30 rounded-full blur-[1px]"></div>
                              📝
                            </div>
@@ -138,9 +139,10 @@ export default function KidsSubjectView({
                         <button 
                           onClick={() => handleActionClick("practice", `mock-quiz-1`)}
                           className="flex-1 relative group"
+                          title="Practice Quiz"
                         >
-                           <div className="absolute inset-0 bg-amber-500 rounded-[1.5rem] top-2"></div>
-                           <div className={`relative bg-amber-400 border-2 border-amber-200 rounded-[1.5rem] py-4 flex items-center justify-center text-4xl transform transition-transform duration-100 active:translate-y-2 ${clickedItem === `practice-mock-quiz-1` ? 'scale-110' : ''}`}>
+                           <div className="absolute inset-0 bg-amber-600 rounded-[1.5rem] top-2"></div>
+                           <div className={`relative bg-amber-400 border-2 border-amber-200 rounded-[1.5rem] py-3 flex items-center justify-center text-3xl transform transition-transform duration-100 active:translate-y-2 ${clickedItem === `practice-mock-quiz-1` ? 'scale-110' : 'group-hover:-translate-y-1'}`}>
                              <div className="absolute top-1 left-3 right-3 h-2 bg-white/30 rounded-full blur-[1px]"></div>
                              🎯
                            </div>
@@ -149,12 +151,13 @@ export default function KidsSubjectView({
 
                     </div>
                   ))}
-                  <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-4 h-10 bg-white/60 rounded-full"></div>
+                  </div>
                 </div>
               )}
             </div>
           );
         })}
+        </div>
       </div>
       </div>
     </main>
