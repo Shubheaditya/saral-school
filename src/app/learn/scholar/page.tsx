@@ -63,13 +63,16 @@ export default function ScholarHomepage() {
         
         {/* TOP NAVIGATION / COMMAND PALETTE TRIGGER */}
         <header className="flex items-center justify-between animate-fade-in-up">
-          <div className="flex items-center gap-4">
-            <div className={`w-10 h-10 rounded-full ${isDark ? 'bg-slate-800 border-slate-700 text-white hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-900 hover:bg-slate-50 shadow-sm'} border font-black flex items-center justify-center cursor-pointer transition-colors`} onClick={() => router.push("/learn/profile")}>
-              {currentUser.name.charAt(0)}
-            </div>
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold">Workspace</p>
-              <h1 className={`text-sm font-medium ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{currentUser.name}'s Dashboard</h1>
+          <div className="flex items-center gap-5">
+            <img src="/logo.png" alt="Saral School" className="w-10 h-10 object-contain drop-shadow-sm rounded-lg bg-white p-1" />
+            <div className="flex items-center gap-4">
+              <div className={`w-10 h-10 rounded-full ${isDark ? 'bg-slate-800 border-slate-700 text-white hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-900 hover:bg-slate-50 shadow-sm'} border font-black flex items-center justify-center cursor-pointer transition-colors`} onClick={() => router.push("/learn/profile")}>
+                {currentUser.name.charAt(0)}
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold">Workspace</p>
+                <h1 className={`text-sm font-medium ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{currentUser.name}'s Dashboard</h1>
+              </div>
             </div>
           </div>
 

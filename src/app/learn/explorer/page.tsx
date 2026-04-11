@@ -41,13 +41,16 @@ export default function ExplorerHomepage() {
 
         {/* Header */}
         <header className="flex items-center justify-between animate-fade-in-up">
-          <div className="flex items-center gap-3">
-            <div className={`w-12 h-12 rounded-full ${isDark ? 'bg-gradient-to-br from-indigo-500 to-purple-600 border-slate-700' : 'bg-gradient-to-br from-indigo-400 to-purple-500 border-white'} border-4 shadow-lg flex items-center justify-center text-2xl font-black text-white`}>
-              {currentUser.name.charAt(0)}
-            </div>
-            <div>
-              <p className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Explorer Dashboard</p>
-              <h1 className={`text-lg font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{currentUser.name}</h1>
+          <div className="flex items-center gap-4">
+            <img src="/logo.png" alt="Saral School" className="w-12 h-12 object-contain drop-shadow-sm rounded-xl bg-white p-1" />
+            <div className="flex items-center gap-3">
+              <div className={`w-12 h-12 rounded-full ${isDark ? 'bg-gradient-to-br from-indigo-500 to-purple-600 border-slate-700' : 'bg-gradient-to-br from-indigo-400 to-purple-500 border-white'} border-4 shadow-lg flex items-center justify-center text-2xl font-black text-white`}>
+                {currentUser.name.charAt(0)}
+              </div>
+              <div>
+                <p className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Explorer Dashboard</p>
+                <h1 className={`text-lg font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{currentUser.name}</h1>
+              </div>
             </div>
           </div>
           <TopProfileBar />

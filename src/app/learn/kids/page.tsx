@@ -41,13 +41,16 @@ export default function KidsHomepage() {
 
         {/* Header */}
         <header className="flex items-center justify-between animate-fade-in-up">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-300 to-rose-400 border-4 border-white shadow-lg flex items-center justify-center text-2xl font-black text-white">
-              {currentUser.name.charAt(0)}
-            </div>
-            <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Welcome back!</p>
-              <h1 className="text-lg font-black text-slate-900">{currentUser.name}</h1>
+          <div className="flex items-center gap-4">
+            <img src="/logo.png" alt="Saral School" className="w-12 h-12 object-contain drop-shadow-sm rounded-xl bg-white p-1" />
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-300 to-rose-400 border-4 border-white shadow-lg flex items-center justify-center text-2xl font-black text-white">
+                {currentUser.name.charAt(0)}
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Welcome back!</p>
+                <h1 className="text-lg font-black text-slate-900">{currentUser.name}</h1>
+              </div>
             </div>
           </div>
           <TopProfileBar />
