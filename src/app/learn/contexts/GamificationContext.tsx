@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { GamificationState, Badge } from "../types";
 import { DEFAULT_BADGES } from "../mockData";
+import { useAuth } from "./AuthContext";
 
 interface GamificationContextType extends GamificationState {
   addPoints: (amount: number) => void;
@@ -16,7 +17,7 @@ interface GamificationContextType extends GamificationState {
 
 const GamificationContext = createContext<GamificationContextType | undefined>(undefined);
 
-const STORAGE_KEY = "saral_gamification";
+const STORAGE_KEY = "saral_gamification_local"; 
 
 function getDefaultState(): GamificationState {
   return {
@@ -31,37 +32,55 @@ function getDefaultState(): GamificationState {
   };
 }
 
-function loadState(): GamificationState {
-  if (typeof window === "undefined") return getDefaultState();
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return JSON.parse(stored);
-  } catch {}
-  return getDefaultState();
-}
-
 export function GamificationProvider({ children }: { children: React.ReactNode }) {
+  const { currentUser } = useAuth();
   const [state, setState] = useState<GamificationState>(getDefaultState());
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setState(loadState());
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (loaded) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    // If the user is logged in natively via our new DB architecture
+    if (currentUser && (currentUser as any).stats) {
+       const rawStats = (currentUser as any).stats;
+       setState(prev => ({
+         ...prev,
+         points: rawStats.points ?? 0,
+         gems: rawStats.gems ?? 0,
+         currentStreak: rawStats.currentStreak ?? 0,
+         longestStreak: rawStats.longestStreak ?? 0,
+         lastActiveDate: rawStats.lastActiveDate ?? ""
+       }));
     }
-  }, [state, loaded]);
+    setLoaded(true);
+  }, [currentUser]);
+
+  // Sync to backend DB when points/gems change
+  const syncToDB = useCallback(async (pointsToAdd: number, gemsToAdd: number, doUpdateStreak: boolean = false) => {
+     if (!currentUser?.id) return;
+     try {
+       await fetch("/api/user/stats", {
+         method: "PUT",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify({
+           userId: currentUser.id,
+           pointsToAdd,
+           gemsToAdd,
+           updateStreak: doUpdateStreak
+         })
+       });
+     } catch(e) {
+       console.error("Failed to sync stats", e);
+     }
+  }, [currentUser]);
 
   const addPoints = useCallback((amount: number) => {
     setState((prev) => ({ ...prev, points: prev.points + amount }));
-  }, []);
+    syncToDB(amount, 0);
+  }, [syncToDB]);
 
   const addGems = useCallback((amount: number) => {
     setState((prev) => ({ ...prev, gems: prev.gems + amount }));
-  }, []);
+    syncToDB(0, amount);
+  }, [syncToDB]);
 
   const updateStreak = useCallback(() => {
     setState((prev) => {
@@ -75,6 +94,8 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       let newStreak = prev.lastActiveDate === yesterdayStr ? prev.currentStreak + 1 : 1;
       const longestStreak = Math.max(newStreak, prev.longestStreak);
 
+      syncToDB(0, 0, true);
+
       return {
         ...prev,
         currentStreak: newStreak,
@@ -82,7 +103,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         lastActiveDate: today,
       };
     });
-  }, []);
+  }, [syncToDB]);
 
   const completeQuiz = useCallback((quizId: string) => {
     setState((prev) => {

@@ -2,111 +2,113 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { AuthState, User, AgeGroup, getAgeGroup, AVATARS } from "../types";
+import { supabase } from "@/lib/supabase";
 
 interface AuthContextType extends AuthState {
-  login: (phone: string) => void;
+  login: (email: string) => void;
   logout: () => void;
-  createUser: (data: { name: string; phone: string; email?: string; birthdate: string; avatarIndex: number; parentPin: string; assignedSemester?: number }) => User;
+  createUser?: any; // Marked as optional for backwards compatibility in other pages just in case
   switchUser: (userId: string) => void;
   updateUser: (userId: string, updates: Partial<User>) => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-const STORAGE_KEY = "saral_auth";
-
-function loadAuth(): AuthState {
-  if (typeof window === "undefined") return { isLoggedIn: false, currentUser: null, users: [] };
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return JSON.parse(stored);
-  } catch {}
-  return { isLoggedIn: false, currentUser: null, users: [] };
-}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>({ isLoggedIn: false, currentUser: null, users: [] });
   const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
-    setState(loadAuth());
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (loaded) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-  }, [state, loaded]);
-
-  const login = useCallback((phone: string) => {
-    setState((prev) => {
-      const user = prev.users.find((u) => u.phone === phone);
-      if (user) {
-        return { ...prev, isLoggedIn: true, currentUser: user };
+  const fetchUserFromDB = async (userId: string): Promise<User | null> => {
+    try {
+      const res = await fetch(`/api/user?id=${userId}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.error) return null;
+        return data as User;
       }
-      // New user - will need onboarding
-      return { ...prev, isLoggedIn: true, currentUser: null };
+      return null;
+    } catch (err) {
+      console.error("Failed to fetch user from DB", err);
+      return null;
+    }
+  };
+
+  const refreshUser = useCallback(async () => {
+     const { data } = await supabase.auth.getSession();
+     if (data.session) {
+         const dbUser = await fetchUserFromDB(data.session.user.id);
+         if (dbUser) {
+             setState({ isLoggedIn: true, currentUser: dbUser, users: [dbUser] });
+         } else {
+             setState({ isLoggedIn: true, currentUser: null, users: [] }); // Needs onboarding
+         }
+     } else {
+         setState({ isLoggedIn: false, currentUser: null, users: [] });
+     }
+  }, []);
+
+  useEffect(() => {
+    refreshUser().finally(() => setLoaded(true));
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session) {
+        const dbUser = await fetchUserFromDB(session.user.id);
+        if (dbUser) {
+            setState({ isLoggedIn: true, currentUser: dbUser, users: [dbUser] });
+        } else {
+            setState({ isLoggedIn: true, currentUser: null, users: [] });
+        }
+      } else {
+        setState({ isLoggedIn: false, currentUser: null, users: [] });
+      }
     });
-  }, []);
 
-  const logout = useCallback(() => {
-    setState((prev) => ({ ...prev, isLoggedIn: false, currentUser: null }));
-  }, []);
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [refreshUser]);
 
-  const createUser = useCallback(
-    (data: { name: string; phone: string; email?: string; birthdate: string; avatarIndex: number; parentPin: string; assignedSemester?: number }): User => {
-      const newUser: User = {
-        id: `user-${Date.now()}`,
-        name: data.name,
-        phone: data.phone,
-        email: data.email,
-        birthdate: data.birthdate,
-        avatarIndex: data.avatarIndex,
-        ageGroup: getAgeGroup(data.birthdate, data.assignedSemester),
-        parentPin: data.parentPin,
-        assignedSemester: data.assignedSemester,
-        createdAt: new Date().toISOString(),
-      };
-      setState((prev) => ({
-        ...prev,
-        currentUser: newUser,
-        users: [...prev.users, newUser],
-      }));
-      return newUser;
-    },
-    []
-  );
+  const login = useCallback((email: string) => {
+    refreshUser();
+  }, [refreshUser]);
+
+  const logout = useCallback(async () => {
+    await supabase.auth.signOut();
+    setState({ isLoggedIn: false, currentUser: null, users: [] });
+  }, []);
 
   const switchUser = useCallback((userId: string) => {
-    setState((prev) => {
-      const user = prev.users.find((u) => u.id === userId);
-      return { ...prev, currentUser: user || prev.currentUser };
-    });
+    // For now we only support 1 user profile per supabase identity.
   }, []);
 
-  const updateUser = useCallback((userId: string, updates: Partial<User>) => {
+  const updateUser = useCallback(async (userId: string, updates: Partial<User>) => {
+    // Optimistic cache update
     setState((prev) => {
-      const users = prev.users.map((u) => {
-        if (u.id === userId) {
-          const updated = { ...u, ...updates };
-          // If assignedSemester was changed, recalculate the ageGroup
-          if (updates.assignedSemester !== undefined) {
-             updated.ageGroup = getAgeGroup(updated.birthdate, updated.assignedSemester);
-          }
-          return updated;
-        }
-        return u;
-      });
-      const currentUser = prev.currentUser?.id === userId ? users.find(u => u.id === userId) as User : prev.currentUser;
-      return { ...prev, users, currentUser };
+      if (!prev.currentUser) return prev;
+      const updated = { ...prev.currentUser, ...updates };
+      if (updates.assignedSemester !== undefined && updated.birthdate) {
+          updated.ageGroup = getAgeGroup(updated.birthdate, updated.assignedSemester);
+      }
+      return { ...prev, currentUser: updated, users: [updated] };
     });
+
+    // Best-effort remote update
+    try {
+      await fetch("/api/user", {
+        method: "POST", // The POST method in route.ts handles upserts (onConflictDoUpdate)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: userId, ...updates })
+      });
+    } catch(e) {
+      console.error(e);
+    }
   }, []);
 
   if (!loaded) return null;
 
   return (
-    <AuthContext.Provider value={{ ...state, login, logout, createUser, switchUser, updateUser }}>
+    <AuthContext.Provider value={{ ...state, login, logout, switchUser, updateUser, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

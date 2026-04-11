@@ -11,18 +11,19 @@ function OnboardingContent() {
   const params = useSearchParams();
   const { createUser } = useAuth();
 
-  const phone = params.get("phone") || "";
+  const prefilledEmail = params.get("email") || "";
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [birthdate, setBirthdate] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(prefilledEmail);
   const [avatarIndex, setAvatarIndex] = useState(0);
   const [parentPin, setParentPin] = useState("1234");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const totalSteps = 4;
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step === 1 && !name.trim()) {
       setError("Please enter your name");
       return;
@@ -35,18 +36,45 @@ function OnboardingContent() {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      // Complete onboarding
-      const user = createUser({ name, phone, email: email || undefined, birthdate, avatarIndex, parentPin });
-      switch (user.ageGroup) {
-        case "kids":
-          router.push("/learn/kids");
-          break;
-        case "explorer":
-          router.push("/learn/explorer");
-          break;
-        case "scholar":
-          router.push("/learn/scholar");
-          break;
+      // Complete onboarding via real API
+      setLoading(true);
+      try {
+        const { supabase } = await import("@/lib/supabase");
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          router.push("/learn/login");
+          return;
+        }
+
+        const ageGroup = getAgeGroup(birthdate);
+        
+        const res = await fetch("/api/user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: session.user.id,
+            email: session.user.email || email,
+            name,
+            birthdate,
+            avatarIndex,
+            parentPin,
+            ageGroup
+          })
+        });
+
+        if (!res.ok) throw new Error("Failed to create profile");
+        
+        // Notify AuthContext (optional) but redirect directly
+        switch (ageGroup) {
+          case "kids": router.push("/learn/kids"); break;
+          case "explorer": router.push("/learn/explorer"); break;
+          case "scholar": router.push("/learn/scholar"); break;
+          default: router.push("/learn/kids"); break;
+        }
+      } catch (err: any) {
+        setError(err.message || "An error occurred");
+        setLoading(false);
       }
     }
   };
@@ -183,9 +211,10 @@ function OnboardingContent() {
           )}
           <button
             onClick={handleNext}
-            className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl text-lg font-bold shadow-lg shadow-indigo-200 bouncy-hover"
+            disabled={loading}
+            className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl text-lg font-bold shadow-lg shadow-indigo-200 bouncy-hover disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {step === totalSteps ? "Start Learning! 🚀" : "Next"}
+            {loading ? "Saving..." : step === totalSteps ? "Start Learning! 🚀" : "Next"}
           </button>
         </div>
       </div>

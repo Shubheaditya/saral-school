@@ -97,3 +97,36 @@ export const studentNotes = sqliteTable('student_notes', {
   timestamp: integer('timestamp'),
   createdAt: text('created_at').notNull()
 });
+
+export const users = sqliteTable('users', {
+  id: text('id').primaryKey(), // matches Supabase auth.users ID
+  email: text('email').notNull(),
+  phone: text('phone'),
+  name: text('name').notNull(),
+  birthdate: text('birthdate').notNull(),
+  avatarIndex: integer('avatar_index').notNull(),
+  ageGroup: text('age_group').notNull(),
+  parentPin: text('parent_pin').notNull(),
+  assignedSemester: integer('assigned_semester'),
+  themePreference: text('theme_preference'),
+  createdAt: text('created_at').notNull()
+});
+
+export const userStats = sqliteTable('user_stats', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  points: integer('points').notNull().default(0),
+  gems: integer('gems').notNull().default(0),
+  currentStreak: integer('current_streak').notNull().default(0),
+  longestStreak: integer('longest_streak').notNull().default(0),
+  lastActiveDate: text('last_active_date'),
+});
+
+export const completedContents = sqliteTable('completed_contents', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  contentId: text('content_id').notNull(), // refID of video or quiz
+  type: text('type').notNull(), // 'video', 'quiz', etc.
+  score: integer('score'), // if quiz
+  completedAt: text('completed_at').notNull(),
+});
