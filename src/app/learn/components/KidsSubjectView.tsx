@@ -51,12 +51,15 @@ export default function KidsSubjectView({
       <div className="relative z-10 w-full">
         {/* Header Bar */}
       <div className="sticky top-0 z-50 bg-transparent p-4 flex items-center justify-between">
-        <button 
-          onClick={() => router.back()} 
-          className="w-16 h-16 bg-white border-b-8 border-slate-200 rounded-full flex items-center justify-center text-3xl shadow-md active:border-b-0 active:translate-y-2 transition-all"
-        >
-          ⬅️
-        </button>
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => router.back()} 
+            className="w-16 h-16 bg-white border-b-8 border-slate-200 rounded-full flex items-center justify-center text-3xl shadow-md active:border-b-0 active:translate-y-2 transition-all"
+          >
+            ⬅️
+          </button>
+          <img src="/logo.png" alt="Saral School" className="w-12 h-12 object-contain drop-shadow-md rounded-xl bg-white p-1" />
+        </div>
         <TopProfileBar />
       </div>
 

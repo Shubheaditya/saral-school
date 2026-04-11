@@ -56,12 +56,15 @@ export default function ExplorerSubjectView({
 
       {/* Header Bar */}
       <div className={`sticky top-0 z-50 ${isDark ? 'bg-slate-900/80 backdrop-blur-md border-b border-white/10' : 'bg-white/80 backdrop-blur-md border-b border-slate-200'} p-4 flex items-center justify-between`}>
-        <button
-          onClick={() => router.back()}
-          className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm transition-transform hover:-translate-x-1 ${isDark ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-white hover:bg-slate-50 border border-slate-200'}`}
-        >
-          ←
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => router.back()}
+            className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm transition-transform hover:-translate-x-1 ${isDark ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-white hover:bg-slate-50 border border-slate-200'}`}
+          >
+            ←
+          </button>
+          <img src="/logo.png" alt="Saral School" className="w-10 h-10 object-contain drop-shadow-sm rounded-lg bg-white p-1" />
+        </div>
         <TopProfileBar />
       </div>
 

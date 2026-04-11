@@ -90,12 +90,15 @@ export default function ScholarSubjectView({
       <div className="relative z-10 w-full">
       {/* Zen Breadcrumb Header */}
       <header className={`sticky top-0 z-40 ${isDark ? 'bg-[#0A0A0A]/80 border-white/5' : 'bg-white/80 border-slate-200'} backdrop-blur-md border-b py-3 px-6 lg:px-12 flex items-center justify-between transition-colors duration-500`}>
-        <div className="flex items-center gap-3 text-xs font-medium">
-           <button onClick={() => router.back()} className={`flex items-center gap-1 transition-colors ${isDark ? 'text-slate-500 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}>
-             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg> Dashboard
-           </button>
-           <span className="text-slate-400">/</span>
-           <span className={isDark ? theme.text : theme.lightText}>{subject.name}</span>
+        <div className="flex items-center gap-4">
+          <img src="/logo.png" alt="Saral School" className="w-8 h-8 object-contain drop-shadow-sm rounded-lg bg-white p-0.5" />
+          <div className="flex items-center gap-3 text-xs font-medium">
+             <button onClick={() => router.back()} className={`flex items-center gap-1 transition-colors ${isDark ? 'text-slate-500 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}>
+               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg> Dashboard
+             </button>
+             <span className="text-slate-400">/</span>
+             <span className={isDark ? theme.text : theme.lightText}>{subject.name}</span>
+          </div>
         </div>
         
         <div className="flex items-center gap-4">
