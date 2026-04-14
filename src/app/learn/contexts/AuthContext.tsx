@@ -96,7 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Best-effort remote update
     try {
       await fetch("/api/user", {
-        method: "POST", // The POST method in route.ts handles upserts (onConflictDoUpdate)
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: userId, ...updates })
       });

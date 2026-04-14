@@ -3,80 +3,14 @@
 @theme {
   --font-nunito: "Nunito", sans-serif;
 
-  /* Primary Logo Brand Colors replacing basic pastel equivalents */
-  /* Indigo -> Dark Slate Blue (#293C50 is 800) */
-  --color-indigo-50:  #f4f6f8;
-  --color-indigo-100: #e4eaf0;
-  --color-indigo-200: #c9d5e2;
-  --color-indigo-300: #a1b8ce;
-  --color-indigo-400: #7496b5;
-  --color-indigo-500: #52799d;
-  --color-indigo-600: #426182;
-  --color-indigo-700: #354e6a;
-  --color-indigo-800: #293C50;
-  --color-indigo-900: #263647;
-  --color-indigo-950: #192532;
+  --color-brand-primary: #E0E7FF;
+  --color-brand-secondary: #ECFDF5;
+  --color-brand-accent: #FFF7ED;
+  --color-brand-soft-pink: #FDF2F8;
+  --color-brand-soft-yellow: #FFFBEB;
 
-  /* Pink -> Mauve/Burgundy (#A36576 is 600) */
-  --color-pink-50:  #fbf6f7;
-  --color-pink-100: #f6eaec;
-  --color-pink-200: #eed5db;
-  --color-pink-300: #e2b3c0;
-  --color-pink-400: #d08c9f;
-  --color-pink-500: #bd6a82;
-  --color-pink-600: #A36576;
-  --color-pink-700: #894556;
-  --color-pink-800: #723b49;
-  --color-pink-900: #623441;
-  --color-pink-950: #341820;
-
-  /* Amber/Rose -> Soft Light Rose/Coral (#D99C9C is 400) */
-  --color-amber-50:  #fcf6f6;
-  --color-amber-100: #f8ebeb;
-  --color-amber-200: #f2d8d8;
-  --color-amber-300: #e9bcbc;
-  --color-amber-400: #D99C9C;
-  --color-amber-500: #cb7777;
-  --color-amber-600: #b55a5a;
-  --color-amber-700: #974848;
-  --color-amber-800: #7e3e3e;
-  --color-amber-900: #693838;
-  --color-amber-950: #381a1a;
-
-  /* Neutral/Slate -> Very slightly warm off-white, replacing default cool slate */
-  --color-slate-50:  #F0F1EB;
-  --color-slate-100: #e2e4db;
-  --color-slate-200: #cfd3c4;
-  --color-slate-300: #b7bea6;
-  --color-slate-400: #9da689;
-  --color-slate-500: #838e6e;
-  --color-slate-600: #687355;
-  --color-slate-700: #545c47;
-  --color-slate-800: #444b3b;
-  --color-slate-900: #393e32;
-  --color-slate-950: #1d2119;
-
-  /* Emerald -> Deep Sage Green to match muted aesthetic */
-  --color-emerald-50:  #f0f5f2;
-  --color-emerald-100: #dae8df;
-  --color-emerald-200: #bbd3c5;
-  --color-emerald-300: #93b7a5;
-  --color-emerald-400: #709d84;
-  --color-emerald-500: #57856b;
-  --color-emerald-600: #446953;
-  --color-emerald-700: #355341;
-  --color-emerald-800: #2d4336;
-  --color-emerald-900: #26382d;
-  --color-emerald-950: #141f19;
-
-  --color-brand-primary: var(--color-indigo-100);
-  --color-brand-secondary: var(--color-emerald-50);
-  --color-brand-accent: var(--color-amber-50);
-  --color-brand-soft-pink: var(--color-pink-50);
-  --color-brand-soft-yellow: var(--color-slate-50);
-
-  --color-text-main: var(--color-indigo-800);
-  --color-text-muted: var(--color-slate-600);
+  --color-text-main: #1E293B;
+  --color-text-muted: #64748B;
 
   --radius-3xl: 1.5rem;
 }
