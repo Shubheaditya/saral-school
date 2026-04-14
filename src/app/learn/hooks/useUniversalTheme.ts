@@ -38,7 +38,7 @@ export function useUniversalTheme() {
   }
 
   if (currentUser.ageGroup === "scholar") {
-    const isDark = currentUser.themePreference !== "light";
+    const isDark = currentUser.themePreference === "dark";
     return {
       backgroundClass: isDark ? "bg-[#0A0A0A]" : "bg-[#F8FAFC]",
       textClass: isDark ? "text-slate-300" : "text-slate-700",

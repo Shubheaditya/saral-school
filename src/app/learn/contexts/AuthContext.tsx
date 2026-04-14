@@ -83,12 +83,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updateUser = useCallback(async (userId: string, updates: Partial<User>) => {
+    let finalUpdates = { ...updates };
+
     // Optimistic cache update
     setState((prev) => {
       if (!prev.currentUser) return prev;
       const updated = { ...prev.currentUser, ...updates };
       if (updates.assignedSemester !== undefined && updated.birthdate) {
-          updated.ageGroup = getAgeGroup(updated.birthdate, updated.assignedSemester);
+          updated.ageGroup = getAgeGroup(updated.birthdate, updates.assignedSemester);
+          finalUpdates.ageGroup = updated.ageGroup;
       }
       return { ...prev, currentUser: updated, users: [updated] };
     });
@@ -98,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await fetch("/api/user", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: userId, ...updates })
+        body: JSON.stringify({ id: userId, ...finalUpdates })
       });
     } catch(e) {
       console.error(e);
