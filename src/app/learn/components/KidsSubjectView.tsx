@@ -25,7 +25,7 @@ export default function KidsSubjectView({
   currentUser: import("../types").User | null;
 }) {
   // FIND THE ACTIVE SEMESTER
-  const defaultSemNum = currentUser?.ageGroup === "scholar" ? 11 : currentUser?.ageGroup === "explorer" ? 5 : 1;
+  const defaultSemNum = currentUser?.ageGroup === "scholar" ? 10 : 1;
   const targetSemNum = currentUser?.assignedSemester || defaultSemNum;
   const activeSemester = subject.semesters.find(s => s.id === `${subject.id}-sem-${targetSemNum}`) || subject.semesters[0];
   const semestersToDisplay = activeSemester ? [activeSemester] : [];

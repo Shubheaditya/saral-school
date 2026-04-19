@@ -22,10 +22,8 @@ export default function LearnPage() {
       case "kids":
         router.replace("/learn/kids");
         break;
-      case "explorer":
-        router.replace("/learn/explorer");
-        break;
       case "scholar":
+      default:
         router.replace("/learn/scholar");
         break;
     }

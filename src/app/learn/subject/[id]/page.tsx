@@ -7,7 +7,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useGamification } from "../../contexts/GamificationContext";
 import TopProfileBar from "../../components/TopProfileBar";
 import KidsSubjectView from "../../components/KidsSubjectView";
-import ExplorerSubjectView from "../../components/ExplorerSubjectView";
 import ScholarSubjectView from "../../components/ScholarSubjectView";
 import UniversalBackground from "../../components/UniversalBackground";
 import { useUniversalTheme } from "../../hooks/useUniversalTheme";
@@ -24,7 +23,7 @@ export default function SubjectPage() {
   const subject = getSubjectById(subjectId);
 
   // Directly open the first chapter by default
-  const defaultSemNum = currentUser?.ageGroup === "scholar" ? 11 : currentUser?.ageGroup === "explorer" ? 5 : 1;
+  const defaultSemNum = currentUser?.ageGroup === "scholar" ? 10 : 1;
   const targetSemNum = currentUser?.assignedSemester || defaultSemNum;
   const activeSemester = subject?.semesters.find(s => s.id === `${subject.id}-sem-${targetSemNum}`) || subject?.semesters[0];
   const chapters = activeSemester?.chapters || [];
@@ -66,10 +65,6 @@ export default function SubjectPage() {
 
   if (currentUser?.ageGroup === "kids") {
     return <KidsSubjectView subject={subject} onAction={handleAction} router={router} currentUser={currentUser} />;
-  }
-
-  if (currentUser?.ageGroup === "explorer") {
-    return <ExplorerSubjectView subject={subject} onAction={handleAction} router={router} currentStreak={currentStreak} currentUser={currentUser} />;
   }
 
   if (currentUser?.ageGroup === "scholar") {

@@ -18,29 +18,23 @@ export default function PracticePage() {
     return null;
   }
 
-  // Type assertion for safety
   const user = currentUser as User;
-
-  // Dynamic Theme Generation
-  const isDark = user?.themePreference !== "light";
   
   const getTheme = () => {
     switch (user.ageGroup) {
       case "kids":
-         return { bg: "bg-emerald-50", text: "text-emerald-900", card: "bg-white shadow-[0_4px_0_#a7f3d0]", border: "border-emerald-200", button: "bg-emerald-500 text-white shadow-[0_4px_0_#059669]", pillBg: "bg-white", pillActive: "bg-emerald-500 text-white shadow-[0_4px_0_#059669]", pillInactive: "text-slate-500 border-2 border-slate-100" };
-      case "explorer":
-         return { bg: "bg-slate-900", text: "text-white", card: "bg-slate-800/80 backdrop-blur border border-white/10 shadow-xl", border: "border-teal-500/50", button: "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg", pillBg: "bg-slate-800", pillActive: "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg", pillInactive: "text-slate-400 hover:text-white border border-white/10" };
+         return { bg: "bg-rose-50", text: "text-slate-900", card: "bg-white shadow-[0_4px_0_#f3e8ee]", border: "border-rose-200", button: "bg-gradient-to-r from-rose-400 to-purple-500 text-white shadow-lg", pillBg: "bg-white", pillActive: "bg-gradient-to-r from-rose-400 to-purple-500 text-white shadow-lg", pillInactive: "text-slate-500 border-2 border-slate-100" };
       case "scholar":
       default:
          return { 
-           bg: isDark ? "bg-[#0A0A0A]" : "bg-[#F8FAFC]", 
-           text: isDark ? "text-slate-200" : "text-slate-900", 
-           card: isDark ? "bg-slate-900/50 backdrop-blur-xl border border-white/10" : "bg-white shadow-sm border border-slate-200", 
-           border: isDark ? "border-slate-700" : "border-slate-200",
-           button: isDark ? "bg-white/10 text-white hover:bg-white/20 border border-white/10" : "bg-slate-900 text-white hover:bg-slate-800",
-           pillBg: isDark ? "bg-slate-900" : "bg-white",
-           pillActive: isDark ? "bg-slate-800 text-white border border-slate-600" : "bg-slate-900 text-white shadow-sm",
-           pillInactive: isDark ? "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50" : "text-slate-500 hover:text-slate-900 hover:bg-slate-50 border border-slate-200"
+           bg: "bg-[#F8FAFC]", 
+           text: "text-slate-900", 
+           card: "bg-white shadow-sm border border-slate-200", 
+           border: "border-slate-200",
+           button: "bg-gradient-to-r from-rose-500 to-purple-500 text-white hover:shadow-lg",
+           pillBg: "bg-white",
+           pillActive: "bg-gradient-to-r from-rose-500 to-purple-500 text-white shadow-sm",
+           pillInactive: "text-slate-500 hover:text-slate-900 hover:bg-slate-50 border border-slate-200"
          };
     }
   };
@@ -52,8 +46,8 @@ export default function PracticePage() {
     : quizzes.filter(q => q.subjectId === selectedSubject);
 
   const quizModes = [
-    { mode: "quiz", label: "Quick Quizzes", icon: "📝", description: "Short, topic-specific quizzes", color: "bg-emerald-50 border-emerald-200" },
-    { mode: "chapter-test", label: "Chapter Tests", icon: "📋", description: "Full chapter assessments", color: "bg-rose-50 border-rose-200" },
+    { mode: "quiz", label: "Quick Quizzes", icon: "📝", description: "Short, topic-specific quizzes", color: "bg-rose-50 border-rose-200" },
+    { mode: "chapter-test", label: "Chapter Tests", icon: "📋", description: "Full chapter assessments", color: "bg-purple-50 border-purple-200" },
     { mode: "brain-game", label: "Brain Games", icon: "🧠", description: "Fun educational games", color: "bg-pink-50 border-pink-200" },
   ];
 
@@ -69,7 +63,7 @@ export default function PracticePage() {
       </div>
 
       <div className="px-6 pb-6 max-w-4xl mx-auto">
-        <p className={`font-medium ${isDark || user.ageGroup === 'explorer' ? 'text-slate-400' : 'text-slate-500'}`}>Sharpen your skills and earn rewards.</p>
+        <p className="font-medium text-slate-500">Sharpen your skills and earn rewards.</p>
       </div>
 
       {/* Subject Filters */}
@@ -103,30 +97,26 @@ export default function PracticePage() {
         {quizModes.map(mode => {
           const modeQuizzes = filteredQuizzes.filter(q => q.mode === mode.mode);
           
-          // Determine custom styles for the category card based on theme
           let categoryBg = "bg-white/50";
           let categoryBorder = "border-slate-200";
           
           if (user.ageGroup === 'kids') {
-            categoryBg = mode.color.split(" ")[0]; // Extract the background color from mode.color
+            categoryBg = mode.color.split(" ")[0];
             categoryBorder = "border-4 border-slate-900/10 shadow-[0_4px_0_rgba(0,0,0,0.05)]";
-          } else if (user.ageGroup === 'explorer') {
-            categoryBg = "bg-slate-800/50 backdrop-blur-md";
-            categoryBorder = "border border-white/5";
           } else {
-            categoryBg = isDark ? "bg-slate-900/30 border-white/5" : "bg-slate-50/50 border-slate-100";
+            categoryBg = "bg-slate-50/50 border-slate-100";
             categoryBorder = "border";
           }
           
           return (
             <div key={mode.mode} className={`${categoryBg} rounded-3xl p-6 sm:p-8 ${categoryBorder}`}>
               <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
-                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shrink-0 ${user.ageGroup === 'kids' ? 'bg-white shadow-sm' : isDark ? 'bg-slate-800' : 'bg-white shadow-sm'}`}>
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shrink-0 bg-white shadow-sm">
                    {mode.icon}
                 </div>
                 <div className="flex-1 w-full">
-                  <h3 className={`text-xl font-black ${user.ageGroup === 'explorer' || isDark ? 'text-white' : 'text-slate-900'}`}>{mode.label}</h3>
-                  <p className={`text-sm mt-1 ${isDark || user.ageGroup === 'explorer' ? 'text-slate-400' : 'text-slate-500'}`}>{mode.description}</p>
+                  <h3 className="text-xl font-black text-slate-900">{mode.label}</h3>
+                  <p className="text-sm mt-1 text-slate-500">{mode.description}</p>
                   
                   {modeQuizzes.length > 0 ? (
                     <div className="mt-5 space-y-3">
@@ -136,17 +126,17 @@ export default function PracticePage() {
                           onClick={() => router.push(`/learn/quiz/${quiz.id}`)}
                           className={`w-full flex items-center gap-4 p-4 text-left transition-all ${theme.card} group ${user.ageGroup === 'kids' ? 'rounded-2xl active:translate-y-1 active:shadow-none' : 'rounded-xl hover:-translate-y-1'}`}
                         >
-                          <span className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-black transition-colors ${user.ageGroup === 'kids' ? 'bg-rose-100 text-rose-600' : isDark ? 'bg-rose-500/20 text-rose-400 group-hover:bg-rose-500/40' : 'bg-rose-50 text-rose-600 group-hover:bg-rose-100'}`}>▶</span>
+                          <span className="flex items-center justify-center w-8 h-8 rounded-full text-xs font-black transition-colors bg-rose-50 text-rose-600 group-hover:bg-rose-100">▶</span>
                           <div className="flex-1">
                             <p className="font-bold text-base">{quiz.title}</p>
-                            <p className={`text-xs mt-0.5 ${isDark || user.ageGroup === 'explorer' ? 'text-slate-400' : 'text-slate-500'}`}>{quiz.questions.length} questions • <span className={isDark ? 'text-amber-400' : 'text-amber-600'}>{quiz.totalPoints} pts</span></p>
+                            <p className="text-xs mt-0.5 text-slate-500">{quiz.questions.length} questions • <span className="text-amber-600">{quiz.totalPoints} pts</span></p>
                           </div>
                         </button>
                       ))}
                     </div>
                   ) : (
-                    <div className={`mt-5 p-6 rounded-2xl text-center border-2 border-dashed ${isDark || user.ageGroup === 'explorer' ? 'border-slate-700 bg-slate-800/30' : 'border-slate-200 bg-slate-50/50'}`}>
-                      <p className={`text-sm font-medium ${isDark || user.ageGroup === 'explorer' ? 'text-slate-500' : 'text-slate-400'}`}>No {mode.label.toLowerCase()} available for this topic</p>
+                    <div className="mt-5 p-6 rounded-2xl text-center border-2 border-dashed border-slate-200 bg-slate-50/50">
+                      <p className="text-sm font-medium text-slate-400">No {mode.label.toLowerCase()} available for this topic</p>
                     </div>
                   )}
                 </div>

@@ -4,7 +4,7 @@
 
 // --- User & Auth ---
 
-export type AgeGroup = "kids" | "explorer" | "scholar";
+export type AgeGroup = "kids" | "scholar";
 
 export interface User {
   id: string;
@@ -284,12 +284,10 @@ export interface ScoreboardEntry {
 
 export function getAgeGroup(birthdate: string, assignedSemester?: number): AgeGroup {
   // If a parent has explicitly assigned a semester, base the UI on the semester level
-  // Semester 1-4: Kids (approx grade K-2)
-  // Semester 5-10: Explorer (approx grade 3-6)
-  // Semester 11+: Scholar (approx grade 7+)
+  // Semester 1-9: Kids (playful UI)
+  // Semester 10+: Scholar (professional UI)
   if (assignedSemester !== undefined) {
-    if (assignedSemester <= 4) return "kids";
-    if (assignedSemester <= 10) return "explorer";
+    if (assignedSemester <= 9) return "kids";
     return "scholar";
   }
 
@@ -301,8 +299,7 @@ export function getAgeGroup(birthdate: string, assignedSemester?: number): AgeGr
   if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
     age--;
   }
-  if (age < 6) return "kids";
-  if (age < 10) return "explorer";
+  if (age < 8) return "kids";
   return "scholar";
 }
 

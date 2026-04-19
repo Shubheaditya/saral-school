@@ -21,7 +21,6 @@ export default function LoginPage() {
       if (currentUser.ageGroup) {
          switch (currentUser.ageGroup) {
            case "kids": router.push("/learn/kids"); break;
-           case "explorer": router.push("/learn/explorer"); break;
            case "scholar": router.push("/learn/scholar"); break;
            default: router.push("/learn/kids"); break;
          }
@@ -85,7 +84,6 @@ export default function LoginPage() {
             login(email); // For legacy local behavior trigger if needed
             switch (userData.ageGroup) {
               case "kids": router.push("/learn/kids"); break;
-              case "explorer": router.push("/learn/explorer"); break;
               case "scholar": router.push("/learn/scholar"); break;
               default: router.push("/learn/kids"); break;
             }

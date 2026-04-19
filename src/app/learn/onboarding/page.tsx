@@ -68,7 +68,6 @@ function OnboardingContent() {
         // Notify AuthContext (optional) but redirect directly
         switch (ageGroup) {
           case "kids": router.push("/learn/kids"); break;
-          case "explorer": router.push("/learn/explorer"); break;
           case "scholar": router.push("/learn/scholar"); break;
           default: router.push("/learn/kids"); break;
         }
@@ -80,7 +79,7 @@ function OnboardingContent() {
   };
 
   const ageGroup = birthdate ? getAgeGroup(birthdate) : null;
-  const ageGroupLabels = { kids: "Little Learner (3-5)", explorer: "Explorer (6-9)", scholar: "Scholar (10-12)" };
+  const ageGroupLabels: Record<string, string> = { kids: "Little Learner (3-7)", scholar: "Scholar (8+)" };
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-12 bg-gradient-to-b from-rose-50/60 via-purple-50/30 to-white">
