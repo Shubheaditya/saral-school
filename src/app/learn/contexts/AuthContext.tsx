@@ -88,22 +88,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!prev.currentUser) return prev;
       const updated = { ...prev.currentUser, ...updates };
       if (updates.assignedSemester !== undefined && updated.birthdate) {
-          updated.ageGroup = getAgeGroup(updated.birthdate, updated.assignedSemester);
+          updated.ageGroup = getAgeGroup(updated.birthdate, updates.assignedSemester);
       }
       return { ...prev, currentUser: updated, users: [updated] };
     });
 
-    // Best-effort remote update
+    // Persist to database via PATCH (partial update)
     try {
+      // Also compute and send the new ageGroup if semester changed
+      const patchBody: Record<string, any> = { id: userId, ...updates };
+      if (updates.assignedSemester !== undefined) {
+        const current = state.currentUser;
+        if (current?.birthdate) {
+          patchBody.ageGroup = getAgeGroup(current.birthdate, updates.assignedSemester);
+        }
+      }
+      
       await fetch("/api/user", {
-        method: "POST", // The POST method in route.ts handles upserts (onConflictDoUpdate)
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: userId, ...updates })
+        body: JSON.stringify(patchBody)
       });
     } catch(e) {
       console.error(e);
     }
-  }, []);
+  }, [state.currentUser]);
 
   if (!loaded) return null;
 

@@ -82,3 +82,43 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to create user' }, { status: 500 });
   }
 }
+
+export async function PATCH(request: Request) {
+  try {
+    const body = await request.json();
+    const { id, ...updates } = body;
+
+    if (!id) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
+
+    // Check user exists
+    const existing = await db.select().from(users).where(eq(users.id, id));
+    if (existing.length === 0) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Build the set object with only provided fields
+    const setObj: Record<string, any> = {};
+    if (updates.name !== undefined) setObj.name = updates.name;
+    if (updates.email !== undefined) setObj.email = updates.email;
+    if (updates.phone !== undefined) setObj.phone = updates.phone;
+    if (updates.birthdate !== undefined) setObj.birthdate = updates.birthdate;
+    if (updates.avatarIndex !== undefined) setObj.avatarIndex = updates.avatarIndex;
+    if (updates.ageGroup !== undefined) setObj.ageGroup = updates.ageGroup;
+    if (updates.parentPin !== undefined) setObj.parentPin = updates.parentPin;
+    if (updates.assignedSemester !== undefined) setObj.assignedSemester = updates.assignedSemester;
+    if (updates.themePreference !== undefined) setObj.themePreference = updates.themePreference;
+
+    if (Object.keys(setObj).length === 0) {
+      return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
+    }
+
+    await db.update(users).set(setObj).where(eq(users.id, id));
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('API Error patching user:', error);
+    return NextResponse.json({ error: 'Failed to update user' }, { status: 500 });
+  }
+}
