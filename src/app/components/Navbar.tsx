@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function Navbar() {
     return (
-        <nav className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 backdrop-blur-md bg-white/80 border-b border-indigo-100">
+        <nav className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 backdrop-blur-md bg-white/80 border-b border-rose-100">
             <Link href="/" className="flex items-center gap-2">
                 <div className="w-10 h-10 rounded-xl overflow-hidden shadow-sm bouncy-hover cursor-pointer bg-white flex items-center justify-center p-0.5">
                     <Image src="/logo.png" alt="Saral School Logo" width={40} height={40} className="object-contain w-full h-full" />
@@ -12,13 +12,13 @@ export default function Navbar() {
                 <span className="text-xl font-extrabold tracking-tight text-slate-900">Saral School</span>
             </Link>
             <div className="hidden md:flex items-center gap-8 font-semibold text-slate-700">
-                <Link href="/" className="hover:text-indigo-600 transition-colors">Home</Link>
-                <Link href="/how-it-works" className="hover:text-indigo-600 transition-colors">How It Works</Link>
-                <Link href="/about" className="hover:text-indigo-600 transition-colors">About</Link>
+                <Link href="/" className="hover:text-rose-600 transition-colors">Home</Link>
+                <Link href="/how-it-works" className="hover:text-rose-600 transition-colors">How It Works</Link>
+                <Link href="/about" className="hover:text-rose-600 transition-colors">About</Link>
                 <Link href="/app" className="bg-emerald-600 text-white px-6 py-2 rounded-2xl font-bold shadow-sm bouncy-hover">
                     Get the App
                 </Link>
-                <Link href="/about#donate" className="bg-indigo-600 text-white px-6 py-2 rounded-2xl font-bold shadow-sm bouncy-hover">
+                <Link href="/about#donate" className="bg-rose-600 text-white px-6 py-2 rounded-2xl font-bold shadow-sm bouncy-hover">
                     Support Us
                 </Link>
             </div>

@@ -12,9 +12,9 @@ export default function UniversalBackground() {
   if (currentUser.ageGroup === "kids") {
     return (
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-pink-200/40 rounded-full mix-blend-multiply filter blur-[100px] animate-float"></div>
-        <div className="absolute top-[20%] right-[-10%] w-[60vw] h-[60vw] bg-yellow-200/40 rounded-full mix-blend-multiply filter blur-[100px] animate-float" style={{ animationDelay: "2s" }}></div>
-        <div className="absolute bottom-[-20%] left-[20%] w-[70vw] h-[70vw] bg-emerald-200/40 rounded-full mix-blend-multiply filter blur-[100px] animate-float" style={{ animationDelay: "4s" }}></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-rose-200/40 rounded-full mix-blend-multiply filter blur-[100px] animate-float"></div>
+        <div className="absolute top-[20%] right-[-10%] w-[60vw] h-[60vw] bg-purple-200/30 rounded-full mix-blend-multiply filter blur-[100px] animate-float" style={{ animationDelay: "2s" }}></div>
+        <div className="absolute bottom-[-20%] left-[20%] w-[70vw] h-[70vw] bg-rose-100/40 rounded-full mix-blend-multiply filter blur-[100px] animate-float" style={{ animationDelay: "4s" }}></div>
       </div>
     );
   }
@@ -32,8 +32,8 @@ export default function UniversalBackground() {
     }
     return (
       <div className="fixed inset-0 pointer-events-none opacity-40 z-0 overflow-hidden">
-        <div className="absolute top-[-10%] right-[-10%] w-[40vw] h-[40vw] bg-indigo-300 rounded-full blur-[100px]" />
-        <div className="absolute bottom-[10%] left-[-5%] w-[50vw] h-[50vw] bg-emerald-200 rounded-full blur-[100px]" />
+        <div className="absolute top-[-10%] right-[-10%] w-[40vw] h-[40vw] bg-purple-300 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[10%] left-[-5%] w-[50vw] h-[50vw] bg-rose-200 rounded-full blur-[100px]" />
       </div>
     );
   }

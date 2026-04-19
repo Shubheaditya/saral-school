@@ -55,12 +55,12 @@ export default function Sparky({ mood = "idle", size = "md", message, className 
   }, [mood]);
 
   const bgColors: Record<SparkyMood, string> = {
-    happy: "bg-indigo-100",
+    happy: "bg-rose-100",
     thinking: "bg-amber-100",
     celebrating: "bg-emerald-100",
     encouraging: "bg-pink-100",
-    waving: "bg-indigo-100",
-    idle: "bg-indigo-100",
+    waving: "bg-rose-100",
+    idle: "bg-rose-100",
   };
 
   return (
@@ -78,7 +78,7 @@ export default function Sparky({ mood = "idle", size = "md", message, className 
         </div>
       </div>
       {message && (
-        <div className="bg-white rounded-2xl px-4 py-2 shadow-md border-2 border-indigo-100 max-w-xs text-center">
+        <div className="bg-white rounded-2xl px-4 py-2 shadow-md border-2 border-rose-100 max-w-xs text-center">
           <p className="text-sm text-slate-600 font-medium">{message}</p>
         </div>
       )}

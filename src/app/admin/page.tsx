@@ -41,7 +41,7 @@ export default function AdminLoginPage() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-400 focus:outline-none text-sm"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-none text-sm"
               placeholder="admin"
             />
           </div>
@@ -51,7 +51,7 @@ export default function AdminLoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-400 focus:outline-none text-sm"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-none text-sm"
               placeholder="Enter password"
               onKeyDown={(e) => e.key === "Enter" && handleLogin()}
             />
@@ -59,7 +59,7 @@ export default function AdminLoginPage() {
           {error && <p className="text-red-500 text-sm font-bold">{error}</p>}
           <button
             onClick={handleLogin}
-            className="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-colors"
+            className="w-full py-3 bg-rose-600 text-white rounded-xl font-bold shadow-lg shadow-rose-200 hover:bg-rose-700 transition-colors"
           >
             Login
           </button>

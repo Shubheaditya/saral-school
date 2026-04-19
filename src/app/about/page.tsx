@@ -20,16 +20,16 @@ export default function About() {
                 <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16">
                     <div className="md:w-1/2">
                         <div className="relative">
-                            <div className="absolute -top-4 -left-4 w-24 h-24 bg-indigo-100 rounded-3xl -z-10 animate-float" />
+                            <div className="absolute -top-4 -left-4 w-24 h-24 bg-rose-100 rounded-3xl -z-10 animate-float" />
                             {/* Visual card instead of broken image */}
-                            <div className="bg-white p-6 rounded-3xl shadow-xl border-4 border-indigo-100 bouncy-hover overflow-hidden">
+                            <div className="bg-white p-6 rounded-3xl shadow-xl border-4 border-rose-100 bouncy-hover overflow-hidden">
                                 <div className="aspect-square bg-gradient-to-br from-amber-50 to-pink-50 flex flex-col items-center justify-center rounded-2xl p-8 gap-4">
-                                    <div className="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center">
+                                    <div className="w-24 h-24 bg-rose-100 rounded-full flex items-center justify-center">
                                         <span className="text-5xl">🦉</span>
                                     </div>
                                     <div className="text-2xl">🎓</div>
                                     <div className="flex gap-2">
-                                        <div className="w-8 h-8 bg-indigo-200 rounded-lg flex items-center justify-center text-sm">📖</div>
+                                        <div className="w-8 h-8 bg-rose-200 rounded-lg flex items-center justify-center text-sm">📖</div>
                                         <div className="w-8 h-8 bg-emerald-200 rounded-lg flex items-center justify-center text-sm">🔬</div>
                                         <div className="w-8 h-8 bg-pink-200 rounded-lg flex items-center justify-center text-sm">🎨</div>
                                         <div className="w-8 h-8 bg-amber-200 rounded-lg flex items-center justify-center text-sm">🔢</div>
@@ -98,11 +98,11 @@ export default function About() {
 
                     <div className="relative">
                         {/* Progress Line */}
-                        <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-2 bg-indigo-100 rounded-full hidden md:block" />
+                        <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-2 bg-rose-100 rounded-full hidden md:block" />
 
                         {[
                             { title: "Research & Design", desc: "Completed initial research with educators and child psychologists. Core curriculum framework designed for both age groups.", status: "✅ Completed", color: "bg-emerald-50 border-emerald-200", icon: "📋" },
-                            { title: "Prototype Development", desc: "Building the first interactive prototypes — UI for Explorers and Scholars, Sparky animations, quiz engine, video player, and gamification system.", status: "🔨 In Progress", color: "bg-indigo-50 border-indigo-200", icon: "⚡" },
+                            { title: "Prototype Development", desc: "Building the first interactive prototypes — UI for Explorers and Scholars, Sparky animations, quiz engine, video player, and gamification system.", status: "🔨 In Progress", color: "bg-rose-50 border-rose-200", icon: "⚡" },
                             { title: "Beta Testing", desc: "Invite a small group of students and parents to test the platform. Measure engagement rates, task completion, and session duration.", status: "📅 Upcoming", color: "bg-amber-50 border-amber-200", icon: "🧪" },
                             { title: "Public Launch", desc: "After incorporating feedback and polishing performance (under 2s load times), open Saral School to everyone — completely free.", status: "🎯 Goal", color: "bg-pink-50 border-pink-200", icon: "🚀" },
                         ].map((item, index) => (
@@ -111,12 +111,12 @@ export default function About() {
                                     <div className={`${item.color} p-8 rounded-3xl border-2 shadow-sm bouncy-hover w-full`}>
                                         <span className="text-3xl mb-2 block">{item.icon}</span>
                                         <h3 className="text-xl font-extrabold mb-1 text-slate-900">{item.title}</h3>
-                                        <span className="text-sm font-bold text-indigo-600 mb-2 block">{item.status}</span>
+                                        <span className="text-sm font-bold text-rose-600 mb-2 block">{item.status}</span>
                                         <p className="text-slate-500">{item.desc}</p>
                                     </div>
                                 </div>
 
-                                <div className="z-10 w-12 h-12 bg-white border-8 border-indigo-200 rounded-full flex items-center justify-center text-sm font-bold shadow-lg my-4 md:my-0 text-slate-900">
+                                <div className="z-10 w-12 h-12 bg-white border-8 border-rose-200 rounded-full flex items-center justify-center text-sm font-bold shadow-lg my-4 md:my-0 text-slate-900">
                                     {index + 1}
                                 </div>
 
@@ -158,7 +158,7 @@ export default function About() {
                     <h2 className="text-3xl md:text-4xl font-black text-center mb-12 text-slate-900">Why We Need Your Support</h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div className="bg-indigo-50 p-8 rounded-3xl border-2 border-indigo-100 bouncy-hover text-center">
+                        <div className="bg-rose-50 p-8 rounded-3xl border-2 border-rose-100 bouncy-hover text-center">
                             <span className="text-4xl mb-4 block">💻</span>
                             <h3 className="text-xl font-bold mb-2 text-slate-900">Development</h3>
                             <p className="text-slate-500">Building an AI-powered, animated, adaptive platform requires a skilled team of developers, designers, and content creators.</p>
@@ -167,7 +167,7 @@ export default function About() {
                         <div className="bg-emerald-50 p-8 rounded-3xl border-2 border-emerald-100 bouncy-hover text-center">
                             <span className="text-4xl mb-4 block">📚</span>
                             <h3 className="text-xl font-bold mb-2 text-slate-900">Content Assembly Line</h3>
-                            <p className="text-slate-500">We run a Human-Led AI content pipeline: trained interns draft NCERT-aligned lessons using standardized prompts, then subject experts verify every piece. <Link href="/how-it-works#content-strategy" className="text-indigo-600 font-semibold hover:underline">Learn more →</Link></p>
+                            <p className="text-slate-500">We run a Human-Led AI content pipeline: trained interns draft NCERT-aligned lessons using standardized prompts, then subject experts verify every piece. <Link href="/how-it-works#content-strategy" className="text-rose-600 font-semibold hover:underline">Learn more →</Link></p>
                         </div>
 
                         <div className="bg-pink-50 p-8 rounded-3xl border-2 border-pink-100 bouncy-hover text-center">
@@ -181,14 +181,14 @@ export default function About() {
 
             {/* Donation CTA */}
             <section id="donate" className="px-6 py-20 bg-slate-50">
-                <div className="max-w-4xl mx-auto bg-indigo-600 rounded-[2rem] p-12 text-center text-white relative overflow-hidden shadow-2xl shadow-indigo-200">
+                <div className="max-w-4xl mx-auto bg-rose-600 rounded-[2rem] p-12 text-center text-white relative overflow-hidden shadow-2xl shadow-rose-200">
                     <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.15),transparent)] pointer-events-none" />
                     <span className="text-5xl mb-4 block">💖</span>
                     <h2 className="text-3xl md:text-4xl font-black mb-4">Support the Future of Learning</h2>
-                    <p className="text-lg text-indigo-100 mb-8 max-w-xl mx-auto">
+                    <p className="text-lg text-rose-100 mb-8 max-w-xl mx-auto">
                         Saral School is a non-profit initiative. Every contribution helps us build accessible education for kids who need it most.
                     </p>
-                    <button className="px-12 py-5 bg-white text-indigo-600 rounded-3xl text-xl font-black shadow-xl bouncy-hover">
+                    <button className="px-12 py-5 bg-white text-rose-600 rounded-3xl text-xl font-black shadow-xl bouncy-hover">
                         Make a Donation
                     </button>
                 </div>

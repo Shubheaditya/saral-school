@@ -35,7 +35,7 @@ export default function ProfilePage() {
            card: isDark ? "bg-slate-900/50 backdrop-blur-xl border border-white/10" : "bg-white shadow-sm border border-slate-200", 
            border: isDark ? "border-slate-700" : "border-slate-200",
            button: isDark ? "bg-white/10 text-white hover:bg-white/20" : "bg-slate-900 text-white hover:bg-slate-800",
-           icon: isDark ? "text-indigo-400" : "text-indigo-600"
+           icon: isDark ? "text-rose-400" : "text-rose-600"
          };
     }
   };
@@ -81,11 +81,11 @@ export default function ProfilePage() {
 
       {/* Avatar & Name */}
       <div className="text-center px-6 pb-6">
-        <div className={`w-24 h-24 sm:w-32 sm:h-32 rounded-full flex items-center justify-center text-5xl sm:text-7xl mx-auto mb-4 ${currentUser.ageGroup === 'kids' ? 'bg-white shadow-[0_8px_0_#bae6fd] border-4 border-indigo-400' : currentUser.ageGroup === 'explorer' ? (isDark ? 'bg-slate-800 shadow-[0_0_30px_rgba(34,211,238,0.3)] border-4 border-cyan-400' : 'bg-white shadow-[0_0_30px_rgba(34,211,238,0.3)] border-4 border-cyan-400') : (isDark ? 'bg-slate-900 border border-slate-700 shadow-xl' : 'bg-slate-50 border border-slate-200 shadow-sm')}`}>
+        <div className={`w-24 h-24 sm:w-32 sm:h-32 rounded-full flex items-center justify-center text-5xl sm:text-7xl mx-auto mb-4 ${currentUser.ageGroup === 'kids' ? 'bg-white shadow-[0_8px_0_#bae6fd] border-4 border-rose-400' : currentUser.ageGroup === 'explorer' ? (isDark ? 'bg-slate-800 shadow-[0_0_30px_rgba(34,211,238,0.3)] border-4 border-cyan-400' : 'bg-white shadow-[0_0_30px_rgba(34,211,238,0.3)] border-4 border-cyan-400') : (isDark ? 'bg-slate-900 border border-slate-700 shadow-xl' : 'bg-slate-50 border border-slate-200 shadow-sm')}`}>
           {AVATARS[currentUser.avatarIndex]}
         </div>
         <h1 className="text-2xl sm:text-3xl font-black tracking-tight">{currentUser.name}</h1>
-        <p className={`text-sm tracking-widest uppercase font-bold mt-1 ${currentUser.ageGroup === 'kids' ? 'text-indigo-500' : (isDark || currentUser.ageGroup === 'explorer' && isDark ? 'text-slate-400' : 'text-slate-500')}`}>
+        <p className={`text-sm tracking-widest uppercase font-bold mt-1 ${currentUser.ageGroup === 'kids' ? 'text-rose-500' : (isDark || currentUser.ageGroup === 'explorer' && isDark ? 'text-slate-400' : 'text-slate-500')}`}>
            {currentUser.ageGroup === 'kids' ? 'Star Learner' : currentUser.ageGroup === 'explorer' ? 'Explorer' : 'Scholar Profile'}
         </p>
       </div>
@@ -97,7 +97,7 @@ export default function ProfilePage() {
             onClick={() => setTab("profile")}
             className={`flex-1 py-3 sm:py-4 rounded-xl font-bold text-sm transition-all ${
               tab === "profile" 
-                 ? (currentUser.ageGroup === 'kids' ? "bg-amber-400 text-white shadow-[0_4px_0_#d97706]" : currentUser.ageGroup === 'explorer' ? "bg-gradient-to-r from-cyan-500 to-indigo-500 text-white shadow-lg" : (isDark ? "bg-slate-800 text-white shadow-sm" : "bg-white text-slate-900 shadow-sm"))
+                 ? (currentUser.ageGroup === 'kids' ? "bg-amber-400 text-white shadow-[0_4px_0_#d97706]" : currentUser.ageGroup === 'explorer' ? "bg-gradient-to-r from-cyan-500 to-rose-500 text-white shadow-lg" : (isDark ? "bg-slate-800 text-white shadow-sm" : "bg-white text-slate-900 shadow-sm"))
                  : (currentUser.ageGroup === 'kids' ? "text-slate-400" : currentUser.ageGroup === 'explorer' ? (isDark ? "text-slate-400 hover:text-white" : "text-slate-500 hover:text-slate-800") : "text-slate-500 hover:text-slate-700")
             }`}
           >
@@ -107,7 +107,7 @@ export default function ProfilePage() {
             onClick={() => setTab("parent")}
             className={`flex-1 py-3 sm:py-4 rounded-xl font-bold text-sm transition-all ${
               tab === "parent" 
-                 ? (currentUser.ageGroup === 'kids' ? "bg-indigo-500 text-white shadow-[0_4px_0_#4338ca]" : currentUser.ageGroup === 'explorer' ? "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-lg" : (isDark ? "bg-slate-800 text-white shadow-sm" : "bg-white text-slate-900 shadow-sm"))
+                 ? (currentUser.ageGroup === 'kids' ? "bg-rose-500 text-white shadow-[0_4px_0_#4338ca]" : currentUser.ageGroup === 'explorer' ? "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-lg" : (isDark ? "bg-slate-800 text-white shadow-sm" : "bg-white text-slate-900 shadow-sm"))
                  : (currentUser.ageGroup === 'kids' ? "text-slate-400" : currentUser.ageGroup === 'explorer' ? (isDark ? "text-slate-400 hover:text-white" : "text-slate-500 hover:text-slate-800") : "text-slate-500 hover:text-slate-700")
             }`}
           >
@@ -129,7 +129,7 @@ export default function ProfilePage() {
               <p className={`text-xs sm:text-sm font-bold mt-2 ${currentUser.ageGroup === 'kids' ? 'text-slate-500' : (isDark || currentUser.ageGroup === 'explorer' && isDark ? 'text-slate-400' : 'text-slate-600')}`}>Quizzes Done</p>
             </div>
             <div className={`p-4 sm:p-6 text-center ${theme.card} ${currentUser.ageGroup === 'kids' ? '' : 'rounded-2xl'}`}>
-              <p className={`text-3xl sm:text-4xl font-black ${currentUser.ageGroup === 'explorer' ? 'text-indigo-500' : 'text-indigo-500'}`}>🎬 {completedVideos.length}</p>
+              <p className={`text-3xl sm:text-4xl font-black ${currentUser.ageGroup === 'explorer' ? 'text-rose-500' : 'text-rose-500'}`}>🎬 {completedVideos.length}</p>
               <p className={`text-xs sm:text-sm font-bold mt-2 ${currentUser.ageGroup === 'kids' ? 'text-slate-500' : (isDark || currentUser.ageGroup === 'explorer' && isDark ? 'text-slate-400' : 'text-slate-600')}`}>Videos Watched</p>
             </div>
           </div>
@@ -181,12 +181,12 @@ export default function ProfilePage() {
                     onClick={() => { switchUser(user.id); router.push("/learn"); }}
                     className={`w-full flex items-center gap-4 p-4 transition-all text-left ${theme.card} ${currentUser.ageGroup === 'kids' ? 'active:translate-y-1 active:shadow-none' : 'hover:-translate-y-1'} ${currentUser.ageGroup !== 'kids' ? 'rounded-2xl' : ''}`}
                   >
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl ${currentUser.ageGroup === 'kids' ? 'bg-indigo-100' : currentUser.ageGroup === 'explorer' ? (isDark ? 'bg-slate-700' : 'bg-slate-200') : (isDark ? 'bg-slate-800' : 'bg-slate-100')}`}>
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl ${currentUser.ageGroup === 'kids' ? 'bg-rose-100' : currentUser.ageGroup === 'explorer' ? (isDark ? 'bg-slate-700' : 'bg-slate-200') : (isDark ? 'bg-slate-800' : 'bg-slate-100')}`}>
                        {AVATARS[user.avatarIndex]}
                     </div>
                     <div>
                        <span className="font-bold block text-lg">{user.name}</span>
-                       <span className={`text-xs uppercase tracking-wider font-bold ${currentUser.ageGroup === 'kids' ? 'text-indigo-500' : (isDark || currentUser.ageGroup === 'explorer' && isDark ? 'text-slate-400' : 'text-slate-500')}`}>{user.ageGroup}</span>
+                       <span className={`text-xs uppercase tracking-wider font-bold ${currentUser.ageGroup === 'kids' ? 'text-rose-500' : (isDark || currentUser.ageGroup === 'explorer' && isDark ? 'text-slate-400' : 'text-slate-500')}`}>{user.ageGroup}</span>
                     </div>
                     <span className={`ml-auto text-xl ${theme.icon}`}>→</span>
                   </button>
@@ -210,7 +210,7 @@ export default function ProfilePage() {
                 value={pinInput}
                 onChange={(e) => { setPinInput(e.target.value.replace(/\D/g, "")); setShowPinError(false); }}
                 placeholder="Enter PIN"
-                className={`w-full max-w-xs mx-auto block px-4 py-4 sm:py-5 border-2 focus:outline-none text-2xl sm:text-3xl font-black text-center tracking-[0.5em] transition-colors ${currentUser.ageGroup === 'kids' ? 'bg-slate-50 border-slate-200 rounded-3xl focus:border-indigo-400 text-slate-900 shadow-inner' : currentUser.ageGroup === 'explorer' ? (isDark ? 'bg-slate-900/50 border-white/10 rounded-2xl focus:border-cyan-400 text-white' : 'bg-slate-100 border-slate-200 rounded-2xl focus:border-cyan-500 text-slate-900') : (isDark ? 'bg-slate-800 border-slate-700 rounded-2xl focus:border-indigo-500 text-white' : 'bg-slate-50 border-slate-200 rounded-2xl focus:border-indigo-500 text-slate-900')}`}
+                className={`w-full max-w-xs mx-auto block px-4 py-4 sm:py-5 border-2 focus:outline-none text-2xl sm:text-3xl font-black text-center tracking-[0.5em] transition-colors ${currentUser.ageGroup === 'kids' ? 'bg-slate-50 border-slate-200 rounded-3xl focus:border-rose-400 text-slate-900 shadow-inner' : currentUser.ageGroup === 'explorer' ? (isDark ? 'bg-slate-900/50 border-white/10 rounded-2xl focus:border-cyan-400 text-white' : 'bg-slate-100 border-slate-200 rounded-2xl focus:border-cyan-500 text-slate-900') : (isDark ? 'bg-slate-800 border-slate-700 rounded-2xl focus:border-rose-500 text-white' : 'bg-slate-50 border-slate-200 rounded-2xl focus:border-rose-500 text-slate-900')}`}
               />
               {showPinError && <p className="text-red-500 text-sm font-bold mt-3 animate-bounce">Incorrect PIN</p>}
               <button
@@ -230,8 +230,8 @@ export default function ProfilePage() {
                     <p className={`text-3xl font-black ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{completedQuizzes.length}</p>
                     <p className={`text-xs font-bold mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Quizzes Done</p>
                   </div>
-                  <div className={`rounded-2xl p-4 text-center ${isDark ? 'bg-indigo-900/20 border border-indigo-500/10' : 'bg-indigo-50 border border-indigo-100'}`}>
-                    <p className={`text-3xl font-black ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`}>{completedVideos.length}</p>
+                  <div className={`rounded-2xl p-4 text-center ${isDark ? 'bg-purple-900/20 border border-rose-500/10' : 'bg-rose-50 border border-rose-100'}`}>
+                    <p className={`text-3xl font-black ${isDark ? 'text-rose-400' : 'text-rose-600'}`}>{completedVideos.length}</p>
                     <p className={`text-xs font-bold mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Videos Watched</p>
                   </div>
                   <div className={`rounded-2xl p-4 text-center ${isDark ? 'bg-amber-900/20 border border-amber-500/10' : 'bg-amber-50 border border-amber-100'}`}>
@@ -250,7 +250,7 @@ export default function ProfilePage() {
                         <span className="text-slate-400">{Math.round(15 + i * 8)}%</span>
                       </div>
                       <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                        <div className="h-2 bg-indigo-500 rounded-full transition-all duration-700" style={{ width: `${15 + i * 8}%` }} />
+                        <div className="h-2 bg-rose-500 rounded-full transition-all duration-700" style={{ width: `${15 + i * 8}%` }} />
                       </div>
                     </div>
                   ))}
@@ -274,10 +274,10 @@ export default function ProfilePage() {
 
               {/* Report Actions */}
               <div className="flex gap-3">
-                <button className="flex-1 py-3 bg-indigo-600 text-white rounded-2xl font-bold bouncy-hover text-sm">
+                <button className="flex-1 py-3 bg-rose-600 text-white rounded-2xl font-bold bouncy-hover text-sm">
                   📥 Download Report
                 </button>
-                <button className="flex-1 py-3 bg-white border-2 border-indigo-200 text-indigo-600 rounded-2xl font-bold bouncy-hover text-sm">
+                <button className="flex-1 py-3 bg-white border-2 border-rose-200 text-rose-600 rounded-2xl font-bold bouncy-hover text-sm">
                   📧 Email Report
                 </button>
               </div>
@@ -299,7 +299,7 @@ export default function ProfilePage() {
                         setTimeout(() => { window.location.href = "/learn"; }, 300);
                       }
                     }}
-                    className={`w-full sm:w-auto p-3 border-2 rounded-xl font-bold text-sm focus:outline-none transition-colors ${isDark ? 'bg-slate-800 border-slate-700 focus:border-indigo-500 text-white' : 'bg-slate-50 border-slate-200 focus:border-indigo-400 text-slate-900'}`}
+                    className={`w-full sm:w-auto p-3 border-2 rounded-xl font-bold text-sm focus:outline-none transition-colors ${isDark ? 'bg-slate-800 border-slate-700 focus:border-rose-500 text-white' : 'bg-slate-50 border-slate-200 focus:border-rose-400 text-slate-900'}`}
                   >
                     <option value="">Auto (Age-based)</option>
                     {Array.from({ length: 18 }, (_, i) => (

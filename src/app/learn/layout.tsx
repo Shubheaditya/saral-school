@@ -7,7 +7,7 @@ export default function LearnLayout({ children }: { children: React.ReactNode })
     <AuthProvider>
       <AppProvider>
         <GamificationProvider>
-          <div className="min-h-screen bg-gradient-to-b from-indigo-50/50 to-white">
+          <div className="min-h-screen bg-gradient-to-b from-rose-50/30 to-white">
             {children}
           </div>
         </GamificationProvider>

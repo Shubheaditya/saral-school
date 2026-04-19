@@ -16,7 +16,7 @@ export function useUniversalTheme() {
   }
 
   if (currentUser.ageGroup === "kids") {
-    return { backgroundClass: "bg-sky-100", textClass: "text-slate-900", isDark: false };
+    return { backgroundClass: "bg-rose-50", textClass: "text-slate-900", isDark: false };
   }
 
   if (currentUser.ageGroup === "explorer") {
@@ -29,7 +29,7 @@ export function useUniversalTheme() {
       textClass = "text-white";
       isDark = true;
     } else if (currentStreak > 5) {
-      backgroundClass = "bg-indigo-950";
+      backgroundClass = "bg-purple-950";
       textClass = "text-white";
       isDark = true;
     }
@@ -38,7 +38,7 @@ export function useUniversalTheme() {
   }
 
   if (currentUser.ageGroup === "scholar") {
-    const isDark = currentUser.themePreference === "dark";
+    const isDark = currentUser.themePreference !== "light";
     return {
       backgroundClass: isDark ? "bg-[#0A0A0A]" : "bg-[#F8FAFC]",
       textClass: isDark ? "text-slate-300" : "text-slate-700",

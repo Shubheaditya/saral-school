@@ -6,7 +6,7 @@ import { useUniversalTheme } from "../hooks/useUniversalTheme";
 
 // Hyper-Gradients for the 'Adventure/Gamer' aesthetic
 const THEME_GRADIENTS: Record<string, string> = {
-  math: "from-blue-600 via-indigo-600 to-purple-700",
+  math: "from-blue-600 via-rose-600 to-purple-700",
   science: "from-emerald-500 via-teal-500 to-cyan-600",
   english: "from-rose-500 via-pink-600 to-purple-600",
   social: "from-amber-500 via-orange-500 to-red-600",
@@ -150,7 +150,7 @@ export default function ExplorerSubjectView({
                     
                     {/* ENTIRE CHAPTER ACTIONS */}
                     <div className="flex gap-2 p-2 mx-2 mb-4">
-                      <button onClick={() => onAction("video", `ch-${chapter.id}`)} className="flex-1 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/20 py-2 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-colors">
+                      <button onClick={() => onAction("video", `ch-${chapter.id}`)} className="flex-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 py-2 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-colors">
                         🎬 View All 
                       </button>
                       <button onClick={() => onAction("practice", `mock-quiz-1`)} className="flex-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 py-2 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-colors">
@@ -171,7 +171,7 @@ export default function ExplorerSubjectView({
 
                           {/* Quick Action Pills */}
                           <div className="flex gap-2 ml-11">
-                            <button onClick={(e) => { e.stopPropagation(); onAction("video", `sub-${subtopic.id}`); }} className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:scale-105 ${isDark ? 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/40' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'}`}>
+                            <button onClick={(e) => { e.stopPropagation(); onAction("video", `sub-${subtopic.id}`); }} className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:scale-105 ${isDark ? 'bg-rose-500/20 text-rose-300 hover:bg-rose-500/40' : 'bg-rose-50 text-rose-700 hover:bg-rose-100'}`}>
                               🎬 Video
                             </button>
                             <button onClick={(e) => { e.stopPropagation(); onAction("notes", `sub-${subtopic.id}`); }} className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:scale-105 ${isDark ? 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/40' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}`}>

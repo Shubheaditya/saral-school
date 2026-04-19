@@ -82,23 +82,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to create user' }, { status: 500 });
   }
 }
-
-export async function PATCH(request: Request) {
-  try {
-    const body = await request.json();
-    const { id, ...updates } = body;
-
-    if (!id) {
-      return NextResponse.json({ error: 'Missing user ID' }, { status: 400 });
-    }
-
-    if (Object.keys(updates).length > 0) {
-      await db.update(users).set(updates).where(eq(users.id, id));
-    }
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('API Error updating user:', error);
-    return NextResponse.json({ error: 'Failed to update user' }, { status: 500 });
-  }
-}

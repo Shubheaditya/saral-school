@@ -84,7 +84,7 @@ export default function ScholarSubjectView({
   };
 
   return (
-    <main className={`min-h-screen ${backgroundClass} ${textClass} selection:bg-indigo-500/30 font-sans relative transition-colors duration-500`}>
+    <main className={`min-h-screen ${backgroundClass} ${textClass} selection:bg-rose-500/30 font-sans relative transition-colors duration-500`}>
       <UniversalBackground />
 
       <div className="relative z-10 w-full">
@@ -106,13 +106,13 @@ export default function ScholarSubjectView({
            <div className={`flex items-center rounded-lg border text-xs ${isDark ? 'border-white/10 bg-white/5' : 'border-slate-200 bg-slate-50'}`}>
              <button 
                onClick={() => setViewMode("journey")} 
-               className={`px-3 py-1.5 rounded-l-lg font-semibold transition-all ${viewMode === 'journey' ? (isDark ? 'bg-indigo-500/20 text-indigo-400' : 'bg-indigo-100 text-indigo-700') : (isDark ? 'text-slate-500 hover:text-white' : 'text-slate-500 hover:text-slate-700')}`}
+               className={`px-3 py-1.5 rounded-l-lg font-semibold transition-all ${viewMode === 'journey' ? (isDark ? 'bg-rose-500/20 text-rose-400' : 'bg-rose-100 text-rose-700') : (isDark ? 'text-slate-500 hover:text-white' : 'text-slate-500 hover:text-slate-700')}`}
              >
                Journey
              </button>
              <button 
                onClick={() => setViewMode("browse")} 
-               className={`px-3 py-1.5 rounded-r-lg font-semibold transition-all ${viewMode === 'browse' ? (isDark ? 'bg-indigo-500/20 text-indigo-400' : 'bg-indigo-100 text-indigo-700') : (isDark ? 'text-slate-500 hover:text-white' : 'text-slate-500 hover:text-slate-700')}`}
+               className={`px-3 py-1.5 rounded-r-lg font-semibold transition-all ${viewMode === 'browse' ? (isDark ? 'bg-rose-500/20 text-rose-400' : 'bg-rose-100 text-rose-700') : (isDark ? 'text-slate-500 hover:text-white' : 'text-slate-500 hover:text-slate-700')}`}
              >
                Browse
              </button>
@@ -159,11 +159,11 @@ export default function ScholarSubjectView({
                 >
                   <div className="flex items-center gap-4">
                      <span className={`text-xs font-mono w-6 ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>{(idx + 1).toString().padStart(2, '0')}</span>
-                     <h2 className={`font-medium transition-colors ${isOpen ? (isDark ? 'text-white' : 'text-indigo-600') : (isDark ? 'text-slate-300' : 'text-slate-700')}`}>{chapter.title}</h2>
+                     <h2 className={`font-medium transition-colors ${isOpen ? (isDark ? 'text-white' : 'text-rose-600') : (isDark ? 'text-slate-300' : 'text-slate-700')}`}>{chapter.title}</h2>
                   </div>
                   <div className={`flex items-center gap-6 text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                      <span className={`hidden sm:inline-block border rounded px-2 py-0.5 ${isDark ? 'border-white/10' : 'border-slate-200 bg-slate-50'}`}>{contentItems.length} items</span>
-                     <svg className={`w-4 h-4 transition-transform duration-300 ${isOpen ? (isDark ? 'rotate-180 text-white' : 'rotate-180 text-indigo-600') : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                     <svg className={`w-4 h-4 transition-transform duration-300 ${isOpen ? (isDark ? 'rotate-180 text-white' : 'rotate-180 text-rose-600') : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                   </div>
                 </button>
 
@@ -180,20 +180,20 @@ export default function ScholarSubjectView({
                           const info = CONTENT_TYPE_INFO[item.type];
                           return (
                             <div key={item.id} className="mb-3 relative">
-                              <div className={`absolute left-[-14px] top-4 w-2.5 h-2.5 rounded-full z-10 ring-4 ${isDark ? 'bg-indigo-400 ring-[#0A0A0A]' : 'bg-indigo-500 ring-white'}`} />
+                              <div className={`absolute left-[-14px] top-4 w-2.5 h-2.5 rounded-full z-10 ring-4 ${isDark ? 'bg-rose-400 ring-[#0A0A0A]' : 'bg-rose-500 ring-white'}`} />
                               <button
                                 onClick={() => handleContentClick(item)}
-                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all group ${isDark ? 'bg-white/[0.03] hover:bg-white/[0.07] border border-white/5 hover:border-indigo-500/30' : 'bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 shadow-sm hover:shadow-md'}`}
+                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all group ${isDark ? 'bg-white/[0.03] hover:bg-white/[0.07] border border-white/5 hover:border-rose-500/30' : 'bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-300 shadow-sm hover:shadow-md'}`}
                               >
                                 <span className={`text-xs font-mono w-5 text-center ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>{itemIdx + 1}</span>
                                 <span className="text-lg">{info?.icon || '📄'}</span>
                                 <div className="flex-1 min-w-0">
-                                  <p className={`text-sm font-medium truncate transition-colors ${isDark ? 'text-slate-300 group-hover:text-white' : 'text-slate-700 group-hover:text-indigo-700'}`}>
+                                  <p className={`text-sm font-medium truncate transition-colors ${isDark ? 'text-slate-300 group-hover:text-white' : 'text-slate-700 group-hover:text-rose-700'}`}>
                                     {getContentTitle(item)}
                                   </p>
                                   <p className={`text-[10px] uppercase tracking-wider ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>{info?.label || item.type}</p>
                                 </div>
-                                <span className={`text-xs font-medium transition-colors ${isDark ? 'text-slate-600 group-hover:text-indigo-400' : 'text-slate-400 group-hover:text-indigo-600'}`}>Start →</span>
+                                <span className={`text-xs font-medium transition-colors ${isDark ? 'text-slate-600 group-hover:text-rose-400' : 'text-slate-400 group-hover:text-rose-600'}`}>Start →</span>
                               </button>
                             </div>
                           );
@@ -275,10 +275,10 @@ export default function ScholarSubjectView({
               
               <button 
                 onClick={() => { setIsCommandPaletteOpen(false); onAction("practice", "mock-quiz-1"); }}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors group ${isDark ? 'hover:bg-indigo-500/10' : 'hover:bg-indigo-50'}`}
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors group ${isDark ? 'hover:bg-rose-500/10' : 'hover:bg-rose-50'}`}
               >
-                <div className={`w-6 h-6 rounded flex items-center justify-center text-xs border transition-colors ${isDark ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/20 group-hover:bg-indigo-500 group-hover:text-white' : 'bg-indigo-100 text-indigo-600 border-indigo-200 group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-600'}`}>⚡</div>
-                <span className={`text-sm font-medium transition-colors ${isDark ? 'text-slate-300 group-hover:text-white' : 'text-slate-700 group-hover:text-indigo-700'}`}>Run Full Subject Diagnostic</span>
+                <div className={`w-6 h-6 rounded flex items-center justify-center text-xs border transition-colors ${isDark ? 'bg-rose-500/20 text-rose-400 border-rose-500/20 group-hover:bg-rose-500 group-hover:text-white' : 'bg-rose-100 text-rose-600 border-rose-200 group-hover:bg-rose-600 group-hover:text-white group-hover:border-rose-600'}`}>⚡</div>
+                <span className={`text-sm font-medium transition-colors ${isDark ? 'text-slate-300 group-hover:text-white' : 'text-slate-700 group-hover:text-rose-700'}`}>Run Full Subject Diagnostic</span>
               </button>
 
               <button 

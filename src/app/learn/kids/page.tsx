@@ -44,7 +44,7 @@ export default function KidsHomepage() {
           <div className="flex items-center gap-4">
             <img src="/logo.png" alt="Saral School" className="w-12 h-12 object-contain drop-shadow-sm rounded-xl bg-white p-1" />
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-300 to-rose-400 border-4 border-white shadow-lg flex items-center justify-center text-2xl font-black text-white">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-300 to-purple-400 border-4 border-white shadow-lg flex items-center justify-center text-2xl font-black text-white">
                 {currentUser.name.charAt(0)}
               </div>
               <div>
@@ -66,8 +66,8 @@ export default function KidsHomepage() {
             <p className="text-3xl font-black text-emerald-500">{completedQuizzes.length}</p>
             <p className="text-xs font-bold text-slate-500 mt-1">Quizzes Done</p>
           </div>
-          <div className="bg-white rounded-3xl p-4 border-2 border-indigo-200 shadow-sm text-center bouncy-hover">
-            <p className="text-3xl font-black text-indigo-500">{completedVideos.length}</p>
+          <div className="bg-white rounded-3xl p-4 border-2 border-purple-200 shadow-sm text-center bouncy-hover">
+            <p className="text-3xl font-black text-purple-500">{completedVideos.length}</p>
             <p className="text-xs font-bold text-slate-500 mt-1">Videos</p>
           </div>
         </div>

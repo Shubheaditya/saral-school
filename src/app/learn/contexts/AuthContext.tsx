@@ -83,15 +83,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updateUser = useCallback(async (userId: string, updates: Partial<User>) => {
-    let finalUpdates = { ...updates };
-
     // Optimistic cache update
     setState((prev) => {
       if (!prev.currentUser) return prev;
       const updated = { ...prev.currentUser, ...updates };
       if (updates.assignedSemester !== undefined && updated.birthdate) {
-          updated.ageGroup = getAgeGroup(updated.birthdate, updates.assignedSemester);
-          finalUpdates.ageGroup = updated.ageGroup;
+          updated.ageGroup = getAgeGroup(updated.birthdate, updated.assignedSemester);
       }
       return { ...prev, currentUser: updated, users: [updated] };
     });
@@ -99,9 +96,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Best-effort remote update
     try {
       await fetch("/api/user", {
-        method: "PATCH",
+        method: "POST", // The POST method in route.ts handles upserts (onConflictDoUpdate)
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: userId, ...finalUpdates })
+        body: JSON.stringify({ id: userId, ...updates })
       });
     } catch(e) {
       console.error(e);

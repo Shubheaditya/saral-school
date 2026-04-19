@@ -44,7 +44,7 @@ export default function ExplorerHomepage() {
           <div className="flex items-center gap-4">
             <img src="/logo.png" alt="Saral School" className="w-12 h-12 object-contain drop-shadow-sm rounded-xl bg-white p-1" />
             <div className="flex items-center gap-3">
-              <div className={`w-12 h-12 rounded-full ${isDark ? 'bg-gradient-to-br from-indigo-500 to-purple-600 border-slate-700' : 'bg-gradient-to-br from-indigo-400 to-purple-500 border-white'} border-4 shadow-lg flex items-center justify-center text-2xl font-black text-white`}>
+              <div className={`w-12 h-12 rounded-full ${isDark ? 'bg-gradient-to-br from-rose-500 to-purple-600 border-slate-700' : 'bg-gradient-to-br from-rose-400 to-purple-500 border-white'} border-4 shadow-lg flex items-center justify-center text-2xl font-black text-white`}>
                 {currentUser.name.charAt(0)}
               </div>
               <div>
@@ -67,7 +67,7 @@ export default function ExplorerHomepage() {
             <p className={`text-xs font-bold mt-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Quizzes Done</p>
           </div>
           <div className={`rounded-2xl p-4 border text-center bouncy-hover ${isDark ? 'bg-slate-900/60 border-white/10 backdrop-blur-xl' : 'bg-white border-slate-200 shadow-sm'}`}>
-            <p className={`text-3xl font-black ${isDark ? 'text-indigo-400' : 'text-indigo-500'}`}>{completedVideos.length}</p>
+            <p className={`text-3xl font-black ${isDark ? 'text-purple-400' : 'text-purple-500'}`}>{completedVideos.length}</p>
             <p className={`text-xs font-bold mt-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Videos</p>
           </div>
         </div>
@@ -110,7 +110,7 @@ export default function ExplorerHomepage() {
                     </div>
                   </div>
 
-                  <span className={`text-lg font-bold opacity-0 group-hover:opacity-100 transition-all duration-150 transform translate-x-2 group-hover:translate-x-0 ${isDark ? 'text-slate-400' : 'text-indigo-400'}`}>&rarr;</span>
+                  <span className={`text-lg font-bold opacity-0 group-hover:opacity-100 transition-all duration-150 transform translate-x-2 group-hover:translate-x-0 ${isDark ? 'text-slate-400' : 'text-rose-400'}`}>&rarr;</span>
                 </div>
               </button>
             );

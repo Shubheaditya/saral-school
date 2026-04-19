@@ -83,7 +83,7 @@ function OnboardingContent() {
   const ageGroupLabels = { kids: "Little Learner (3-5)", explorer: "Explorer (6-9)", scholar: "Scholar (10-12)" };
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-12 bg-gradient-to-b from-indigo-50 to-white">
+    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-12 bg-gradient-to-b from-rose-50/60 via-purple-50/30 to-white">
       {/* Progress */}
       <div className="w-full max-w-md mb-8">
         <div className="flex items-center justify-between mb-2">
@@ -91,7 +91,7 @@ function OnboardingContent() {
         </div>
         <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
           <div
-            className="h-2.5 bg-indigo-500 rounded-full transition-all duration-500"
+            className="h-2.5 bg-gradient-to-r from-rose-400 to-purple-500 rounded-full transition-all duration-500"
             style={{ width: `${(step / totalSteps) * 100}%` }}
           />
         </div>
@@ -109,7 +109,7 @@ function OnboardingContent() {
         className="mb-6"
       />
 
-      <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-xl border-2 border-indigo-100">
+      <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-xl border-2 border-rose-100">
         {step === 1 && (
           <div className="space-y-4">
             <h2 className="text-2xl font-black text-slate-900">What's your name?</h2>
@@ -118,7 +118,7 @@ function OnboardingContent() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter your name"
-              className="w-full px-4 py-4 rounded-2xl border-2 border-indigo-100 focus:border-indigo-400 focus:outline-none text-lg font-medium text-slate-900 placeholder:text-slate-300"
+              className="w-full px-4 py-4 rounded-2xl border-2 border-rose-200 focus:border-rose-400 focus:outline-none text-lg font-medium text-slate-900 placeholder:text-slate-300"
               autoFocus
             />
             <div>
@@ -128,7 +128,7 @@ function OnboardingContent() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="parent@email.com"
-                className="w-full px-4 py-3 rounded-2xl border-2 border-slate-100 focus:border-indigo-400 focus:outline-none text-sm text-slate-700 placeholder:text-slate-300"
+                className="w-full px-4 py-3 rounded-2xl border-2 border-slate-100 focus:border-rose-400 focus:outline-none text-sm text-slate-700 placeholder:text-slate-300"
               />
               <p className="text-xs text-slate-400 mt-1">Used for sending progress reports to parents</p>
             </div>
@@ -144,7 +144,7 @@ function OnboardingContent() {
               onChange={(e) => setBirthdate(e.target.value)}
               max={new Date().toISOString().split("T")[0]}
               min="2010-01-01"
-              className="w-full px-4 py-4 rounded-2xl border-2 border-indigo-100 focus:border-indigo-400 focus:outline-none text-lg font-medium text-slate-900"
+              className="w-full px-4 py-4 rounded-2xl border-2 border-rose-200 focus:border-rose-400 focus:outline-none text-lg font-medium text-slate-900"
             />
             {ageGroup && (
               <div className="bg-emerald-50 rounded-xl p-3 border border-emerald-200">
@@ -166,8 +166,8 @@ function OnboardingContent() {
                   onClick={() => setAvatarIndex(idx)}
                   className={`w-full aspect-square rounded-2xl flex items-center justify-center text-4xl transition-all ${
                     avatarIndex === idx
-                      ? "bg-indigo-100 border-4 border-indigo-400 scale-110 shadow-lg"
-                      : "bg-slate-50 border-2 border-slate-100 hover:border-indigo-200"
+                      ? "bg-rose-100 border-4 border-rose-400 scale-110 shadow-lg"
+                      : "bg-slate-50 border-2 border-slate-100 hover:border-rose-200"
                   }`}
                 >
                   {avatar}
@@ -187,9 +187,9 @@ function OnboardingContent() {
               value={parentPin}
               onChange={(e) => setParentPin(e.target.value.replace(/\D/g, ""))}
               placeholder="4-digit PIN"
-              className="w-full px-4 py-4 rounded-2xl border-2 border-indigo-100 focus:border-indigo-400 focus:outline-none text-2xl font-bold text-center text-slate-900 tracking-[0.5em]"
+              className="w-full px-4 py-4 rounded-2xl border-2 border-rose-200 focus:border-purple-400 focus:outline-none text-2xl font-bold text-center text-slate-900 tracking-[0.5em]"
             />
-            <div className="bg-indigo-50 rounded-xl p-4 border border-indigo-200">
+            <div className="bg-rose-50 rounded-xl p-4 border border-rose-200">
               <p className="text-sm text-slate-700 font-medium text-center">
                 <span className="text-3xl block mb-2">{AVATARS[avatarIndex]}</span>
                 <strong>{name}</strong> will be a <strong>{ageGroup ? ageGroupLabels[ageGroup] : ""}</strong>
@@ -212,7 +212,7 @@ function OnboardingContent() {
           <button
             onClick={handleNext}
             disabled={loading}
-            className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl text-lg font-bold shadow-lg shadow-indigo-200 bouncy-hover disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 py-4 bg-gradient-to-r from-rose-500 to-purple-500 text-white rounded-2xl text-lg font-bold shadow-lg shadow-rose-200 bouncy-hover disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Saving..." : step === totalSteps ? "Start Learning! 🚀" : "Next"}
           </button>

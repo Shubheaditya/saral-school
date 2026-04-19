@@ -2,10 +2,10 @@ import Link from "next/link";
 
 export default function AppPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-slate-50">
+    <main className="min-h-screen bg-gradient-to-b from-rose-50 via-white to-slate-50">
       {/* Hero */}
       <section className="px-6 pt-16 pb-12 text-center">
-        <div className="mx-auto mb-6 w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center shadow-lg shadow-indigo-100 animate-float">
+        <div className="mx-auto mb-6 w-24 h-24 bg-rose-100 rounded-full flex items-center justify-center shadow-lg shadow-rose-100 animate-float">
           <span className="text-6xl">🦉</span>
         </div>
 
@@ -60,7 +60,7 @@ export default function AppPage() {
           </div>
 
           {/* Option 2: Download App */}
-          <div className="bg-white rounded-3xl p-8 shadow-xl border-2 border-indigo-200 relative overflow-hidden">
+          <div className="bg-white rounded-3xl p-8 shadow-xl border-2 border-rose-200 relative overflow-hidden">
             <span className="text-5xl mb-5 block">📲</span>
             <h2 className="text-2xl font-black text-slate-900 mb-3">Download the App</h2>
             <p className="text-slate-500 mb-6">
@@ -75,7 +75,7 @@ export default function AppPage() {
                   <p className="font-bold text-slate-900 text-sm">Android</p>
                   <p className="text-xs text-slate-400">Download APK (Coming Soon)</p>
                 </div>
-                <span className="ml-auto text-indigo-400 text-xl">→</span>
+                <span className="ml-auto text-rose-400 text-xl">→</span>
               </button>
 
               {/* iOS */}
@@ -85,7 +85,7 @@ export default function AppPage() {
                   <p className="font-bold text-slate-900 text-sm">iPhone & iPad</p>
                   <p className="text-xs text-slate-400">Add to Home Screen (Guide below)</p>
                 </div>
-                <span className="ml-auto text-indigo-400 text-xl">→</span>
+                <span className="ml-auto text-rose-400 text-xl">→</span>
               </button>
 
               {/* Windows / Desktop */}
@@ -95,7 +95,7 @@ export default function AppPage() {
                   <p className="font-bold text-slate-900 text-sm">Windows / Mac / Linux</p>
                   <p className="text-xs text-slate-400">Install as Desktop App (Coming Soon)</p>
                 </div>
-                <span className="ml-auto text-indigo-400 text-xl">→</span>
+                <span className="ml-auto text-rose-400 text-xl">→</span>
               </button>
             </div>
 
@@ -140,24 +140,24 @@ export default function AppPage() {
             </div>
 
             {/* iPhone Guide */}
-            <div className="bg-indigo-50 rounded-3xl p-6 border-2 border-indigo-100 bouncy-hover">
+            <div className="bg-rose-50 rounded-3xl p-6 border-2 border-rose-100 bouncy-hover">
               <span className="text-3xl mb-3 block">🍎</span>
               <h3 className="font-bold text-slate-900 mb-3">iPhone & iPad (Safari)</h3>
               <ol className="space-y-2 text-sm text-slate-600">
                 <li className="flex items-start gap-2">
-                  <span className="bg-indigo-200 text-indigo-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shrink-0">1</span>
+                  <span className="bg-rose-200 text-rose-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shrink-0">1</span>
                   Open Saral School in Safari
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="bg-indigo-200 text-indigo-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shrink-0">2</span>
+                  <span className="bg-rose-200 text-rose-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shrink-0">2</span>
                   Tap the Share button (⬆)
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="bg-indigo-200 text-indigo-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shrink-0">3</span>
+                  <span className="bg-rose-200 text-rose-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shrink-0">3</span>
                   Scroll down, tap &quot;Add to Home Screen&quot;
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="bg-indigo-200 text-indigo-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shrink-0">4</span>
+                  <span className="bg-rose-200 text-rose-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shrink-0">4</span>
                   Tap &quot;Add&quot; to confirm
                 </li>
               </ol>
@@ -207,7 +207,7 @@ export default function AppPage() {
             </Link>
             <Link
               href="/"
-              className="px-10 py-5 bg-white border-2 border-indigo-200 text-slate-700 rounded-3xl text-xl font-bold bouncy-hover inline-block text-center shadow-sm"
+              className="px-10 py-5 bg-white border-2 border-rose-200 text-slate-700 rounded-3xl text-xl font-bold bouncy-hover inline-block text-center shadow-sm"
             >
               ← Back to Home
             </Link>

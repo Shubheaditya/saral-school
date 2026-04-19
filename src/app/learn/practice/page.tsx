@@ -53,7 +53,7 @@ export default function PracticePage() {
 
   const quizModes = [
     { mode: "quiz", label: "Quick Quizzes", icon: "📝", description: "Short, topic-specific quizzes", color: "bg-emerald-50 border-emerald-200" },
-    { mode: "chapter-test", label: "Chapter Tests", icon: "📋", description: "Full chapter assessments", color: "bg-indigo-50 border-indigo-200" },
+    { mode: "chapter-test", label: "Chapter Tests", icon: "📋", description: "Full chapter assessments", color: "bg-rose-50 border-rose-200" },
     { mode: "brain-game", label: "Brain Games", icon: "🧠", description: "Fun educational games", color: "bg-pink-50 border-pink-200" },
   ];
 
@@ -136,7 +136,7 @@ export default function PracticePage() {
                           onClick={() => router.push(`/learn/quiz/${quiz.id}`)}
                           className={`w-full flex items-center gap-4 p-4 text-left transition-all ${theme.card} group ${user.ageGroup === 'kids' ? 'rounded-2xl active:translate-y-1 active:shadow-none' : 'rounded-xl hover:-translate-y-1'}`}
                         >
-                          <span className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-black transition-colors ${user.ageGroup === 'kids' ? 'bg-indigo-100 text-indigo-600' : isDark ? 'bg-indigo-500/20 text-indigo-400 group-hover:bg-indigo-500/40' : 'bg-indigo-50 text-indigo-600 group-hover:bg-indigo-100'}`}>▶</span>
+                          <span className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-black transition-colors ${user.ageGroup === 'kids' ? 'bg-rose-100 text-rose-600' : isDark ? 'bg-rose-500/20 text-rose-400 group-hover:bg-rose-500/40' : 'bg-rose-50 text-rose-600 group-hover:bg-rose-100'}`}>▶</span>
                           <div className="flex-1">
                             <p className="font-bold text-base">{quiz.title}</p>
                             <p className={`text-xs mt-0.5 ${isDark || user.ageGroup === 'explorer' ? 'text-slate-400' : 'text-slate-500'}`}>{quiz.questions.length} questions • <span className={isDark ? 'text-amber-400' : 'text-amber-600'}>{quiz.totalPoints} pts</span></p>

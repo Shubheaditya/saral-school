@@ -105,10 +105,10 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-12 bg-gradient-to-b from-indigo-50 to-white">
+    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-12 bg-gradient-to-b from-rose-50/60 via-purple-50/30 to-white">
       <Sparky mood="waving" size="lg" message="Welcome to Saral School!" className="mb-8" />
 
-      <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-xl border-2 border-indigo-100 relative">
+      <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-xl border-2 border-rose-100 relative">
         {loading && (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex items-center justify-center rounded-3xl cursor-not-allowed">
             <span className="text-4xl animate-spin">⏳</span>
@@ -133,14 +133,14 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
-                className="w-full px-4 py-4 rounded-2xl border-2 border-indigo-100 focus:border-indigo-400 focus:outline-none text-lg font-medium text-slate-900 placeholder:text-slate-300"
+                className="w-full px-4 py-4 rounded-2xl border-2 border-rose-200 focus:border-rose-400 focus:outline-none text-lg font-medium text-slate-900 placeholder:text-slate-300"
               />
             </div>
             {error && <p className="text-red-500 text-sm font-bold">{error}</p>}
             <button
               onClick={handleEmailSubmit}
               disabled={loading}
-              className="w-full py-4 bg-indigo-600 text-white rounded-2xl text-lg font-bold shadow-lg shadow-indigo-200 bouncy-hover"
+              className="w-full py-4 bg-gradient-to-r from-rose-500 to-purple-500 text-white rounded-2xl text-lg font-bold shadow-lg shadow-rose-200 bouncy-hover"
             >
               Send Magic Code
             </button>
@@ -155,14 +155,14 @@ export default function LoginPage() {
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
                 placeholder="OTP Code"
-                className="w-full px-4 py-4 rounded-2xl border-2 border-indigo-100 focus:border-indigo-400 focus:outline-none text-2xl font-bold text-center text-slate-900 tracking-[0.25em] placeholder:text-slate-300 placeholder:tracking-normal placeholder:text-lg"
+                className="w-full px-4 py-4 rounded-2xl border-2 border-rose-200 focus:border-purple-400 focus:outline-none text-2xl font-bold text-center text-slate-900 tracking-[0.25em] placeholder:text-slate-300 placeholder:tracking-normal placeholder:text-lg"
               />
             </div>
             {error && <p className="text-red-500 text-sm font-bold">{error}</p>}
             <button
               onClick={handleOtpSubmit}
               disabled={loading}
-              className="w-full py-4 bg-emerald-600 text-white rounded-2xl text-lg font-bold shadow-lg shadow-emerald-200 bouncy-hover"
+              className="w-full py-4 bg-gradient-to-r from-purple-500 to-rose-500 text-white rounded-2xl text-lg font-bold shadow-lg shadow-purple-200 bouncy-hover"
             >
               Verify & Continue
             </button>

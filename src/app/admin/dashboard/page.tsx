@@ -89,7 +89,7 @@ export default function AdminDashboard() {
             <span key={i} className="flex items-center gap-2">
               {i > 0 && <span className="text-slate-300">/</span>}
               {item.onClick && i < breadcrumb.length - 1 ? (
-                <button onClick={item.onClick} className="text-indigo-600 hover:text-indigo-800 font-bold">
+                <button onClick={item.onClick} className="text-rose-600 hover:text-rose-800 font-bold">
                   {item.label}
                 </button>
               ) : (
@@ -155,7 +155,7 @@ function SubjectsScreen({ subjects, addSubject, deleteSubject, onOpen }: {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-black text-slate-900">Subjects ({subjects.length})</h2>
-        <button onClick={() => setShowForm(!showForm)} className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold text-sm hover:bg-indigo-700">+ Add Subject</button>
+        <button onClick={() => setShowForm(!showForm)} className="px-4 py-2 bg-rose-600 text-white rounded-lg font-bold text-sm hover:bg-rose-700">+ Add Subject</button>
       </div>
       {showForm && (
         <div className="bg-white rounded-xl p-6 border border-slate-200 mb-6">
@@ -186,7 +186,7 @@ function SubjectsScreen({ subjects, addSubject, deleteSubject, onOpen }: {
         {subjects.map(subject => {
           const totalChapters = subject.semesters.reduce((sum, sem) => sum + sem.chapters.length, 0);
           return (
-            <div key={subject.id} onClick={() => onOpen(subject.id)} className="bg-white rounded-xl p-5 border border-slate-200 text-left hover:border-indigo-300 hover:shadow-md transition-all group cursor-pointer">
+            <div key={subject.id} onClick={() => onOpen(subject.id)} className="bg-white rounded-xl p-5 border border-slate-200 text-left hover:border-rose-300 hover:shadow-md transition-all group cursor-pointer">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-3xl">{subject.icon}</span>
                 <button
@@ -196,7 +196,7 @@ function SubjectsScreen({ subjects, addSubject, deleteSubject, onOpen }: {
               </div>
               <h3 className="font-bold text-slate-900 text-lg">{subject.name}</h3>
               <p className="text-sm text-slate-400">{subject.semesters.length} semesters &middot; {totalChapters} chapters</p>
-              <span className="text-indigo-500 text-sm font-bold mt-2 block">Open &rarr;</span>
+              <span className="text-rose-500 text-sm font-bold mt-2 block">Open &rarr;</span>
             </div>
           );
         })}
@@ -219,9 +219,9 @@ function SemestersScreen({ subject, onOpen }: { subject: Subject; onOpen: (semId
             <button
               key={sem.id}
               onClick={() => onOpen(sem.id)}
-              className="bg-white rounded-xl p-4 border border-slate-200 text-center hover:border-indigo-300 hover:shadow-md transition-all"
+              className="bg-white rounded-xl p-4 border border-slate-200 text-center hover:border-rose-300 hover:shadow-md transition-all"
             >
-              <p className="text-2xl font-black text-indigo-600 mb-1">{sem.number}</p>
+              <p className="text-2xl font-black text-rose-600 mb-1">{sem.number}</p>
               <p className="text-xs font-bold text-slate-700">{sem.title}</p>
               <p className="text-xs text-slate-400 mt-1">{chapterCount} ch &middot; {contentCount} items</p>
             </button>
@@ -263,7 +263,7 @@ function ChaptersScreen({ subject, semesterId, addChapter, deleteChapter, onOpen
 
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm font-bold text-slate-500">{semester.chapters.length} chapters</span>
-        <button onClick={() => setShowForm(!showForm)} className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold text-sm hover:bg-indigo-700">+ Add Chapter</button>
+        <button onClick={() => setShowForm(!showForm)} className="px-4 py-2 bg-rose-600 text-white rounded-lg font-bold text-sm hover:bg-rose-700">+ Add Chapter</button>
       </div>
 
       {showForm && (
@@ -288,9 +288,9 @@ function ChaptersScreen({ subject, semesterId, addChapter, deleteChapter, onOpen
             <div
               key={chapter.id}
               onClick={() => onOpen(chapter.id)}
-              className="w-full bg-white rounded-xl p-4 border border-slate-200 flex items-center gap-4 text-left hover:border-indigo-300 hover:shadow-md transition-all group cursor-pointer"
+              className="w-full bg-white rounded-xl p-4 border border-slate-200 flex items-center gap-4 text-left hover:border-rose-300 hover:shadow-md transition-all group cursor-pointer"
             >
-              <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center text-lg font-black text-indigo-600 shrink-0">
+              <div className="w-10 h-10 bg-rose-50 rounded-lg flex items-center justify-center text-lg font-black text-rose-600 shrink-0">
                 {idx + 1}
               </div>
               <div className="flex-1">
@@ -301,7 +301,7 @@ function ChaptersScreen({ subject, semesterId, addChapter, deleteChapter, onOpen
                 onClick={(e) => { e.stopPropagation(); deleteChapter(subject.id, semesterId, chapter.id); }}
                 className="text-red-400 hover:text-red-600 text-xs font-bold opacity-0 group-hover:opacity-100"
               >Delete</button>
-              <span className="text-indigo-400 font-bold text-sm">Open &rarr;</span>
+              <span className="text-rose-400 font-bold text-sm">Open &rarr;</span>
             </div>
           ))}
         </div>
@@ -373,7 +373,7 @@ function ChapterDetailScreen({ subject, semesterId, chapterId, app }: {
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-bold text-slate-900">Content Items ({items.length})</h3>
         <div className="relative">
-          <button onClick={() => setShowAddMenu(!showAddMenu)} className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold text-sm hover:bg-indigo-700">
+          <button onClick={() => setShowAddMenu(!showAddMenu)} className="px-4 py-2 bg-rose-600 text-white rounded-lg font-bold text-sm hover:bg-rose-700">
             + Add Content
           </button>
           {showAddMenu && (
@@ -399,7 +399,7 @@ function ChapterDetailScreen({ subject, semesterId, chapterId, app }: {
         <div className="bg-white rounded-xl p-12 border border-dashed border-slate-300 text-center">
           <span className="text-4xl block mb-2">ðŸ“¦</span>
           <p className="text-slate-500 mb-3">No content yet. Add videos, notes, quizzes, tests, or formula sheets.</p>
-          <button onClick={() => setShowAddMenu(true)} className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold text-sm">+ Add Content</button>
+          <button onClick={() => setShowAddMenu(true)} className="px-4 py-2 bg-rose-600 text-white rounded-lg font-bold text-sm">+ Add Content</button>
         </div>
       ) : (
         <div className="space-y-2 mb-6">
@@ -513,7 +513,7 @@ function AddVideoForm({ subjectId, semesterId, chapterId, order, app, onClose }:
   };
 
   return (
-    <div className="bg-white rounded-xl p-6 border-2 border-indigo-200 mb-4">
+    <div className="bg-white rounded-xl p-6 border-2 border-rose-200 mb-4">
       <h4 className="font-bold text-slate-900 mb-4">Add Video Lecture</h4>
       <div className="space-y-3">
         <div>
@@ -531,7 +531,7 @@ function AddVideoForm({ subjectId, semesterId, chapterId, order, app, onClose }:
           </div>
           <div>
             <label className="text-sm font-bold text-slate-600 block mb-1">OR Upload Video File (.mp4)</label>
-            <input type="file" accept="video/mp4,video/webm" onChange={e => setFile(e.target.files?.[0] || null)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 font-bold hover:file:bg-indigo-100" disabled={!!videoUrl} />
+            <input type="file" accept="video/mp4,video/webm" onChange={e => setFile(e.target.files?.[0] || null)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-rose-50 file:text-rose-700 font-bold hover:file:bg-rose-100" disabled={!!videoUrl} />
           </div>
         </div>
         <div>
@@ -838,7 +838,7 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
         <div className="bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
           <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
             <span className="font-bold text-slate-800 text-sm">Questions ({questions.length}) | Total: {totalMarks} Marks</span>
-            <button onClick={openNewQuestion} className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors duration-150">+ Add Question</button>
+            <button onClick={openNewQuestion} className="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold hover:bg-rose-700 transition-colors duration-150">+ Add Question</button>
           </div>
           {questions.length === 0 && !builderOpen && (
             <div className="px-4 py-8 text-center text-slate-400 text-sm"><p className="text-lg mb-1">No questions yet</p><p className="text-xs">Click "+ Add Question" to get started</p></div>
@@ -847,11 +847,11 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
             <div className="divide-y divide-slate-100 stagger-children">
               {questions.map((q, i) => (
                 <div key={q.id} className="px-4 py-3 flex items-center gap-3 hover:bg-slate-50 group animate-fade-in-up">
-                  <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-xs font-black flex items-center justify-center flex-shrink-0">{i + 1}</span>
+                  <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-700 text-xs font-black flex items-center justify-center flex-shrink-0">{i + 1}</span>
                   <span className="text-[10px] font-bold bg-amber-100 text-amber-700 rounded px-1.5 py-0.5 uppercase flex-shrink-0">{q.type}</span>
                   <span className="text-slate-700 text-sm flex-1 truncate">{q.prompt.text || "(no text)"}</span>
                   <span className="text-xs font-bold text-slate-500 flex-shrink-0">{q.markingScheme?.maxMarks || 1}M{(q.markingScheme?.negativeMarks || 0) > 0 ? ` / -${q.markingScheme?.negativeMarks}` : ""}</span>
-                  <button onClick={() => openEditQuestion(i)} className="text-indigo-500 hover:text-indigo-700 text-xs font-bold opacity-0 group-hover:opacity-100 transition-all duration-150 px-2 py-1 hover:bg-indigo-50 rounded">Edit</button>
+                  <button onClick={() => openEditQuestion(i)} className="text-rose-500 hover:text-rose-700 text-xs font-bold opacity-0 group-hover:opacity-100 transition-all duration-150 px-2 py-1 hover:bg-rose-50 rounded">Edit</button>
                   <button onClick={() => deleteQuestion(i)} className="text-red-400 hover:text-red-700 text-xs font-bold opacity-0 group-hover:opacity-100 transition-all duration-150 px-2 py-1 hover:bg-red-50 rounded">Delete</button>
                 </div>
               ))}
@@ -861,7 +861,7 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
 
         {/* Question Builder Panel */}
         {builderOpen && (
-          <div className="border-2 border-indigo-200 rounded-xl bg-indigo-50/30 p-5 space-y-4 animate-fade-in-up">
+          <div className="border-2 border-rose-200 rounded-xl bg-rose-50/30 p-5 space-y-4 animate-fade-in-up">
             <div className="flex items-center justify-between">
               <h5 className="font-bold text-slate-900">{editingIdx !== null ? `Editing Question ${editingIdx + 1}` : "New Question"}</h5>
               <button onClick={() => setBuilderOpen(false)} className="text-xs text-slate-400 hover:text-slate-700 px-2 py-1 rounded hover:bg-slate-100 transition-colors duration-150">x Close</button>
@@ -871,7 +871,7 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
             <div className="grid grid-cols-3 gap-2">
               {(["mcq", "multi-correct", "fill-blank", "matching", "drag-drop", "theory"] as QuestionType[]).map(t => (
                 <button key={t} onClick={() => setDraft(prev => ({ ...prev, type: t }))}
-                  className={`px-2 py-2 rounded-lg text-xs font-bold border transition-all duration-150 text-center ${draft.type === t ? "bg-indigo-600 text-white border-indigo-600" : "bg-white text-slate-600 border-slate-200 hover:border-indigo-300"}`}>
+                  className={`px-2 py-2 rounded-lg text-xs font-bold border transition-all duration-150 text-center ${draft.type === t ? "bg-rose-600 text-white border-rose-600" : "bg-white text-slate-600 border-slate-200 hover:border-rose-300"}`}>
                   {t === "mcq" ? "Single Choice" : t === "multi-correct" ? "Multiple Correct" : t === "fill-blank" ? "Fill in Blank" : t === "matching" ? "Matching" : t === "drag-drop" ? "Drag & Drop" : "Long Answer"}
                 </button>
               ))}
@@ -881,7 +881,7 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
             <div>
               <label className="text-sm font-bold text-slate-600 block mb-1">Question Text *</label>
               <textarea value={draft.prompt.text || ""} onChange={e => setDraft(prev => ({ ...prev, prompt: { ...prev.prompt, text: e.target.value } }))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-20 resize-y focus:outline-none focus:border-indigo-400 transition-colors duration-150" placeholder="Enter your question..." />
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-20 resize-y focus:outline-none focus:border-rose-400 transition-colors duration-150" placeholder="Enter your question..." />
             </div>
 
             {/* Prompt Media */}
@@ -902,11 +902,11 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
                   {(draft.options || []).map((opt, i) => (
                     <div key={i} className="flex items-center gap-2">
                       {draft.type === "mcq"
-                        ? <input type="radio" name="correct" checked={draft.correctIndex === i} onChange={() => setDraft(prev => ({ ...prev, correctIndex: i }))} className="w-4 h-4 accent-indigo-600 flex-shrink-0" />
-                        : <input type="checkbox" checked={(draft.correctIndices || []).includes(i)} onChange={() => toggleCorrectIdx(i)} className="w-4 h-4 accent-indigo-600 flex-shrink-0" />
+                        ? <input type="radio" name="correct" checked={draft.correctIndex === i} onChange={() => setDraft(prev => ({ ...prev, correctIndex: i }))} className="w-4 h-4 accent-rose-600 flex-shrink-0" />
+                        : <input type="checkbox" checked={(draft.correctIndices || []).includes(i)} onChange={() => toggleCorrectIdx(i)} className="w-4 h-4 accent-rose-600 flex-shrink-0" />
                       }
                       <input value={opt.text || ""} onChange={e => { const opts = [...(draft.options || [])]; opts[i] = { ...opts[i], text: e.target.value }; setDraft(prev => ({ ...prev, options: opts })); }}
-                        className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400 transition-colors duration-150" placeholder={`Option ${String.fromCharCode(65 + i)}`} />
+                        className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-rose-400 transition-colors duration-150" placeholder={`Option ${String.fromCharCode(65 + i)}`} />
                       <input type="file" accept="image/*" onChange={e => { const files = [...(draft._optionFiles || [])]; files[i] = e.target.files?.[0] || null; setDraft(prev => ({ ...prev, _optionFiles: files })); }}
                         className="w-24 text-[10px] file:py-0.5 file:px-1 file:rounded file:border-0 file:bg-slate-100 file:text-slate-600 file:text-[10px]" title="Attach image" />
                       {opt.imageUrl && <span className="text-[10px] text-emerald-600 flex-shrink-0">img</span>}
@@ -914,28 +914,28 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
                     </div>
                   ))}
                 </div>
-                <button onClick={addOption} className="mt-2 text-xs text-indigo-600 font-bold hover:text-indigo-800">+ Add Option</button>
+                <button onClick={addOption} className="mt-2 text-xs text-rose-600 font-bold hover:text-rose-800">+ Add Option</button>
                 {draft.type === "multi-correct" && (
-                  <div className="mt-3 p-3 bg-indigo-50 rounded-lg border border-indigo-200">
-                    <label className="text-xs font-bold text-indigo-700 block mb-2">Multi-Correct Marking Mode</label>
+                  <div className="mt-3 p-3 bg-rose-50 rounded-lg border border-rose-200">
+                    <label className="text-xs font-bold text-rose-700 block mb-2">Multi-Correct Marking Mode</label>
                     <div className="space-y-1.5">
                       <label className="flex items-start gap-2 cursor-pointer">
                         <input type="radio" name="mcMode" value="all-or-nothing" checked={(draft.markingScheme?.multiCorrectMode || "all-or-nothing") === "all-or-nothing"}
                           onChange={() => setDraft(prev => ({ ...prev, markingScheme: { ...prev.markingScheme, multiCorrectMode: "all-or-nothing" } }))}
-                          className="mt-0.5 accent-indigo-600 flex-shrink-0" />
-                        <span className="text-xs text-indigo-800">All-or-Nothing: Full marks only if ALL correct options are selected, else 0</span>
+                          className="mt-0.5 accent-rose-600 flex-shrink-0" />
+                        <span className="text-xs text-rose-800">All-or-Nothing: Full marks only if ALL correct options are selected, else 0</span>
                       </label>
                       <label className="flex items-start gap-2 cursor-pointer">
                         <input type="radio" name="mcMode" value="partial" checked={draft.markingScheme?.multiCorrectMode === "partial"}
                           onChange={() => setDraft(prev => ({ ...prev, markingScheme: { ...prev.markingScheme, multiCorrectMode: "partial" } }))}
-                          className="mt-0.5 accent-indigo-600 flex-shrink-0" />
-                        <span className="text-xs text-indigo-800">Partial Marking: Marks per correct option, deduct per wrong option selected</span>
+                          className="mt-0.5 accent-rose-600 flex-shrink-0" />
+                        <span className="text-xs text-rose-800">Partial Marking: Marks per correct option, deduct per wrong option selected</span>
                       </label>
                       <label className="flex items-start gap-2 cursor-pointer">
                         <input type="radio" name="mcMode" value="any-wrong-full-negative" checked={draft.markingScheme?.multiCorrectMode === "any-wrong-full-negative"}
                           onChange={() => setDraft(prev => ({ ...prev, markingScheme: { ...prev.markingScheme, multiCorrectMode: "any-wrong-full-negative" } }))}
-                          className="mt-0.5 accent-indigo-600 flex-shrink-0" />
-                        <span className="text-xs text-indigo-800">Any Wrong = Full Negative: If any wrong option is selected, full negative marks are deducted</span>
+                          className="mt-0.5 accent-rose-600 flex-shrink-0" />
+                        <span className="text-xs text-rose-800">Any Wrong = Full Negative: If any wrong option is selected, full negative marks are deducted</span>
                       </label>
                     </div>
                   </div>
@@ -946,17 +946,17 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
             {draft.type === "fill-blank" && (
               <div><label className="text-sm font-bold text-slate-600 block mb-1">Correct Answer *</label>
                 <input value={draft.correctAnswer || ""} onChange={e => setDraft(prev => ({ ...prev, correctAnswer: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400 transition-colors duration-150" placeholder="Exact correct answer" /></div>
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-rose-400 transition-colors duration-150" placeholder="Exact correct answer" /></div>
             )}
 
             {(draft.type === "matching" || draft.type === "drag-drop") && (
               <div className="grid grid-cols-2 gap-3">
                 <div><label className="text-sm font-bold text-slate-600 block mb-1">{draft.type === "matching" ? "Left Items" : "Items"} (comma-separated)</label>
                   <input value={draft._matchLeft || ""} onChange={e => setDraft(prev => ({ ...prev, _matchLeft: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400 transition-colors duration-150" placeholder="Dog, Cat, Duck" /></div>
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-rose-400 transition-colors duration-150" placeholder="Dog, Cat, Duck" /></div>
                 <div><label className="text-sm font-bold text-slate-600 block mb-1">{draft.type === "matching" ? "Right Items" : "Targets"} (matching order)</label>
                   <input value={draft._matchRight || ""} onChange={e => setDraft(prev => ({ ...prev, _matchRight: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400 transition-colors duration-150" placeholder="Bark, Meow, Quack" /></div>
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-rose-400 transition-colors duration-150" placeholder="Bark, Meow, Quack" /></div>
               </div>
             )}
 
@@ -964,16 +964,16 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
               <div className="space-y-3">
                 <div><label className="text-sm font-bold text-slate-600 block mb-1">Sample / Reference Answer</label>
                   <textarea value={draft.sampleAnswer || ""} onChange={e => setDraft(prev => ({ ...prev, sampleAnswer: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-24 resize-y focus:outline-none focus:border-indigo-400 transition-colors duration-150" placeholder="Model answer..." /></div>
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-24 resize-y focus:outline-none focus:border-rose-400 transition-colors duration-150" placeholder="Model answer..." /></div>
                 <div><label className="text-sm font-bold text-slate-600 block mb-1">Max Words (optional)</label>
                   <input type="number" value={draft.maxWords || ""} onChange={e => setDraft(prev => ({ ...prev, maxWords: parseInt(e.target.value) || undefined }))}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400 transition-colors duration-150" placeholder="e.g. 200" /></div>
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-rose-400 transition-colors duration-150" placeholder="e.g. 200" /></div>
               </div>
             )}
 
             <div><label className="text-sm font-bold text-slate-600 block mb-1">Explanation (shown after answering)</label>
               <input value={draft.explanation || ""} onChange={e => setDraft(prev => ({ ...prev, explanation: e.target.value }))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-indigo-400 transition-colors duration-150" placeholder="Why is this the correct answer?" /></div>
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-rose-400 transition-colors duration-150" placeholder="Why is this the correct answer?" /></div>
 
             {/* Marking Scheme */}
             <div className="bg-emerald-50 rounded-xl border border-emerald-200 p-4">
@@ -992,7 +992,7 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
             </div>
 
             <div className="flex gap-2 pt-1">
-              <button onClick={commitQuestion} disabled={uploading} className="px-5 py-2 bg-indigo-600 text-white rounded-lg font-bold text-sm hover:bg-indigo-700 disabled:opacity-50 transition-colors duration-150">
+              <button onClick={commitQuestion} disabled={uploading} className="px-5 py-2 bg-rose-600 text-white rounded-lg font-bold text-sm hover:bg-rose-700 disabled:opacity-50 transition-colors duration-150">
                 {uploading ? "Uploading Media..." : editingIdx !== null ? "Update Question" : "Add Question"}
               </button>
               <button onClick={() => { setBuilderOpen(false); setEditingIdx(null); }} className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg font-bold text-sm hover:bg-slate-200 transition-colors duration-150">Cancel</button>

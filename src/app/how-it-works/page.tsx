@@ -4,8 +4,8 @@ export default function HowItWorks() {
     return (
         <main>
             {/* Page Header */}
-            <section className="px-6 py-20 bg-gradient-to-b from-indigo-50 to-white text-center">
-                <div className="mx-auto mb-6 w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center shadow-md animate-float">
+            <section className="px-6 py-20 bg-gradient-to-b from-rose-50 to-white text-center">
+                <div className="mx-auto mb-6 w-20 h-20 bg-rose-100 rounded-full flex items-center justify-center shadow-md animate-float">
                     <span className="text-4xl">🦉</span>
                 </div>
                 <h1 className="text-4xl md:text-6xl font-black text-slate-900 mb-4">How Saral School Works</h1>
@@ -18,7 +18,7 @@ export default function HowItWorks() {
             <section id="onboarding" className="px-6 py-20 bg-white">
                 <div className="max-w-5xl mx-auto">
                     <div className="text-center mb-14">
-                        <span className="inline-block px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded-full font-bold text-sm mb-4">STEP 1</span>
+                        <span className="inline-block px-4 py-1.5 bg-rose-100 text-rose-700 rounded-full font-bold text-sm mb-4">STEP 1</span>
                         <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4">Getting Started — Onboarding</h2>
                         <p className="text-lg text-slate-500 max-w-3xl mx-auto">
                             A simple, step-by-step process designed so parents can set things up and then hand the device to their child — no further interference needed.
@@ -27,12 +27,12 @@ export default function HowItWorks() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                         {/* New User Flow */}
-                        <div className="bg-indigo-50 p-8 rounded-3xl border-2 border-indigo-200 bouncy-hover">
+                        <div className="bg-rose-50 p-8 rounded-3xl border-2 border-rose-200 bouncy-hover">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="w-14 h-14 bg-indigo-200 rounded-2xl flex items-center justify-center text-3xl">👋</div>
+                                <div className="w-14 h-14 bg-rose-200 rounded-2xl flex items-center justify-center text-3xl">👋</div>
                                 <div>
                                     <h3 className="text-2xl font-black text-slate-900">New User</h3>
-                                    <span className="text-indigo-600 font-bold">First time setup</span>
+                                    <span className="text-rose-600 font-bold">First time setup</span>
                                 </div>
                             </div>
                             <div className="space-y-3">
@@ -45,7 +45,7 @@ export default function HowItWorks() {
                                     { step: "6", label: "Land on Home Screen — tap avatar to start!" },
                                 ].map((s) => (
                                     <div key={s.step} className="flex items-center gap-3 bg-white p-3 rounded-xl shadow-sm">
-                                        <div className="w-8 h-8 bg-indigo-500 text-white rounded-lg flex items-center justify-center text-sm font-black shrink-0">{s.step}</div>
+                                        <div className="w-8 h-8 bg-rose-500 text-white rounded-lg flex items-center justify-center text-sm font-black shrink-0">{s.step}</div>
                                         <p className="text-sm text-slate-600 font-medium">{s.label}</p>
                                     </div>
                                 ))}
@@ -122,7 +122,7 @@ export default function HowItWorks() {
 
                     {/* Assessment features grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-white p-8 rounded-3xl border-2 border-indigo-100 bouncy-hover">
+                        <div className="bg-white p-8 rounded-3xl border-2 border-rose-100 bouncy-hover">
                             <span className="text-3xl mb-3 block">🎮</span>
                             <h3 className="text-xl font-bold text-slate-900 mb-2">Engaging Experience</h3>
                             <ul className="text-slate-500 space-y-2 text-sm">
@@ -211,12 +211,12 @@ export default function HowItWorks() {
                         </div>
 
                         {/* Scholars */}
-                        <div className="bg-indigo-50 p-8 rounded-3xl border-2 border-indigo-200 bouncy-hover">
+                        <div className="bg-rose-50 p-8 rounded-3xl border-2 border-rose-200 bouncy-hover">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="w-14 h-14 bg-indigo-200 rounded-2xl flex items-center justify-center text-3xl">📚</div>
+                                <div className="w-14 h-14 bg-rose-200 rounded-2xl flex items-center justify-center text-3xl">📚</div>
                                 <div>
                                     <h3 className="text-2xl font-black text-slate-900">Scholars</h3>
-                                    <span className="text-indigo-600 font-bold">Ages 10–12</span>
+                                    <span className="text-rose-600 font-bold">Ages 10–12</span>
                                 </div>
                             </div>
                             <ul className="space-y-4">
@@ -256,7 +256,7 @@ export default function HowItWorks() {
                                 icon: "🦉",
                                 title: "Sparky the Owl Mascot",
                                 desc: "A friendly, animated owl that guides kids through lessons. Sparky provides instructions, offers hints, celebrates achievements, and gives gentle encouragement. Appears on homepage, quizzes, and loading screens with smooth animations.",
-                                color: "bg-indigo-50 border-indigo-100",
+                                color: "bg-rose-50 border-rose-100",
                             },
                             {
                                 icon: "📹",
@@ -280,7 +280,7 @@ export default function HowItWorks() {
                                 icon: "🧠",
                                 title: "Brain Games",
                                 desc: "Fun mini-games tied to each subject, available in the Practice section. A different kind of practice that doesn't feel like studying.",
-                                color: "bg-indigo-50 border-indigo-100",
+                                color: "bg-rose-50 border-rose-100",
                             },
                         ].map((item) => (
                             <div key={item.title} className={`flex flex-col md:flex-row items-start gap-6 ${item.color} p-8 rounded-3xl border-2 shadow-sm bouncy-hover`}>
@@ -332,14 +332,14 @@ export default function HowItWorks() {
                     {/* Assembly Line */}
                     <h3 className="text-2xl font-black text-slate-900 mb-8 text-center">The Content Assembly Line</h3>
                     <div className="space-y-6">
-                        <div className="flex flex-col md:flex-row items-start gap-6 bg-indigo-50 p-8 rounded-3xl border-2 border-indigo-100 bouncy-hover">
-                            <div className="bg-indigo-600 text-white w-14 h-14 rounded-2xl flex flex-col items-center justify-center shrink-0">
+                        <div className="flex flex-col md:flex-row items-start gap-6 bg-rose-50 p-8 rounded-3xl border-2 border-rose-100 bouncy-hover">
+                            <div className="bg-rose-600 text-white w-14 h-14 rounded-2xl flex flex-col items-center justify-center shrink-0">
                                 <span className="text-xs font-bold opacity-70">STAGE</span>
                                 <span className="text-xl font-black leading-none">1</span>
                             </div>
                             <div>
                                 <h4 className="text-xl font-bold text-slate-900 mb-1">Drafting — &quot;The Maker&quot;</h4>
-                                <p className="text-sm font-semibold text-indigo-600 mb-2">Role: Prompt Operator (College Intern)</p>
+                                <p className="text-sm font-semibold text-rose-600 mb-2">Role: Prompt Operator (College Intern)</p>
                                 <p className="text-slate-500 leading-relaxed">
                                     Pick a topic from the master sheet, copy the standardized Master Prompt into ChatGPT/Claude,
                                     review the output, and save it. Output: ~10–15 topics per hour.
@@ -436,7 +436,7 @@ export default function HowItWorks() {
                     <p className="text-lg text-slate-500 mb-8">
                         Learn about our mission and how you can help bring Saral School to life.
                     </p>
-                    <Link href="/about" className="px-10 py-5 bg-indigo-600 text-white rounded-3xl text-xl font-bold shadow-xl shadow-indigo-200 bouncy-hover inline-block">
+                    <Link href="/about" className="px-10 py-5 bg-rose-600 text-white rounded-3xl text-xl font-bold shadow-xl shadow-rose-200 bouncy-hover inline-block">
                         About Us →
                     </Link>
                 </div>

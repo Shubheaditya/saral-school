@@ -17,7 +17,7 @@ export default function TopProfileBar() {
   const getTheme = () => {
     switch (currentUser.ageGroup) {
       case "kids":
-         return { bg: "bg-white", border: "border-indigo-100", shadow: "shadow-[0_4px_0_#e0e7ff]", textName: "text-slate-900", iconBg: "bg-indigo-100 text-indigo-500", textPoints: "text-amber-500", textGems: "text-indigo-500" };
+          return { bg: "bg-white", border: "border-rose-100", shadow: "shadow-[0_4px_0_#f3e8ee]", textName: "text-slate-900", iconBg: "bg-rose-100 text-rose-500", textPoints: "text-amber-500", textGems: "text-purple-500" };
       case "explorer":
          return { 
            bg: isDark ? "bg-slate-900/50 backdrop-blur-md" : "bg-white/80 backdrop-blur-md", 

@@ -3,21 +3,22 @@
 @theme {
   --font-nunito: "Nunito", sans-serif;
 
-  --color-brand-primary: #E0E7FF;
-  --color-brand-secondary: #ECFDF5;
-  --color-brand-accent: #FFF7ED;
-  --color-brand-soft-pink: #FDF2F8;
+  /* Logo-inspired palette: dusty rose → mauve → slate navy */
+  --color-brand-primary: #F3E8EE;   /* soft rose wash */
+  --color-brand-secondary: #EDE4F0; /* soft lavender wash */
+  --color-brand-accent: #D4A0A8;    /* dusty rose accent */
+  --color-brand-soft-pink: #F5E1E6; /* light pink from logo wing */
   --color-brand-soft-yellow: #FFFBEB;
 
-  --color-text-main: #1E293B;
-  --color-text-muted: #64748B;
+  --color-text-main: #1E2D3D;       /* logo navy */
+  --color-text-muted: #6B7A8D;      /* muted slate from logo */
 
   --radius-3xl: 1.5rem;
 }
 
 :root {
   --background: #ffffff;
-  --foreground: #1e293b;
+  --foreground: #1E2D3D;
   color-scheme: light;
 }
 

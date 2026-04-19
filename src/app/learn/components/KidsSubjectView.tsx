@@ -119,8 +119,8 @@ export default function KidsSubjectView({
                           className="flex-1 relative group"
                           title="Watch Video"
                         >
-                           <div className="absolute inset-0 bg-indigo-500 rounded-[1.5rem] top-2"></div>
-                           <div className={`relative bg-indigo-400 border-2 border-indigo-200 rounded-[1.5rem] py-3 flex items-center justify-center text-3xl transform transition-transform duration-100 active:translate-y-2 ${clickedItem === `video-sub-${subtopic.id}` ? 'scale-110' : 'group-hover:-translate-y-1'}`}>
+                           <div className="absolute inset-0 bg-rose-500 rounded-[1.5rem] top-2"></div>
+                           <div className={`relative bg-rose-400 border-2 border-rose-200 rounded-[1.5rem] py-3 flex items-center justify-center text-3xl transform transition-transform duration-100 active:translate-y-2 ${clickedItem === `video-sub-${subtopic.id}` ? 'scale-110' : 'group-hover:-translate-y-1'}`}>
                              <div className="absolute top-1 left-3 right-3 h-2 bg-white/30 rounded-full blur-[1px]"></div>
                              🎬
                            </div>
