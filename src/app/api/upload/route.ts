@@ -1,47 +1,44 @@
 import { NextResponse } from 'next/server';
-import { v2 as cloudinary } from 'cloudinary';
-
-// Configure Cloudinary with the credentials from the environment
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { supabase } from '../../../lib/supabase';
 
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
-    const file = formData.get('file') as File;
+    const file = formData.get('file') as File | null;
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    // Convert the File object to a Node.js Buffer for the Cloudinary stream
+    // Convert the File object to a Node.js Buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Use a Promise to handle the stream upload to Cloudinary
-    const result = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        { 
-          folder: 'saral-school',
-          resource_type: 'auto' // 'auto' allows images, raw docs like PDFs, and video/audio
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-      // End the stream and trigger the upload
-      uploadStream.end(buffer);
-    });
+    // Create a unique filename to prevent collisions
+    const fileExt = file.name.split('.').pop() || 'tmp';
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 10)}.${fileExt}`;
 
-    // Return the secure URL provided by Cloudinary
-    return NextResponse.json({ url: (result as any).secure_url });
+    // Upload to Supabase Storage Bucket named "saral-school"
+    const { data, error } = await supabase.storage
+      .from('saral-school')
+      .upload(fileName, buffer, {
+        contentType: file.type || 'application/octet-stream',
+        upsert: true,
+      });
 
-  } catch (error) {
-    console.error('Cloudinary upload error:', error);
-    return NextResponse.json({ error: 'Failed to upload file to Cloudinary' }, { status: 500 });
+    if (error) {
+      throw error;
+    }
+
+    // Retrieve the public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('saral-school')
+      .getPublicUrl(fileName);
+
+    return NextResponse.json({ url: publicUrl });
+
+  } catch (error: any) {
+    console.error('Supabase upload error:', error.message || error);
+    return NextResponse.json({ error: 'Failed to upload file to Supabase' }, { status: 500 });
   }
 }
