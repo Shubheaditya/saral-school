@@ -971,9 +971,9 @@ function AddQuizForm({ subjectId, semesterId, chapterId, order, mode, label, app
               </div>
             )}
 
-            <div><label className="text-sm font-bold text-slate-600 block mb-1">Explanation (shown after answering)</label>
-              <input value={draft.explanation || ""} onChange={e => setDraft(prev => ({ ...prev, explanation: e.target.value }))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-rose-400 transition-colors duration-150" placeholder="Why is this the correct answer?" /></div>
+            <div><label className="text-sm font-bold text-slate-600 block mb-1">💡 Solution / Explanation (shown in test report)</label>
+              <textarea value={draft.explanation || ""} onChange={e => setDraft(prev => ({ ...prev, explanation: e.target.value }))}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-20 resize-y focus:outline-none focus:border-rose-400 transition-colors duration-150" placeholder="Write the detailed solution here. This will be shown to students after they submit the quiz and in the test report." /></div>
 
             {/* Marking Scheme */}
             <div className="bg-emerald-50 rounded-xl border border-emerald-200 p-4">

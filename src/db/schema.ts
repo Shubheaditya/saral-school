@@ -130,3 +130,15 @@ export const completedContents = sqliteTable('completed_contents', {
   score: integer('score'), // if quiz
   completedAt: text('completed_at').notNull(),
 });
+
+export const quizAttempts = sqliteTable('quiz_attempts', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  quizId: text('quiz_id').notNull(),
+  subjectId: text('subject_id').notNull(),
+  score: integer('score').notNull(),
+  totalMarks: integer('total_marks').notNull(),
+  percentage: integer('percentage').notNull(),
+  answers: text('answers', { mode: 'json' }), // JSON record of user answers
+  completedAt: text('completed_at').notNull(),
+});

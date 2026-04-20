@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../contexts/AuthContext";
 import { useGamification } from "../contexts/GamificationContext";
@@ -9,6 +9,7 @@ import TopProfileBar from "../components/TopProfileBar";
 import Sparky from "../components/Sparky";
 import UniversalBackground from "../components/UniversalBackground";
 import { useUniversalTheme } from "../hooks/useUniversalTheme";
+import { useApp } from "../contexts/AppContext";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -215,63 +216,7 @@ export default function ProfilePage() {
             </div>
           ) : (
             <div className="space-y-6 sm:space-y-8">
-              <div className={`p-6 sm:p-8 ${theme.card} ${currentUser.ageGroup === 'kids' ? '' : 'rounded-3xl'}`}>
-                <h2 className="text-xl sm:text-2xl font-black mb-6">Overview & Reports</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                  <div className="rounded-2xl p-4 text-center bg-emerald-50 border border-emerald-100">
-                    <p className="text-3xl font-black text-emerald-600">{completedQuizzes.length}</p>
-                    <p className="text-xs font-bold mt-1 text-slate-500">Quizzes Done</p>
-                  </div>
-                  <div className="rounded-2xl p-4 text-center bg-rose-50 border border-rose-100">
-                    <p className="text-3xl font-black text-rose-600">{completedVideos.length}</p>
-                    <p className="text-xs font-bold mt-1 text-slate-500">Videos Watched</p>
-                  </div>
-                  <div className="rounded-2xl p-4 text-center bg-amber-50 border border-amber-100">
-                    <p className="text-3xl font-black text-amber-600">{longestStreak}</p>
-                    <p className="text-xs font-bold mt-1 text-slate-500">Best Streak</p>
-                  </div>
-                </div>
-
-                <h3 className="font-bold text-slate-900 mb-3">Subject Progress</h3>
-                <div className="space-y-3">
-                  {["Mathematics", "Science", "English", "Social Science", "Logical Reasoning", "Technology"].map((name, i) => (
-                    <div key={name}>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="font-medium text-slate-700">{name}</span>
-                        <span className="text-slate-400">{Math.round(15 + i * 8)}%</span>
-                      </div>
-                      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                        <div className="h-2 bg-gradient-to-r from-rose-400 to-purple-500 rounded-full transition-all duration-700" style={{ width: `${15 + i * 8}%` }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Insights */}
-              <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-                <h3 className="font-bold text-slate-900 mb-3">Insights</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
-                    <p className="text-sm font-bold text-emerald-700 mb-1">💪 Strengths</p>
-                    <p className="text-xs text-slate-600">Numbers, Patterns, Animals</p>
-                  </div>
-                  <div className="bg-amber-50 rounded-xl p-4 border border-amber-100">
-                    <p className="text-sm font-bold text-amber-700 mb-1">📖 Needs Practice</p>
-                    <p className="text-xs text-slate-600">Phonics, Geography</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Report Actions */}
-              <div className="flex gap-3">
-                <button className="flex-1 py-3 bg-gradient-to-r from-rose-500 to-purple-500 text-white rounded-2xl font-bold bouncy-hover text-sm">
-                  📥 Download Report
-                </button>
-                <button className="flex-1 py-3 bg-white border-2 border-rose-200 text-rose-600 rounded-2xl font-bold bouncy-hover text-sm">
-                  📧 Email Report
-                </button>
-              </div>
+              <PerformanceAnalytics userId={currentUser.id} theme={theme} ageGroup={currentUser.ageGroup} completedQuizzes={completedQuizzes} completedVideos={completedVideos} longestStreak={longestStreak} />
 
               {/* Learning Settings */}
               <div className={`p-6 sm:p-8 ${theme.card} ${currentUser.ageGroup === 'kids' ? '' : 'rounded-3xl'}`}>
@@ -332,5 +277,126 @@ export default function ProfilePage() {
       )}
       </div>
     </main>
+  );
+}
+
+// ========== PERFORMANCE ANALYTICS COMPONENT ==========
+interface AnalyticsData {
+  totalAttempts: number;
+  avgPercentage: number;
+  totalScore: number;
+  totalMaxMarks: number;
+  bySubject: Record<string, { attempts: number; avgPercentage: number; totalScore: number; totalMarks: number }>;
+}
+
+function PerformanceAnalytics({ userId, theme, ageGroup, completedQuizzes, completedVideos, longestStreak }: {
+  userId: string; theme: any; ageGroup: string; completedQuizzes: string[]; completedVideos: string[]; longestStreak: number;
+}) {
+  const { subjects } = useApp();
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [semesterFilter, setSemesterFilter] = useState<string>("all");
+
+  useEffect(() => {
+    async function fetchAnalytics() {
+      try {
+        const res = await fetch(`/api/user/quiz-attempts?userId=${userId}`);
+        if (res.ok) {
+          const data = await res.json();
+          setAnalytics(data.analytics);
+        }
+      } catch (e) {
+        console.error("Failed to fetch analytics", e);
+      }
+      setLoading(false);
+    }
+    fetchAnalytics();
+  }, [userId]);
+
+  const subjectMap: Record<string, string> = {};
+  subjects.forEach(s => { subjectMap[s.id] = s.name; });
+  const subjectIcons: Record<string, string> = {};
+  subjects.forEach(s => { subjectIcons[s.id] = s.icon; });
+
+  return (
+    <>
+      {/* Overview Stats */}
+      <div className={`p-6 sm:p-8 ${theme.card} ${ageGroup === 'kids' ? '' : 'rounded-3xl'}`}>
+        <h2 className="text-xl sm:text-2xl font-black mb-6">📊 Performance Analytics</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+          <div className="rounded-2xl p-4 text-center bg-emerald-50 border border-emerald-100">
+            <p className="text-2xl font-black text-emerald-600">{completedQuizzes.length}</p>
+            <p className="text-xs font-bold mt-1 text-slate-500">Quizzes Done</p>
+          </div>
+          <div className="rounded-2xl p-4 text-center bg-rose-50 border border-rose-100">
+            <p className="text-2xl font-black text-rose-600">{completedVideos.length}</p>
+            <p className="text-xs font-bold mt-1 text-slate-500">Videos Watched</p>
+          </div>
+          <div className="rounded-2xl p-4 text-center bg-amber-50 border border-amber-100">
+            <p className="text-2xl font-black text-amber-600">{longestStreak}</p>
+            <p className="text-xs font-bold mt-1 text-slate-500">Best Streak</p>
+          </div>
+          <div className="rounded-2xl p-4 text-center bg-purple-50 border border-purple-100">
+            <p className="text-2xl font-black text-purple-600">{analytics?.avgPercentage ?? 0}%</p>
+            <p className="text-xs font-bold mt-1 text-slate-500">Avg Score</p>
+          </div>
+        </div>
+
+        {/* Semester Filter */}
+        <div className="flex items-center gap-3 mb-6">
+          <span className="text-sm font-bold text-slate-700 shrink-0">Filter:</span>
+          <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
+            <button
+              onClick={() => setSemesterFilter("all")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${semesterFilter === "all" ? "bg-gradient-to-r from-rose-500 to-purple-500 text-white shadow-sm" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`}
+            >All Semesters</button>
+            {Array.from({ length: 18 }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => setSemesterFilter(String(i + 1))}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${semesterFilter === String(i + 1) ? "bg-gradient-to-r from-rose-500 to-purple-500 text-white shadow-sm" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`}
+              >Sem {i + 1}</button>
+            ))}
+          </div>
+        </div>
+
+        {/* Subject-wise Performance */}
+        <h3 className="font-bold text-slate-900 mb-3">Subject Performance</h3>
+        {loading ? (
+          <div className="text-center py-8">
+            <div className="w-8 h-8 border-4 border-rose-200 border-t-rose-600 rounded-full animate-spin mx-auto mb-2" />
+            <p className="text-sm text-slate-400">Loading analytics...</p>
+          </div>
+        ) : analytics && Object.keys(analytics.bySubject).length > 0 ? (
+          <div className="space-y-3">
+            {Object.entries(analytics.bySubject).map(([subId, data]) => (
+              <div key={subId} className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{subjectIcons[subId] || '📚'}</span>
+                    <span className="font-bold text-sm text-slate-800">{subjectMap[subId] || subId}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-bold text-slate-400">{data.attempts} attempt{data.attempts !== 1 ? 's' : ''}</span>
+                    <span className={`text-sm font-black ${data.avgPercentage >= 70 ? 'text-emerald-600' : data.avgPercentage >= 40 ? 'text-amber-600' : 'text-red-500'}`}>{data.avgPercentage}%</span>
+                  </div>
+                </div>
+                <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                  <div
+                    className={`h-2.5 rounded-full transition-all duration-700 ${data.avgPercentage >= 70 ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : data.avgPercentage >= 40 ? 'bg-gradient-to-r from-amber-400 to-amber-500' : 'bg-gradient-to-r from-red-400 to-red-500'}`}
+                    style={{ width: `${Math.max(data.avgPercentage, 3)}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-slate-50 rounded-2xl p-8 text-center border border-slate-100">
+            <span className="text-4xl block mb-2">📝</span>
+            <p className="text-slate-500 font-medium">No quiz attempts yet. Take a quiz to see your performance!</p>
+          </div>
+        )}
+      </div>
+    </>
   );
 }

@@ -21,7 +21,7 @@ const SUBJECT_STYLES: Record<string, { bg: string; border: string; glow: string;
 
 export default function ScholarHomepage() {
   const router = useRouter();
-  const { currentUser } = useAuth();
+  const { currentUser, updateUser } = useAuth();
   const { updateStreak, points, currentStreak, completedQuizzes, completedVideos } = useGamification();
   const { subjects } = useApp();
   const { backgroundClass, textClass } = useUniversalTheme();
@@ -151,6 +151,39 @@ export default function ScholarHomepage() {
                   <div className="w-2.5 h-2.5 rounded-[1px] bg-purple-600"></div>
                </div>
                <span>More</span>
+            </div>
+          </div>
+        </div>
+
+        {/* SEMESTER SELECTOR */}
+        <div className="animate-fade-in-up">
+          <div className="border rounded-xl p-4 bg-white shadow-sm border-slate-200">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-base">🎓</span>
+                <p className="text-xs font-medium text-slate-500">Current Semester</p>
+              </div>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-gradient-to-r from-rose-500 to-purple-500 text-white">
+                Semester {currentUser.assignedSemester || 10}
+              </span>
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
+              {Array.from({ length: 9 }, (_, i) => (
+                <button
+                  key={i + 10}
+                  onClick={() => {
+                    updateUser(currentUser.id, { assignedSemester: i + 10 });
+                    setTimeout(() => { window.location.href = "/learn"; }, 300);
+                  }}
+                  className={`px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-all ${
+                    (currentUser.assignedSemester || 10) === i + 10
+                      ? "bg-gradient-to-r from-rose-500 to-purple-500 text-white shadow-sm"
+                      : "bg-slate-50 text-slate-500 border border-slate-200 hover:bg-rose-50 hover:border-rose-300"
+                  }`}
+                >
+                  Sem {i + 10}
+                </button>
+              ))}
             </div>
           </div>
         </div>

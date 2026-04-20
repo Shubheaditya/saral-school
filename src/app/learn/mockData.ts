@@ -1,4 +1,4 @@
-import { Subject, Badge, ScoreboardEntry, Quiz, Question, Semester, Chapter } from "./types";
+import { Subject, Badge, Semester, Chapter } from "./types";
 
 // ============================================================
 // Helper to generate semesters with pre-populated chapters
@@ -204,66 +204,6 @@ export const DEFAULT_SUBJECTS: Subject[] = [
 ];
 
 // ============================================================
-// Mock Quiz (sample for demonstration)
-// ============================================================
-
-export const MOCK_QUIZ_QUESTIONS: Question[] = [
-  {
-    type: "mcq",
-    id: "q1",
-    prompt: { text: "What is 5 + 3?" },
-    options: [{ text: "6" }, { text: "7" }, { text: "8" }, { text: "9" }],
-    correctIndex: 2,
-    explanation: "5 + 3 = 8",
-  },
-  {
-    type: "mcq",
-    id: "q2",
-    prompt: { text: "Which shape has 4 equal sides?" },
-    options: [{ text: "Triangle" }, { text: "Square" }, { text: "Circle" }, { text: "Rectangle" }],
-    correctIndex: 1,
-    explanation: "A square has 4 equal sides.",
-  },
-  {
-    type: "fill-blank",
-    id: "q3",
-    prompt: { text: "The sun rises in the ___." },
-    correctAnswer: "east",
-    acceptableAnswers: ["East", "EAST"],
-    explanation: "The sun rises in the east.",
-  },
-  {
-    type: "mcq",
-    id: "q4",
-    prompt: { text: "Which animal says 'Moo'?" },
-    options: [{ text: "Dog" }, { text: "Cat" }, { text: "Cow" }, { text: "Bird" }],
-    correctIndex: 2,
-    explanation: "A cow says 'Moo'!",
-  },
-  {
-    type: "matching",
-    id: "q5",
-    prompt: { text: "Match the animals with their sounds:" },
-    leftItems: [{ text: "Dog" }, { text: "Cat" }, { text: "Duck" }],
-    rightItems: [{ text: "Quack" }, { text: "Bark" }, { text: "Meow" }],
-    correctPairs: { Dog: "Bark", Cat: "Meow", Duck: "Quack" },
-    explanation: "Dogs bark, cats meow, and ducks quack!",
-  },
-];
-
-export const MOCK_QUIZ: Quiz = {
-  id: "mock-quiz-1",
-  chapterId: "",
-  subjectId: "math",
-  title: "Quick Math Quiz",
-  description: "Test your basic math skills!",
-  questions: MOCK_QUIZ_QUESTIONS,
-  mode: "quiz",
-  totalPoints: 50,
-  totalMarks: 50,
-};
-
-// ============================================================
 // Default Badges
 // ============================================================
 
@@ -276,19 +216,4 @@ export const DEFAULT_BADGES: Badge[] = [
   { id: "first-video", name: "Video Watcher", description: "Watch your first video lecture", icon: "📹", requirement: "Watch 1 video", earned: false },
   { id: "all-subjects", name: "Explorer", description: "Try all 6 subjects", icon: "🗺️", requirement: "Access all 6 subjects", earned: false },
   { id: "hundred-points", name: "Century", description: "Earn 100 points", icon: "💎", requirement: "Earn 100 points", earned: false },
-];
-
-// ============================================================
-// Mock Scoreboard Data
-// ============================================================
-
-export const MOCK_SCOREBOARD: ScoreboardEntry[] = [
-  { userId: "mock-1", name: "Aarav", avatarIndex: 0, points: 1250, rank: 1 },
-  { userId: "mock-2", name: "Priya", avatarIndex: 3, points: 1100, rank: 2 },
-  { userId: "mock-3", name: "Rahul", avatarIndex: 1, points: 980, rank: 3 },
-  { userId: "mock-4", name: "Ananya", avatarIndex: 6, points: 870, rank: 4 },
-  { userId: "mock-5", name: "Vikram", avatarIndex: 2, points: 750, rank: 5 },
-  { userId: "mock-6", name: "Diya", avatarIndex: 7, points: 620, rank: 6 },
-  { userId: "mock-7", name: "Arjun", avatarIndex: 4, points: 510, rank: 7 },
-  { userId: "mock-8", name: "Meera", avatarIndex: 5, points: 430, rank: 8 },
 ];

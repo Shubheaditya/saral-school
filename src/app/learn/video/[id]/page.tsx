@@ -28,7 +28,7 @@ export default function VideoPage() {
   const videoId = params.id as string;
   const { currentUser } = useAuth();
   const { getVideoById } = useApp();
-  const { completeVideo, checkAndAwardBadges } = useGamification();
+  const { completeVideo, checkAndAwardBadges, addPoints, addGems } = useGamification();
   const { backgroundClass, textClass, isDark } = useUniversalTheme();
 
   const video = getVideoById(videoId);
@@ -46,11 +46,13 @@ export default function VideoPage() {
     if (completed) return;
     const timer = setTimeout(() => {
       completeVideo(videoId);
+      addPoints(10);
+      addGems(1);
       checkAndAwardBadges();
       setCompleted(true);
     }, 3000);
     return () => clearTimeout(timer);
-  }, [videoId, completed, completeVideo, checkAndAwardBadges]);
+  }, [videoId, completed, completeVideo, addPoints, addGems, checkAndAwardBadges]);
 
   return (
     <main className={`min-h-screen ${backgroundClass} ${textClass} relative pb-24 transition-colors duration-200`}>

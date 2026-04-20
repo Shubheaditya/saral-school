@@ -6,7 +6,7 @@ import {
   VideoLecture, Quiz, ChapterNotes, FormulaSheet, StudentNote,
   AdminContent, generateSemesters,
 } from "../types";
-import { DEFAULT_SUBJECTS, MOCK_QUIZ } from "../mockData";
+import { DEFAULT_SUBJECTS } from "../mockData";
 import { supabase, isSupabaseConfigured } from "../../../lib/supabase";
 
 interface AppContextType {
@@ -59,7 +59,7 @@ function getDefaultContent(): AdminContent {
   return {
     subjects: DEFAULT_SUBJECTS,
     videos: [],
-    quizzes: [MOCK_QUIZ],
+    quizzes: [],
     chapterNotes: [],
     formulaSheets: [],
     studentNotes: [],
