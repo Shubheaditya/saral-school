@@ -490,7 +490,7 @@ function AddVideoForm({ subjectId, semesterId, chapterId, order, app, onClose }:
         return;
       }
       const fileName = `videos/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-      const { data, error } = await supabase.storage.from('saral_files').upload(fileName, file);
+      const { data, error } = await supabase.storage.from('saral-school').upload(fileName, file);
       if (error) {
         console.error("Video upload failed:", error);
         alert(`Failed to upload video to Supabase: ${error.message}\nMake sure your storage bucket exists and policies are applied.`);
@@ -498,7 +498,7 @@ function AddVideoForm({ subjectId, semesterId, chapterId, order, app, onClose }:
         return;
       }
       if (data) {
-        finalVideoUrl = supabase.storage.from('saral_files').getPublicUrl(fileName).data.publicUrl;
+        finalVideoUrl = supabase.storage.from('saral-school').getPublicUrl(fileName).data.publicUrl;
       }
     }
 
@@ -584,7 +584,7 @@ function AddNotesForm({ subjectId, semesterId, chapterId, order, app, onClose }:
         finalPdfUrl = data.url;
       } catch (error) {
         console.error("File upload failed:", error);
-        alert(`Failed to upload document to Cloudinary. Please try again.`);
+        alert(`Failed to upload document. Please check your Supabase storage bucket exists and try again.`);
         setUploading(false);
         return;
       }
