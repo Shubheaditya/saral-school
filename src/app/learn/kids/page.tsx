@@ -72,39 +72,6 @@ export default function KidsHomepage() {
           </div>
         </div>
 
-        {/* Semester Selector - Prominent */}
-        <div className="animate-fade-in-up">
-          <div className="bg-white rounded-3xl p-4 border-2 border-purple-200 shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">🎓</span>
-                <h3 className="font-black text-slate-900 text-sm">Current Semester</h3>
-              </div>
-              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-gradient-to-r from-rose-400 to-purple-400 text-white">
-                Sem {currentUser.assignedSemester || 1}
-              </span>
-            </div>
-            <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
-              {Array.from({ length: 9 }, (_, i) => (
-                <button
-                  key={i + 1}
-                  onClick={() => {
-                    updateUser(currentUser.id, { assignedSemester: i + 1 });
-                    setTimeout(() => { window.location.href = "/learn"; }, 300);
-                  }}
-                  className={`px-4 py-2 rounded-xl text-sm font-black whitespace-nowrap transition-all ${
-                    (currentUser.assignedSemester || 1) === i + 1
-                      ? "bg-gradient-to-r from-rose-400 to-purple-500 text-white shadow-md scale-105"
-                      : "bg-slate-50 text-slate-500 border border-slate-200 hover:bg-rose-50 hover:border-rose-300"
-                  }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
         {/* Subjects Label */}
         <div className="animate-fade-in-up">
           <h2 className="text-2xl font-black text-slate-900">My Subjects</h2>
