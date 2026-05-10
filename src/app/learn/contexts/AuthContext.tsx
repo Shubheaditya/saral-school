@@ -2,12 +2,10 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { AuthState, User, AgeGroup, getAgeGroup, AVATARS } from "../types";
-import { supabase } from "@/lib/supabase";
 
 interface AuthContextType extends AuthState {
-  login: (email: string) => void;
+  login: (phone: string) => void;
   logout: () => void;
-  createUser?: any; // Marked as optional for backwards compatibility in other pages just in case
   switchUser: (userId: string) => void;
   updateUser: (userId: string, updates: Partial<User>) => void;
   refreshUser: () => Promise<void>;
@@ -19,9 +17,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>({ isLoggedIn: false, currentUser: null, users: [] });
   const [loaded, setLoaded] = useState(false);
 
-  const fetchUserFromDB = async (userId: string): Promise<User | null> => {
+  const fetchUserFromDB = async (phone: string): Promise<User | null> => {
     try {
-      const res = await fetch(`/api/user?id=${userId}`);
+      const res = await fetch(`/api/user?phone=${phone}`);
       if (res.ok) {
         const data = await res.json();
         if (data.error) return null;
@@ -35,51 +33,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const refreshUser = useCallback(async () => {
-     const { data } = await supabase.auth.getSession();
-     if (data.session) {
-         const dbUser = await fetchUserFromDB(data.session.user.id);
-         if (dbUser) {
-             setState({ isLoggedIn: true, currentUser: dbUser, users: [dbUser] });
-         } else {
-             setState({ isLoggedIn: true, currentUser: null, users: [] }); // Needs onboarding
-         }
-     } else {
-         setState({ isLoggedIn: false, currentUser: null, users: [] });
-     }
+    // Check if we have a stored phone in localStorage
+    const storedPhone = typeof window !== "undefined" ? localStorage.getItem("saral_phone") : null;
+    if (storedPhone) {
+      const dbUser = await fetchUserFromDB(storedPhone);
+      if (dbUser) {
+        setState({ isLoggedIn: true, currentUser: dbUser, users: [dbUser] });
+      } else {
+        // Phone exists in localStorage but no DB record — keep logged in state for onboarding
+        setState({ isLoggedIn: true, currentUser: null, users: [] });
+      }
+    } else {
+      setState({ isLoggedIn: false, currentUser: null, users: [] });
+    }
   }, []);
 
   useEffect(() => {
     refreshUser().finally(() => setLoaded(true));
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session) {
-        const dbUser = await fetchUserFromDB(session.user.id);
-        if (dbUser) {
-            setState({ isLoggedIn: true, currentUser: dbUser, users: [dbUser] });
-        } else {
-            setState({ isLoggedIn: true, currentUser: null, users: [] });
-        }
-      } else {
-        setState({ isLoggedIn: false, currentUser: null, users: [] });
-      }
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
   }, [refreshUser]);
 
-  const login = useCallback((email: string) => {
+  const login = useCallback((phone: string) => {
+    const cleaned = phone.replace(/\D/g, "");
+    if (typeof window !== "undefined") {
+      localStorage.setItem("saral_phone", cleaned);
+    }
     refreshUser();
   }, [refreshUser]);
 
-  const logout = useCallback(async () => {
-    await supabase.auth.signOut();
+  const logout = useCallback(() => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("saral_phone");
+    }
     setState({ isLoggedIn: false, currentUser: null, users: [] });
   }, []);
 
   const switchUser = useCallback((userId: string) => {
-    // For now we only support 1 user profile per supabase identity.
+    // For multi-child: could be extended later
   }, []);
 
   const updateUser = useCallback(async (userId: string, updates: Partial<User>) => {
@@ -88,14 +77,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!prev.currentUser) return prev;
       const updated = { ...prev.currentUser, ...updates };
       if (updates.assignedSemester !== undefined && updated.birthdate) {
-          updated.ageGroup = getAgeGroup(updated.birthdate, updates.assignedSemester);
+        updated.ageGroup = getAgeGroup(updated.birthdate, updates.assignedSemester);
       }
       return { ...prev, currentUser: updated, users: [updated] };
     });
 
-    // Persist to database via PATCH (partial update)
+    // Persist to database via PATCH
     try {
-      // Also compute and send the new ageGroup if semester changed
       const patchBody: Record<string, any> = { id: userId, ...updates };
       if (updates.assignedSemester !== undefined) {
         const current = state.currentUser;
@@ -103,13 +91,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           patchBody.ageGroup = getAgeGroup(current.birthdate, updates.assignedSemester);
         }
       }
-      
+
       await fetch("/api/user", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(patchBody)
       });
-    } catch(e) {
+    } catch (e) {
       console.error(e);
     }
   }, [state.currentUser]);

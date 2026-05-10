@@ -6,21 +6,29 @@ import { eq } from 'drizzle-orm';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');
+  const phone = searchParams.get('phone');
 
-  if (!id) {
-    return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+  if (!id && !phone) {
+    return NextResponse.json({ error: 'User ID or phone is required' }, { status: 400 });
   }
 
   try {
-    const userResult = await db.select().from(users).where(eq(users.id, id));
+    let userResult;
+    if (id) {
+      userResult = await db.select().from(users).where(eq(users.id, id));
+    } else {
+      userResult = await db.select().from(users).where(eq(users.phone, phone!));
+    }
+
     if (userResult.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
     
-    const statsResult = await db.select().from(userStats).where(eq(userStats.userId, id));
+    const user = userResult[0];
+    const statsResult = await db.select().from(userStats).where(eq(userStats.userId, user.id));
     
     return NextResponse.json({
-      ...userResult[0],
+      ...user,
       stats: statsResult.length > 0 ? statsResult[0] : null
     });
   } catch (error) {

@@ -9,13 +9,12 @@ import Sparky from "../components/Sparky";
 function OnboardingContent() {
   const router = useRouter();
   const params = useSearchParams();
-  const { createUser } = useAuth();
+  const { login } = useAuth();
 
-  const prefilledEmail = params.get("email") || "";
+  const prefilledPhone = params.get("phone") || "";
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [birthdate, setBirthdate] = useState("");
-  const [email, setEmail] = useState(prefilledEmail);
   const [avatarIndex, setAvatarIndex] = useState(0);
   const [parentPin, setParentPin] = useState("1234");
   const [error, setError] = useState("");
@@ -36,25 +35,25 @@ function OnboardingContent() {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      // Complete onboarding via real API
+      // Complete onboarding via API
       setLoading(true);
       try {
-        const { supabase } = await import("@/lib/supabase");
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (!session) {
+        const phone = prefilledPhone || localStorage.getItem("saral_phone") || "";
+        if (!phone) {
           router.push("/learn/login");
           return;
         }
 
+        const userId = `user-${phone}-${Date.now()}`;
         const ageGroup = getAgeGroup(birthdate);
         
         const res = await fetch("/api/user", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            id: session.user.id,
-            email: session.user.email || email,
+            id: userId,
+            phone,
+            email: "",
             name,
             birthdate,
             avatarIndex,
@@ -65,7 +64,9 @@ function OnboardingContent() {
 
         if (!res.ok) throw new Error("Failed to create profile");
         
-        // Notify AuthContext (optional) but redirect directly
+        // Re-login to refresh user data
+        login(phone);
+
         switch (ageGroup) {
           case "kids": router.push("/learn/kids"); break;
           case "scholar": router.push("/learn/scholar"); break;
@@ -120,17 +121,6 @@ function OnboardingContent() {
               className="w-full px-4 py-4 rounded-2xl border-2 border-rose-200 focus:border-rose-400 focus:outline-none text-lg font-medium text-slate-900 placeholder:text-slate-300"
               autoFocus
             />
-            <div>
-              <label className="text-sm font-bold text-slate-500 block mb-2">Email (optional)</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="parent@email.com"
-                className="w-full px-4 py-3 rounded-2xl border-2 border-slate-100 focus:border-rose-400 focus:outline-none text-sm text-slate-700 placeholder:text-slate-300"
-              />
-              <p className="text-xs text-slate-400 mt-1">Used for sending progress reports to parents</p>
-            </div>
           </div>
         )}
 
