@@ -43,7 +43,6 @@ export default function LoginPage() {
         email,
         options: {
           shouldCreateUser: true,
-          emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/learn/login` : undefined
         }
       });
 
